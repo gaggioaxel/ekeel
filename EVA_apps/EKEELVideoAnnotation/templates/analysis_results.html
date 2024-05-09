@@ -1,0 +1,218 @@
+{% extends "layout.html" %}
+{% set active_page = "analysis" %}
+  <head>
+
+      {% block head %}
+          {{ super() }}
+          <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+      {% endblock %}
+
+
+
+  </head>
+  <body>
+    {% block navbar %}{{ super() }}{% endblock %}
+    {% block body %}
+
+
+
+    {% if results.analysis_type == "data_summary" %}
+        <div class="container">
+            <p class="title"> Data Summary </p>
+            <div class="table">
+              <table class="table table-responsive">
+                  <tr class="d-flex">
+                    <td class="col-3">Video title</td>
+                    <th class="col">{{ title }}</th>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="col-3">Annotator</td>
+                    <th class="col">{{ annotator }}</th>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="col-3">Number of total descriptions</td>
+                    <th class="col">{{ results.num_descriptions }}</th>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="col-3">Number of definitions</td>
+                    <th class="col">{{ results.num_definitions }}</th>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="col-3">Number of in depths</td>
+                    <th class="col">{{ results.num_depth }}</th>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="col-3">Number of relations</td>
+                    <th class="col">{{ results.num_rels }}</th>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="col-3">Unique relations</td>
+                    <th class="col">{{ results.num_unique }}</th>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="col-3">Strong relations</td>
+                    <th class="col">{{ results.num_strong}}</th>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="col-3">Weak relations</td>
+                    <th class="col">{{ results.num_weak }}</th>
+                  </tr>
+
+                  <tr class="d-flex">
+                    <td class="col-3">Number of concepts</td>
+                    <th class="col">{{ results.num_concepts }}</th>
+                  </tr>
+
+                  <tr class="d-flex">
+                    <td class="col-3">Number of transitive relations</td>
+                    <th class="col">{{ results.num_transitives }}</th>
+                  </tr>
+
+
+              </table>
+            </div>
+
+
+        </div>
+
+    {% elif results.analysis_type == "agreement" %}
+        <div class="container">
+            <p class="title"> Agreement </p>
+
+            <div class="table">
+              <table class="table table-responsive">
+                  <tr class="d-flex">
+                    <td class="col-3">Video title</td>
+                    <th class="col">{{ title }}</th>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="col-3">First annotator</td>
+                    <th class="col">{{ results.annotator1}}</th>
+                  </tr>
+
+                   <tr class="d-flex">
+                    <td class="col-3">Second annotator</td>
+                    <th class="col">{{ results.annotator2}}</th>
+                  </tr>
+
+                  <tr class="d-flex">
+                    <td class="col-3">Agreement</td>
+                    <th class="col">{{ results.agreement }}</th>
+                  </tr>
+
+
+              </table>
+            </div>
+
+        </div>
+    {% elif results.analysis_type == "linguistic" %}
+        <div class="container">
+            <p class="title"> Linguistic analysis</p>
+
+            <label for="prerequisite_name" style="background-color: #ff6666;">Prerequisite:</label>
+            <select class="form-control" id="prerequisite_name" name="prerequisite_name"></select>
+            <br />
+            <label for="target_name" style="background-color: lightblue;">Target:</label>
+            <select class="form-control" id="target_name" name="target_name"></select>
+            <br />
+            <label for="edge_weight" id="edge_weight_label">Weight of the relation:</label>
+            <select class="form-control" id="edge_weight" name="edge_weight">
+                <option value='ANY WEIGHT'>ANY WEIGHT</option>
+                <option value='Strong'>Strong</option>
+                <option value='Weak'>Weak</option>
+            </select>
+            <br />
+{#            <label for="sent_id">Sentence of the relation:</label>#}
+{#            <select class="form-control" id="sent_id" name="sent_id"></select>#}
+{#            <br />#}
+            <input type="submit" name="find" id="find" class="btn btn-primary" value="Find" />
+        </div>
+        <br>
+        <div id="results"></div>
+
+        <!-- Modal box for showing prerequisite relations -->
+        <div class="modal fade" id="modalAnalysis" role="dialog">
+        <div class="modal-dialog" style="max-width:fit-content">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="conceptSummary_name"></h4>
+                </div>
+
+                <ul class="nav nav-tabs" id="tabContent" style="margin:auto">
+                    <li class="active" style="margin:7px"> <a href="#context_tab" data-toggle="tab" >Context</a> <br></li>
+                    <li style="margin:7px"> <a href="#pos" data-toggle="tab">POS</a> <br></li>
+                    <li style="margin:7px"> <a href="#grafo" data-toggle="tab" >Graph</a> <br></li>
+
+                </ul>
+
+                <div class="tab-content" style="width:600px" >
+                    <div class="tab-pane active" id="context_tab">
+
+                        <div class="modal-body">
+                            <div id="relation"></div>
+                            <p>The relation has been annotated in the following context:</p>
+                            <div id="paper_modal"></div>
+                            <br />
+
+                            <div id="buttons_wrapper">
+                                <a href="#" id="prev_button" style="float:left;" class="previous round">Previous sentence</a>
+                                <a href="#" id="next_button" style="float:right;" class="next round">Next sentence</a>
+                            </div>
+                            <br />
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="pos">
+                        <div class="modal-body">
+                            <table class="table table-bordered" id="table_pos">
+                                <tr>
+                                    <th>SENT NUM</th><th>TOK NUM</th><th>FORMA</th><th>LEMMA</th><th>POS (COARSE)</th><th>POS (FINE)</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="grafo">
+                        <div class="modal-body" id="graph_canvas" style="width:600px; height:400px;">
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        </div>
+
+        <script type="text/javascript">
+            let concept_map = {{ results.concept_map|tojson }};
+            let concepts = {{ results.concepts|tojson }};
+            let sentences = {{ results.sentences|tojson }};
+            let conll = {{ results.conll|tojson }};
+            concepts.sort()
+        </script>
+        <script src="{{ url_for('static', filename='graph_visualization.js') }}"></script>
+        <script src="{{ url_for('static', filename='linguistic_analysis.js') }}"></script>
+
+    {% elif analysis_type == "fleiss" %}
+        <div class="container">
+            <p class="title"> Fleiss</p>
+            Fleiss' kappa is a statistical measure for assessing the reliability of a dataset on the basis of the agreement computed between all its annotators.
+This contrasts with Cohens' Kappa, which only works between no more than two annotators.
+        <br><br>
+        <p class="titleLower">Value: {{ results }}</p>
+        </div>
+
+
+    {% endif %}
+
+
+
+    {% endblock %}
+  </body>
+
+ù

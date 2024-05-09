@@ -1,0 +1,1 @@
+In this lecture, we consider strategies for adversarial games such as chess. We discuss the minimax algorithm, and how alpha-beta pruning improves its efficiency. We then examine progressive deepening, which ensures that some answer is always available.

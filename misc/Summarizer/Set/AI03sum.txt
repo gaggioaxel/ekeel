@@ -1,0 +1,2 @@
+We consider a block-stacking program, which can answer questions about its own behavior, and then identify an animal given a list of its characteristics. Finally, we discuss how to extract knowledge from an expert, using the example of bagging groceries.
+

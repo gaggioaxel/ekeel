@@ -1,0 +1,297 @@
+
+We're going to move on today.
+When I was talking about this I tried to put two different concepts in the same place.
+And people corrected me.
+And we had the case of SO2.
+Both of these molecules, when you're thinking about VSEPR, the number of electron domain count--
+Right.
+And we did this on Wednesday.
+OK.
+But I was also telling you about repulsion order at the same time.
+OK.
+The number of lone pairs.
+And so this shape is called bent.
+But you make mistakes.
+You do your best.
+That's all you can ever do.
+I said bent.
+I said the word bent.
+But that shape is not bent.
+That shape is trigonal planer.
+And it's a little bit distorted.
+OK.
+This shape is bent.
+But it's also a little bit distorted.
+OK.
+There's trigonal planar.
+there's bent.
+OK.
+Good.
+But this tells me that there's electrons on the bond.
+It tells me that there's electrons really localized in the region between the atoms.
+Yep.
+Sharing is caring.
+I've got the two protons.
+And we talked about these.
+A repulsion.
+And then the two electrons.
+Repulsion.
+And each electron sees both of them.
+And this is where those electrons are.
+And the electron is in this probability cloud around both of them.
+That's the molecular orbital.
+And Lewis can't tell us about that.
+OK.
+Molecular orbital.
+Right?
+OK.
+Combinations of the AOs.
+LCAO.
+Linear Combination of Atomic Orbitals.
+OK.
+And in particular, sum and difference of orbitals is what we're about.
+These are waves.
+These are waves.
+And that's what we're going to explore in MO theory.
+This is not a charge.
+These are just waves.
+Waves.
+The p orbital has a plus and a minus.
+Right?
+OK.
+And I can add it. Or I can subtract it.
+OK.
+I might actually get something like this.
+Because I've just subtracted the same amount.
+And I've created two MOs.
+That's about the simplest thing you can do in MO theory.
+OK.
+Because these are just the orbitals.
+I got to do something with them.
+That got me excited.
+But you can see right here.
+Or antibonding.
+This would be antibonding.
+And you can see why this is antibonding.
+I made these with 1s.
+They're actually less bonding.
+They're antibonding.
+Those are my AOs.
+AO, AO.
+And the way we refer to the antibonding orbital is with a little star.
+OK.
+I used two AOs.
+I added and subtracted them.
+I got two MOs.
+That's good.
+It makes a lot of sense.
+I got to have room for four.
+Two here.
+Two here.
+They must obey Pauli.
+You can't mess with quantum mechanics.
+They're still electrons.
+They're still quantum mechanical.
+OK.
+And one more thing.
+Hund.
+But we will.
+OK.
+And we'll see how that goes.
+OK.
+OK.
+That's it.
+OK.
+There's a way of understanding bond strength.
+And that is a very important concept.
+OK.
+But I don't know if that's a good idea.
+OK.
+And there's a definition for this.
+It's going to equal 1/2 of the number of electrons in a bonding orbital, minus the number of electrons
+in an antibonding orbital.
+Sorry.
+But we'll do a bunch of them so you can see what this means.
+I don't feel like writing it out.
+OK.
+Good.
+It's 1/2.
+That's good.
+And in this case, energy is always going up in these diagrams.
+There's no charge to the system.
+And so now different quantum numbers.
+Pauli.
+But same sigma.
+But you know what's coming.
+I've got three electrons.
+They're going to go here.
+Here the bond order is zero.
+Because you're putting just as much charge on this thing that wants to bond it as you are on this thing
+that doesn't want to bond it.
+And at the end of the day, it leads to a molecule that is not stable.
+OK.
+OK.
+That's not my example.
+And we're populating it with one electron.
+This is just like SPD.
+Sigma 1s.
+Sigma 1s star.
+OK.
+Good.
+But we're going to move on-don't worry-from sigma.
+OK.
+Oh-ho.
+2s.
+Lithium brings this.
+What does it bring?
+It brings three electrons.
+But I want to make an important point.
+OK.
+The reason is because it's related to the overlap.
+Those are molecular.
+They're kind of close to the core.
+OK.
+These sigma 1ses-oh, sigma 1s.
+Sigma 2s.
+Sigma 2s.
+Sigma 2s.
+OK.
+Bond order.
+So the lithium dimer bonding order is 1.
+OK.
+But you could spend the whole night.
+After I watch Dr.
+It's finite.
+It's not going to take forever.
+OK.
+OK.
+And I'm going to add it to a p orbital that looks like this.
+They're both along the axis.
+One.
+Zero.
+And this is minus.
+I had nodes in the original orbitals.
+And the other thing we see about this is that it is symmetric around that bonding axis.
+OK.
+I don't know.
+OK.
+I'll take that.
+And so the density goes down.
+But I've reduced the electron density.
+No probability density there.
+OK.
+Sigma star pz.
+By the way, some textbooks.
+We're adding and subtracting.
+We're constructively interfering and destructively interfering.
+But it's the same thing.
+That's what we're doing.
+OK.
+But that's why we have another symbol for them.
+I have three orbitals.
+One, I put it along the axis.
+And this is one of them.
+I'll show it to you.
+They're not saying what molecule this is yet.
+This is a 2p orbital.
+Good.
+There's a pi orbital.
+And you get the same exact effect.
+And that's what it looks like for the pi orbital. OK.
+It's not really involved in the bonding.
+I'm going to leave it out.
+OK.
+Good.
+And we know that they are all filled.
+OK.
+And I'm not.
+Those are 2s.
+Those are 2s.
+Sigma 2s.
+Sigma star 2s.
+OK.
+Good.
+That was close.
+px, py, pz.
+And there is oxygen.
+And they form these MOs.
+And we just went over what types they are.
+And there's a sigma M.
+This delta is up there.
+The pis are inside.
+Pi px, pi py.
+All looking like the shapes that we've been drawing.
+I've got the valence filling for oxygen.
+One, two, three, four, five, six, seven, eight.
+Pauli.
+Pauli.
+It's a double bond.
+Lewis could have gotten us this.
+But Lewis can't get us magnetism.
+Lewis can't get us magnetism.
+OK.
+And I pour it through a huge magnet.
+Liquid nitrogen just goes right on through.
+That's liquid nitrogen. Liquid oxygen.
+There's four more things we've got to cover.
+One is paramagnetism.
+Another is what happens when you go hetero nuclear.
+You will feel a force from that magnetic field.
+What's happening?
+I can tell you why that experiment happens.
+Paramagnetism.
+This is diamagnetism.
+But you still feel a little repulsion to a magnetic field.
+Because water is diamagnetic.
+It looked sort of OK.
+So the frog was floating.
+And it was like a study about levitation using magnetism.
+It's like it's sophisticated.
+I pour it through a colander.
+You did use a membrane.
+You did a filter.
+I could have.
+I've accomplished the same exact thing.
+I have separated the pasta from the water.
+Test done.
+Pasta may not taste as good.
+Gazuntite.
+And this is how we do chemistry.
+It's a big pasta cooker.
+40% of that is for this one thing.
+It's boiling pasta.
+But the pasta is 1 nanometer to 10 nanometer particles.
+40% goes into boiling one chemical species off of another.
+Separation.
+Separation.
+Desalination.
+And there's a really simple reason.
+We don't have the right pasta colander.
+There's no option for that size scale that can withstand the conditions that are in all of those chemical
+separations.
+We need O2.
+But we don't want the N2.
+And this is how much energy it takes.
+OK.
+But I had some other-paramagnetism.
+Unpaired electrons. Sigma.
+Sigma S. Sigma.
+Sigma star.
+Pi.
+Pi star.
+You see.
+I'm throwing more orbitals into the mix.
+And they're closer.
+They switch.
+It's real.
+They switch.
+But it is important.
+And those happen below O2.
+Sigma.
+Same symmetry.
+You see that?
+That's an important effect.
+OK.
+But it only happens below O2.
+OK.
+But Cl is bringing all of the-it's bringing S. It's bringing P.

@@ -1,0 +1,358 @@
+{% extends "layout.html" %}
+{% set active_page = "burst" %}
+  <head>
+
+      {% block head %}
+          {{ super() }}
+          <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/form_video.css') }}"/>
+          <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/video_annotator.css') }}"/>
+
+          <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+          <style>
+
+          .concept{
+                background-color: yellow;
+            }
+
+          #transcript p {
+                margin-bottom:0;
+          }
+          </style>
+
+      {% endblock %}
+
+
+
+  </head>
+  <body>
+    {% block navbar %}{{ super() }}{% endblock %}
+    {% block body %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <!-- <strong>Title</strong> --> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <script>
+    function popup() {
+
+      const setPopup = false;
+      var withSyn;
+
+      if(setPopup) {
+        if (confirm("Do you want to use synonyms in burst procedure!")) {
+          withSyn = true;
+        } else {
+          withSyn = false;
+        }
+      }
+      else {
+        withSyn = false;
+      }
+      
+      return withSyn;
+    }
+    </script>
+
+    <div style="padding-left: 5%; padding-right: 5%; height: 90vh; overflow-y: auto;" >
+        <div id="checkConcepts" style="display:none;">
+            <p class="title"> Semi-Automatic Annotation </p>
+            <p> Add or remove concepts, then launch Automatic Annotation</p>
+
+            <div class="row">
+
+              <div  class="col-7">
+                <div style="display: flex; justify-content: space-between; align-items: right;"> 
+                  <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="concepts-tab" data-toggle="tab" href="#concepts" role="tab" aria-controls="home" aria-selected="true">Vocabulary</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="add-tab" data-toggle="tab" href="#add-concept" role="tab" aria-controls="profile" aria-selected="false">Add new concept</a>
+                    <li class="nav-item">
+                      <a class="nav-link" id="add-tab" data-toggle="tab" href="#add-synonyms" role="tab" aria-controls="profile" aria-selected="false">Manage synonyms</a>
+                    </li>
+                  </ul>
+                  <button  onclick="runSemiBurst()" class="btn btn-primary" style="float: right;margin-right: 10%">Launch Automatic Annotation</button>
+                </div>
+
+                <!-- Body of the modal Concepts & Synonyms -->
+                <div class="tab-content tab-body" id="myTabContent">
+
+                  <!-- TAB 1 - Concepts Vocabulary -->
+                  <div class="tab-pane fade show active tab-body-1" id="concepts" role="tabpanel" aria-labelledby="concepts-tab" style="max-height:400px;overflow:auto;border:3px solid rgba(200,200,200,0.5);">
+                      <!--<table class="table">
+                        <tbody id="conceptsTable"></tbody>
+                      </table>-->
+                      <div class="list-group list-group-flush" id="conceptsTable">
+                        <div class="list-group-item list-group-item-action conceptList">
+                          <input type="text" oninput="filterVocabulary(this.value)" class="form-control filter-vocabulary-class" autocomplete="off" id="filter-vocabulary"  placeholder="Search concept...">
+                          <div id="conceptVocabularyContentBurst"></div> 
+                        </div>
+                      </div>
+                  </div>
+
+                  <!-- TAB 2 - Add Concepts -->
+                  <div class="tab-pane fade tab-body-2" id="add-concept" role="tabpanel" aria-labelledby="add-tab">
+                    <div >
+
+                      <div class="row">
+                          <label for="newConcept"> Add Concept:</label>
+                          <input type="text" class="form-control" autocomplete="off" id="newConcept"  placeholder="Enter new concept">
+                      </div>
+                        <br>
+                      <div class="row">
+                          <button  onclick="addConcept()" class="btn btn-primary">Add new concept</button>
+                      </div>
+                        <br>
+                      <div class="row tab-error" id="errorConcept" style="display:none">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- TAB 3 - Manage Synonyms -->
+                  <div class="tab-pane fade tab-body-3" id="add-synonyms" role="tabpanel" aria-labelledby="add-tab">
+                    <div class="main-vocabulary-body">
+
+                      <!-- Synonym set selected -->
+                      <div class="row selected-synset-show">
+                        <p class="spaced-text same-line">Selected Synonym Set: </p><p class="synonym-set-class same-line" id="synonymSet"></p>
+                      </div>
+
+                      <!-- Synonym set selection -->
+                      <div id="synset-selection" class="spaced-text synset-selection-class row">
+                        <div class="row">
+                          <label for="selectSynonymSet">Word of Synonym Set:</label>
+                          <input type="text" class="form-control" autocomplete="off" id="selectSynonymSet"  placeholder="Select one of the synonym set word">
+                        </div>
+                        <div class="row button-center">
+                            <button onclick="selectSynonymSet()" class="btn btn-primary button-select-synset">Select Synonym Set</button>
+                        </div>
+                        <div class="row tab-error" id="errorSynonymSet" style="display:none"></div>
+                      </div>
+
+                      <!-- Add new synonym -->
+                      <div id="add-syn-selection" class="spaced-text add-syn-selection-class row">
+                        <div class="row">
+                            <label for="newSynonym">Add/Remove Synonym:</label>
+                            <input type="text" class="form-control" autocomplete="off" id="synonymWord"  placeholder="Enter synonym to add/remove">
+                        </div>
+                        <div class="row">
+                          <div class="col-6">
+                              <button  onclick="addSynonym()" class="btn btn-primary button-add-syn">Add Synonym</button>
+                          </div>
+                          <div class="col-6">
+                            <button  onclick="removeSynonym()" class="btn btn-primary button-rem-syn">Remove Synonym</button>
+                          </div>
+                        </div>
+                        <div class="row tab-error" id="errorNewSynonym" style="display:none"></div>
+                        <div class="row tab-error" id="errorRemoveSynonym" style="display:none"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+
+              </div>
+              
+              <div id="right-body" class="right-body-class">
+                <div class="col">
+                  <p class="titleLower" style="margin-bottom:2px; margin-top:10px"> Transcript </p>
+                  <div id="transcript" style="overflow-y: scroll;max-height:400px; border:3px solid rgba(200,200,200,0.5); padding-left: 5px;"></div>
+                </div>
+                <div id="selectedConceptBox" class="selected-concept-box" style="margin-left: 3%; margin-top:1%">
+                  <p class="padding-left same-line">Selected Concept:<span id="transcript-selected-concept" class="selected-concept same-line">--</span></p>
+                  <div class="padding-left">
+                      <p class="description-selected-concept same-line">Synonyms: </p>
+                      <p id="transcript-selected-concept-synonym" class="m-synonym-text2 margin-left same-line">--</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+
+        </div>
+
+        <div class="container" id="loadingAutomatic" style="display: none; margin-top: 2%">
+            <div class="text-center" style="margin-top: 4%">
+              <p id="loadingText" class="titleLower"> Annotating automatically.. </p>
+              <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
+        </div>
+
+        <div class="container" id="results" style="display: none;">
+            <p class="title"> Automatic Annotation results</p>
+            <div style="display: flex; justify-content: space-around; align-items: right;"> 
+              <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="data_summary-tab"
+                     data-toggle="tab" href="#summary" role="tab" aria-controls="home" aria-selected="true">Data Summary</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="defs-tab"
+                     data-toggle="tab" href="#defs" role="tab" aria-controls="profile" aria-selected="false">Definitions</a>
+                </li>
+                <li class="nav-item" >
+                  <a class="nav-link" id="rels-tab"
+                     data-toggle="tab" href="#rels" role="tab" aria-controls="contact" aria-selected="false">Relations</a>
+                </li>
+              </ul>
+              <button type="button" onclick="DownloadBurstResultAsJson($burstGraph)" class="btn btn-primary" style="float:right;">Download graph</button>
+              <button id="refinement-button" type="button" onclick="refineBurstWithVideoAnalysis()" title="Video signal analysis of textual elements within the video lesson" class="btn btn-primary" style="display:none; margin-left:10%;">Refine analysis</button>
+            </div>
+
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="summary" role="tabpanel" aria-labelledby="data_summary-tab">
+              <div id="data_summary"></div>
+            </div>
+
+            <div class="tab-pane fade" id="defs" role="tabpanel" aria-labelledby="defs-tab">
+              <div style="padding:3%;">
+                <div class="row">
+                    <div id="video" class="col">
+                    <video
+                        id="video-active"
+                        class="video-js video-player"
+                        preload="none"
+                        controls poster="https://img.youtube.com/vi/{{ video_id }}/maxresdefault.jpg" >
+                    <source src="{{url_for('static', filename='videos/'+video_id+'/'+video_id+'.mp4')}}" type="video/mp4">
+                    </video>
+                 </div>
+
+
+                  <div class="col" style="width: 700px;">
+                    <table class="table" style="max-height:650px">
+                      <thead>
+                        <tr>
+                          <th scope="col">Concept</th>
+                          <th scope="col">Start</th>
+                          <th scope="col">End</th>
+                          <th scope="col">Type</th>
+                          <th scope="col"></th>
+                        </tr>
+                      </thead>
+                      <tbody id="defsTable">
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="rels" role="tabpanel" aria-labelledby="rels-tab">
+              <div id="network" style="border:3px solid rgba(200,200,200,0.5);"></div>
+            </div>
+          
+          </div>
+          
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+  {% endblock %}
+  </body>
+
+{% block scripts %}
+<!-- <script src="{{ url_for('static', filename='autocomplete.js') }}"></script> -->
+<script src="{{ url_for('static', filename='download.js') }}"></script>
+<script src="{{ url_for('static', filename='burstVocabulary.js') }}"></script>
+<script src="{{ url_for('static', filename='graph_visualization.js') }}"></script>
+<script>
+
+    /*let relations = { { relations|tojson }};
+    let definitions = { { definitions|tojson }};
+    let concepts = { { concepts|tojson }};
+    console.log(relations)
+    console.log(concepts)
+    console.log(definitions)
+
+   showNetwork(concepts, relations, "relations")*/
+
+    let $captions = {{ result|tojson }};
+    let $concepts = {{ concepts|tojson }};
+    $concepts.sort()
+    let $conceptVocabulary = {};
+    let $conceptMap = null;
+    let $downloadableGraph = null;
+    let $synonymList = [];
+    let $lemmatizedSubs = {{ lemmatized_subtitles|tojson }};
+    let $video_id = {{ video_id|tojson }};
+    let $allLemmas = {{ all_lemmas|tojson }};
+    let $hasBeenRefined = false
+
+    let $typeAnalysis = {{ type|tojson }};
+    if ($typeAnalysis == "auto"){
+      loadingAutomatic()
+    } else {
+      document.getElementById("checkConcepts").style.display = "block";
+    }
+
+    let $title = {{ title|tojson }};
+
+    async function runSemiBurst() {
+      loadingAutomatic()
+      $burstSynonym = await popup(); 
+      let result = await launchBurstAnalysis("semi")
+      if (result.can_be_refined) {
+        enableRefinementButton()
+      }
+      $definitions = result.definitions
+      console.log($definitions)
+    }
+
+    async function getVocabulary() {
+      $conceptVocabulary = await getConceptVocabulary();
+
+      if($typeAnalysis == "semi"){
+        addSubtitles();
+        //printConcepts()
+        showVocabularyBurst($conceptVocabulary);
+        
+      }
+      else{
+        $burstSynonym = await popup();
+        loadingAutomatic()
+        let result = await launchBurstAnalysis($typeAnalysis)
+        if (result.can_be_refined) {
+          enableRefinementButton()
+        }
+        $definitions = result.definitions
+        console.log($definitions)
+      }
+      
+      
+    }
+    console.log("getting vocabulary");
+    let video = document.getElementById("video-active");
+    getVocabulary();
+
+    function enableRefinementButton(){
+      document.getElementById("refinement-button").style.display = "block"
+    }
+
+    function loadingAutomatic(){
+        document.getElementById("checkConcepts").style.display = "none"
+        document.getElementById("loadingAutomatic").style.display = "block"
+    }
+
+
+
+</script>
+{% endblock %}

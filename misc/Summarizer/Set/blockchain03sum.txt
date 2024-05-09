@@ -1,0 +1,1 @@
+n this lecture, Prof. Gensler, explains the basics of blockchain and covers Bitcoin design features, hash functions, blocker headers, Merkle trees, among other related topics.

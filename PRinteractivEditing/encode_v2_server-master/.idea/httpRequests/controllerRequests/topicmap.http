@@ -1,0 +1,30 @@
+GET http://localhost:8080/protected/v1/topicmaps
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+DELETE http://localhost:8080/protected/v1/topicmap?topic_map_id=3
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/protected/v1/topicmap?topic_map_id=3
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/protected/v1/topicmap
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+{"title": "my first topicmapUpdate", "description": "a description", "version":  "1.0", "id": 4}
+
+###
+
+POST http://localhost:8080/protected/v1/topicmap
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0NDA2NzU4NSwiaWF0IjoxNjQ0MDU3Nzg1NTIwfQ.rxDoW5FtRWOb0IXr1pBoz189Zg0XuYHZ8t6js5qbyYI
+Content-Type: application/json
+
+{"creationDate": 1642351386000,"title": "my new topicmap1", "version":  "1.0", "schemaId":4}

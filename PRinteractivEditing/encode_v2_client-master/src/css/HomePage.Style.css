@@ -1,0 +1,291 @@
+/*HomePage.js css*/
+.column {
+    float: left;
+    position: relative !important;
+}
+
+#div-top{
+    height: 12%;
+    border: 1px solid #e5e3e3;
+}
+
+#div-top-menu{
+    background-color: #0c3771;
+    height: 100%;
+}
+
+.div-home-element{
+    height: 88%;
+    background-color: white;
+    border: 1px solid #e5e3e3;
+}
+
+
+#div-topic-map-list{
+    overflow-y: scroll;
+    width: 20%;
+    border: 1px solid #e5e3e3;
+}
+
+#div-schema-list{
+    overflow-y: scroll;
+    width: 20%;
+    border: 1px solid #e5e3e3;
+}
+
+#div-graph{
+    width: 80%;
+}
+
+
+#div-schema-list::-webkit-scrollbar-thumb {
+    background: #0c377185;
+}
+
+.item, i{
+    cursor:pointer;
+}
+
+/*TopMenu css*/
+
+.top-menu{
+    background-color:#0c3771 !important;
+    margin: 0;
+    width:100%;
+    padding-left: 2%;
+    height: 100%;
+}
+
+.top-menu-icon, .top-menu-item{
+    color:white !important;
+}
+
+#logout-button{
+    margin-left: 0 !important;
+}
+
+#manage-association-role-dropdown{
+    border-bottom: 1px solid lightgray;
+}
+#manage-scope-dropdown{
+    border-bottom: 1px solid lightgray;
+}
+
+#manage-occurrence-dropdown{
+    border-bottom: 1px solid lightgray;
+}
+#manage-topic-dropdown{
+    border-bottom: 1px solid lightgray;
+}
+#manage-effort-dropdown{
+    border-bottom: 1px solid lightgray;
+}
+.dropdown-item{
+    padding-left: 10px;
+}
+.dropdown-item-title{
+    color: #0c3771;
+}
+/*schemaList*/
+#div-schema-list-title{
+
+    padding: 10px;
+    text-align: left;
+    height: auto;
+    background-color: #bac7e1;
+
+
+
+}
+#schema-desc{
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 20px;
+  background-color: #F0F3F8;
+
+}
+
+#p-schema-list-title{
+    color: #0c3771;
+    font-size: 18px;
+    line-height: 1em;
+    text-transform: uppercase;
+    font-weight: bold;
+
+
+}
+#hide-icon-schema-list{
+    margin-left: 40%;
+
+}
+#show-schema-list-button-icon{
+    margin-left: 5px;
+}
+#show-schema-list-button{
+    margin-left: -45px;
+    margin-top: 42px;
+    -webkit-transform:rotate(-90deg);
+    background-color:#F0F3F8;
+    color: #0c3771 ;
+    border: 1px solid lightgray;
+
+}
+
+
+#schemainfoList{
+    border-bottom: 1px solid lightgray;
+}
+
+/*schema css*/
+
+.schemaTitle{
+    height: auto;
+    border-bottom: 1px solid  lightgray;
+
+}
+
+.schema-title{
+    font-size: 18px;
+    margin-bottom: 5%;
+    margin-left: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #0c3771;
+}
+
+#schema-list-schema-title{
+    color: #0c3771;
+    padding-top: 10px;
+}
+#schema-dropdown{
+    color: #0c3771;
+    float:right;
+}
+#schema-icons{
+    color: #0c3771;
+    padding: 10px;
+    background-color: #F0F3F8;
+
+}
+
+
+.schema-type-title{
+}
+.schema-list-type-element{
+
+}
+.schema-list-element-name{
+    margin-left: 15px;
+}
+
+.schema-element-li{
+    border-left: 4px solid lightgray;
+    border-bottom: 1px solid #bac7e1;
+}
+
+#schema-description{
+    margin-top: 5%;
+}
+
+/*TopicMapList css*/
+#topic-map-element-container{
+
+}
+
+#topicMapTitle{
+
+}
+
+/*TopicType css*/
+
+#topic-type-list-title{
+    font-size: 13px;
+    margin-left: 15px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #0c3771;
+}
+
+
+
+/*OccurrenceType css*/
+
+#occurrence-type-list-title{
+    font-size: 13px;
+
+    margin-left: 15px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #0c3771;
+}
+
+
+
+/*AssociationType css*/
+
+#association-type-list-title{
+    font-size: 13px;
+    margin-left: 15px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #0c3771;
+}
+
+
+/*Scope css*/
+#scope-list-title{
+    font-size: 13px;
+    margin-left: 15px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #0c3771;
+}
+
+#effort-type-list-title{
+    font-size: 13px;
+    margin-left: 15px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #0c3771;
+}
+
+
+/*TopicMap css*/
+#topicmap-list{
+    padding-bottom: 15px;
+
+}
+
+.topicMapTitle {
+
+    height: auto;
+    margin-top: 5px;
+}
+
+#topicmap-desc{
+    margin-left: 25px;
+    padding-bottom: 5px;
+    border-left:lightgray;
+}
+
+#p-topic-map-list-title {
+    font-size: 15px;
+
+    margin-top: 15px;
+    margin-left: 15px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #0c3771;
+}
+
+#circle-topic-map-title{
+}
+
+.topic-map-element-li{
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.icon-list:hover{
+    color: #53abff;
+}

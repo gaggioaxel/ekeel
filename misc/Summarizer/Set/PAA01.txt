@@ -1,0 +1,34 @@
+ I'm Srini Devadas.006-Introduction to Algorithms-this term with professor Erik Domane.006 learning a variety of algorithms. I want to dive right in and tell you about interesting things, like algorithms and complexity of algorithms. And you'll find that there's really a difference between these various algorithms that we'll look at in terms of their complexity.
+
+And a prerequisite for this class is 6.042. And in 6.042 you learned about asymptotic complexity.
+
+So the one sentence summary of this class is that this is about efficient procedures for solving problems on large inputs. So scalability is important.
+
+You going to learn a bunch of different data structures.046.
+
+And one of the nice things about this class is that you'll be doing real implementations of these data structures and algorithms in Python. And by fun I don't mean easy. We'll look at a particular problem, as I mentioned, of peak finding.
+
+A couple of them are going to have bugs in them. And you can expect that most of the problem sets are going to follow that sort of template. What kind of algorithm could use for that?
+
+Trees are a wonderful data structure. 99% similar, which is kind of amazing. The fact is that you will get large inputs to run your code. And you want to keep complexity in mind as you're coding and thinking about the pseudocode, if you will, of your algorithm itself.
+
+We will talk about numerics. Or 64 bits isn't enough to represent these numbers. These numbers have thousands of bits.
+
+A good example is RSA encryption, that is used in SSL, for example.
+
+Graphs, really a fundamental data structure in all of computer science. In previous terms we've done other things like the 15 puzzle. We'll try and make it fun.
+
+OK. I want to talk about a specific problem. And a through i are numbers. And we want to find a peak. I was going to get to that. Right? So great question. I searched exhaustively. Thanks for the question. And you might have something that looks like that. If it was right in the middle. You could certainly set things up that way. And the asymptotic complexity of this algorithm is linear.
+
+PROFESSOR: It's find a peak if it exists. We don't really need this as it was discussed.006 cushions. It is soft.
+
+PROFESSOR: Chase. OK? All right, great. I'm going to write it out for the 1D version.006.
+
+We're going to look at the n over 2 position.
+
+And we're going to look to the left, and we're going to look to the right. And we're going to do that in sequence. You just look to the right hand side.
+
+You want to write an argument that this algorithm is correct. And I'm not going to bother with that. That it does what it claims to do. And in this case it's two, three lines of careful reasoning that essentially say, given the definition of the peak, that this is going to find a peak in the array that you're given. Because the whole point of this algorithm was because we didn't like this theta n complexity corresponding to the straightforward algorithm. That's exactly right. Good. Veers left. And there's really a huge difference. There's an exponential difference. And this one takes 0.001 seconds. OK? Huge difference. It's the obvious definition of a peak.
+
+You might want to start in the middle, and you might want to work your way left first. That's correct. OK? If not 1. That's i. You're right. The log n complexity, that's what this was. Log n complexity. Thanks, Eric.
+PROFESSOR: That's exactly correct. So this algorithm is incorrect. I end up finding a peak. And it's quite possible that I return 12 as a peak. That is a 1D peak on this row. But 14 is not a 2D peak. And 14 is not a 2D peak. And this one works. I'm going to find the global maximum on column j. I'm going to pick the left columns. And that's essentially why this algorithm works.

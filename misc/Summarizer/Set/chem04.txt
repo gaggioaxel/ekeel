@@ -1,0 +1,47 @@
+ That's the planetary model. How many meters do you
+have per wave? We're getting somewhere here. You can use f.000000667 meters. And we're going to
+add something to this in just a minute. There was work going on at the time already related to quantization. It's discrete.
+Something is discrete. It's quantized. You look at those. It's pixels. These things are acting like xylophones. It was quantization of light. I
+don't know. There's a reason, Planck-Einstein. It might just look like a simple relationship. I'm going lowercase-Planck's
+constant.26-no-6.62-sorry-6. Or it's
+also equal to 4.136 times 10 to the minus 15th electronvolt-seconds. 100 years off, 90 years off. I'm good. And that was revolutionary. That was not what people thought. It was electrons coming off of a piece of
+metal. Nothing happened. It just depends on frequency. I just won't write it.8 electronvolts.7
+electronvolts. You plot that versus the-I said it wasn't going to
+use f-versus the frequency of the light, nothing, nothing, nothing. That explains it because these
+things were made of these particles that were called photons. So photons. And that's where we were on Monday. That's what he did. I'm going after the atom. Angular momentum, mvr.
+But there's something added to it. This is like the
+unit. It's like that photon energy. It comes in units, but it comes in units of integers.5. That's quantization. We're quantization things. This is how you get the quantization
+from this. I will not derive Bohr's model for you. It's actually really fairly
+straightforward. It's not accelerating in. It's got a
+value of 0. But
+that's its value. No. And this is not necessarily drawn to scale.5-ish angstroms, 0. And that comes in when you do F equals ma. z is the
+atomic number in both cases.
+This is mind-blowing because it tells you that that's where the electrons are in the
+atom orbit, in the atom, but they're only those distances. It didn't make sense.6 divided by n squared electronvolts.6 eV.4 eV. Above that is free. The electron is free. You've ionized it.
+You've taken it out. That was revolutionary at the time. That's not E. That's eV.
+What do I mean by a transition? I mean that an electron is in an atom at some level,
+and it moves to another level. There are only certain changes in energy that that
+electron can experience. It's photon
+energy. Photon energy gets emitted from electrons changing their levels in an atom.
+Light is an absolutely intricate part of this system. I'm going to keep going.5 times 10 to the 15th
+hertz. And that's what he saw when he looked at the sun. It's not a good idea, but Angstrom did. Chemists love it because a bond is a few
+angstroms. Spectroscopists like nanometers. We
+don't like thousands. We want to work with hundreds. So spectroscopists use
+nanometers. Other people, chemists, whose angstroms. These frequencies, wavelengths that are coming out are
+not continuous. And there were a lot of
+people trying to understand this at the time, Balmer and Rydberg. And I'm not going
+to go through-they came up with sort of partial formula. They were empirically
+based.
+And at the time, it was a real thing. You're instead seeing discrete lines. You get these lines when an electron goes down in energy. You could shine light. If you look at a question like this-I forget.
+We think of these as photons. Red. That
+was over here. z equals 1. We're not going to go-some day. If your favorite radio station broadcasts at a frequency of 107. Light, energy-light
+to energy, photons, particles. And so the energy
+here is h nu. You
+get 7.12 times 10 to the minus 26 joules per photon. I just decided to stick with joules. They're just units.
+Carbon has absorption lines. I love this plot.
+And there's energy use. Big deal. But I'm talking
+about refrigerators for a different reason.
+That molecule has its own absorption. These are very reactive
+atoms in the atmosphere. They love ozone. Absorption-it's the same principle, Bohr. UV, O3. That little sliver of yellow
+is critical. And ozone was doing the job, and it still is. This is a great
+example of how policy is so critical.

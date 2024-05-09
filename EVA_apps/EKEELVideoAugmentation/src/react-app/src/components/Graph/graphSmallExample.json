@@ -1,0 +1,77 @@
+{
+    "graph": {
+      "@context": [
+        "http://www.w3.org/ns/anno.jsonld",
+        {
+          "edu": "http://edurell.com/"
+        }
+      ],
+      "@graph": [
+        {
+          "body": "edu:functional_morphology",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno35",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:sexual_dimorphism"
+            },
+            "id": "_:Nd67b50561c3940349c78e93640833c3a",
+            "selector": {
+              "id": "_:N5ae82c9b062a4ff19dd5157360456fff",
+              "type": "edu:TimestampSelector",
+              "value": "00:06:42^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:super_orbital_ridge",
+          "type": "skos:Concept"
+        },
+        {
+            "id": "edu:sexual_dimorphism",
+            "type": "skos:Concept"
+        },
+        {
+            "id": "edu:functional_morphology",
+            "type": "skos:Concept"
+        },
+        {
+          "id": "edu:nuchal_crest",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:sexual_dimorphism",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno2",
+          "motivation": "describing",
+          "target": {
+            "id": "_:Nd9dbb6f67c524835bcb21f02cab75589",
+            "selector": {
+              "endSelector": {
+                "id": "_:N30f7c072df1c4c8aa36ed1512d08feb3",
+                "type": "edu:TimestampSelector",
+                "value": "00:08:57^^xsd:dateTime"
+              },
+              "id": "_:Na603381d25c04c2ca8262f2b7b857870",
+              "startSelector": {
+                "id": "_:N1e1413fc542f4c729402ffbd37958b5e",
+                "type": "edu:TimestampSelector",
+                "value": "00:08:27^^xsd:dateTime"
+              },
+              "type": "RangeSelector"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        }
+      ]
+    }
+  }

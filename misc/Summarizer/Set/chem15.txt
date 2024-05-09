@@ -1,0 +1,109 @@
+
+And then next week, we're going to talk about crystals.
+It was in the cases that we talked about.
+But it's to a lone pair on that atom.
+So the numbers work.
+And this is what's going on in the liquid.
+And they're talking.
+And that's happening all over the place.
+It depends.
+It's a great question.
+You can make tetrahedral.
+There's many forms of ice, 12 different ways to make a solid of ice.
+People try to write the physics of the hydrogen bond as 1 over r cubed.
+That is not true.
+It's complicated.
+It's not a polar molecule.
+There's no hydrogen bond.
+It's always there.
+Dipole-dipole London and hydrogen, just London.
+If you look at the big picture, we have done the electronic structure of atoms and molecules.
+Dipole-dipole, London dispersion, hydrogen bonding.
+And of course, we're excited about this.
+And we're going to make solids out of them.
+And this week, this week we're going to do the electronic structure.
+And next week, we're going to do atoms.
+And next week Friday, we're going to break a bunch of stuff with parents.
+But it's also going to depend on the bonding.
+It's going to depend on how the electronic structure comes together.
+And it's going to depend on how the atoms come together.
+That's how we're going to start.
+But we've got to move on because this is just two atoms, two atoms.
+We've got a lot.
+It all came from LCAO.
+LCAO is the linear combination of atomic orbitals.
+But I can also subtract one in the middle.
+And we know that the number of molecular orbitals has to equal the number of atomic orbitals.
+It's almost like it kind of cancels out.
+But so four 1s orbitals.
+I'm just adding and subtracting.
+This is one node.
+And zero nodes.
+I just went to four.
+I just went to four.
+There's 4, 5.
+These don't look discrete.
+We call that a band.
+10 to the 24th s orbitals.
+We can't.
+It's the 1s band.
+We've already learned them for molecules.
+They holds for bands and solids.
+So filling is like MOs.
+The band is filled halfway.
+And we know that it's half filled because it's hydrogen.
+One s, one s, sigma, sigma, star.
+Same is true in solids.
+But you have to know the filling.
+And I will talk about metals on Friday.
+And there's a gap.
+That's a different kind of material.
+2p band.
+And we'll be talking about some examples.
+That's not a metal.
+That's between an s and a p band.
+And then the filling determines the properties.
+And they're so important.
+They're so important.
+I want to talk about these.
+And we're going to see it through the vantage point of these electronic levels.
+And then next week, we'll see it through the vantage point of atoms.
+And this is unoccupied.
+So unoccupied by electrons.
+This is fully occupied by electrons.
+Valence band.
+And we use vb for short.
+Conduction band.
+So the conduction band and the valence band depend on the filling.
+And there's one more definition we got to know about.
+This is an extremely important property of materials, the electronic band gap.
+And for diamond, it's really large.
+For diamond, it's really large.
+And it's something like 0.025 electron-volts.
+It's kind of stuck in those bonds.
+This is not going to carry electrons through the material.
+I'm not a metal.
+That's why it's called a semi conductor.
+They kind of conduct electrons.
+We can do the same thing for solids.
+It's just like the atom.
+I'm stuck.
+It's just like we talked about with atoms.
+This is also different.
+There's diamond.
+There's silicon.
+There's germanium.
+And you can understand this from what you know about the electron levels in atoms.
+It happens to work for this column.
+You're somewhere in the middle of a band.
+And we'll talk about that on Wednesday.
+They're stuck in these bonds.
+This measures that.
+This measures that.
+You've also got some LEDs and some LEDs.
+It gives you different energies of the photons.
+And that's the second piece.
+If LEDs were insulators, they wouldn't work.
+Because the way an LED works is actually just the opposite.
+That means that I must have different gaps.
+That's what's happening on the right hand side.

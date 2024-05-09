@@ -1,0 +1,123 @@
+ I'm Eric Domain.
+
+And the last class, we sort of jumped into things.
+
+And in this class, we're going to do some more algorithms. So the beginning of algebra. But he was sort of the textbook writer who wrote sort of how people solved them. You multiply by this. Some fun history. This is a new lecture. You take some input. You run it through.
+
+You compute some output. An algorithm is basically the mathematical analog of a computer program.
+
+You can draw a picture of sort of analogs. So an algorithm is a mathematical analog of a computer program. A computer program is built on top of a programming language.
+
+And it's written in a programming language. Pseudocode means lots of different things. Though there's a particular pseudocode in your textbook which you probably could run on a computer. A lot of it, anyway.
+
+But you don't have to use that version. It just makes sense to humans who do the mathematics.
+
+There's an analog of a computer in the mathematical world. And that's sort of the focus of the first part of this lecture.
+
+Then the algorithm does a bunch of operations. You add them up. That is the total cost of your algorithm.
+
+Each operation has a time cost. You add those up. That's running time of the algorithm.
+
+OK, so let's-I'm going to cover two models of computation which you can just think of as different ways of thinking. But you've see analogs if you've seen those before. It's technical detail. A typical chip these days is like four gigs in one thing. That's random access memory.
+
+This is the fifth word. You can think of this as infinite. It's usually called store.
+
+OK, it needs to know where these words are. It accesses them by address. You can do some computations on those registers. But in some sense, it is reality.
+
+This is how we think about computers. They all take constant time.
+
+You can manipulate a whole word at a time. A word is w bits. It's slightly annoying.
+
+And most of this class, we won't really worry about what w is. We'll assume that we're given as input a bunch of things which are words.
+
+We're given a matrix of numbers. We don't worry about that. We just think of them as words and we assume that we can manipulate those words.
+
+We didn't say why it was constant time to do that.
+
+Words are words. Words come in as inputs. For example, in this model there's no dynamic memory allocation. It's kind of like a higher level programming abstraction. And an object has a constant number of fields. And that's where pointer machine gets its name. That's good. You should have seen pointers. Modern languages these days don't call them pointers because pointers are scary. But there's a very subtle difference between them.
+
+And this model actually really is references. But for whatever reason, it's called a pointer machine. It doesn't matter.
+
+So the next pointer points to this node. The previous pointer points to this node. Next pointer points to null.
+
+And you can create a new node. You can destroy a node. That's the dynamic memory allocation. You can't touch them.
+
+A pointer becomes an index into this giant table. And that's more like the pointers in C if you've ever written C programs.
+
+In this model, you can just follow a pointer. That's all you can do. Because you could implement a pointer machine with a random access machine. But it offers a different way of thinking. A lot of data structures are built this way.
+
+Cool. This goes back to the '80s. This one probably '80s or '70s. Because we're implementing everything in Python. But it also has a lot of operations. And each of those has a cost associated with them. There's a lot of operations.
+
+I'm not going to cover all of them. But we'll cover more in recitation. And there's a whole bunch in my notes. I won't get to all of them. It's a super cool array, of course? And you can think of it as a list. But in terms implementation, it's implemented as an array. That's why it's so confusing. In fact, they are not. And it's very different. This takes constant time.
+
+I know that the terminology is super confusing. You can think of manipulating that object as taking constant time.
+
+You have a pointer.
+
+This takes constant time. This takes constant time. And you want to append some item to the list. L. That would take linear time. Python doesn't do that.
+
+It's a very simple idea.
+
+You'll see how this can basically be done in constant time. There's a lot of features in Python that use algorithms. And that's kind of why I'm telling you.append(x). This doesn't use any fancy operations that we haven't seen already. And so the amount of time here is basically order the length of L1. And the time here is order the length of L2. It still takes constant time to build an initial list.
+
+OK, so there are a bunch of operations that are written in these notes. I'm not going to go through all of them because they're tedious.
+
+But these are entire data structures. Linear time.
+
+Lists aren't necessarily sorted. We don't know anything about them. OK, blah, blah, blah.
+
+OK, another fun one. This is like a pop quiz.
+
+It always stores the list at the beginning-stores the length of the list at the beginning. This is instantaneous. That can matter.
+
+If you look at Python sorting algorithm, it uses a comparison sort.
+
+And that is using algorithms. Python called dicts. In fact, this is one of the most important data structures in all of computer science. It's called a hash table. That also takes constant time.
+
+You can delete something from the dictionary.update, that involves a lot of keys. That doesn't take some time.
+
+It's a randomized algorithm. It doesn't always take constant time. It's always correct. It's a big area of research. We've got dictionaries.
+
+We've got sorting.
+
+You can do it in that much time.6.6 power, a little better than quadratic. It's pretty cool.
+
+One more. So last time, we did peak finding. I'll call them D1 D2. And I want to compute the distance between them. You'd like to know when two web pages are basically identical. And there's lots of extra copies.
+
+Or you're Wikipedia. And I don't know if you've ever looked at Wikipedia. There's a list of all mirrors of Wikipedia.
+
+There's like millions of them. And they find them by hand. Because that would defeat the point. It's not the one we cover in class. I've got some more. Web search. And you want to implement searching.
+
+I'm searching for introduction to algorithms. You can think of introduction to algorithms as a very short document. But it's part of what it does. It's partly also just a toy problem. That's a simple definition of decomposing documents into words. And I've thought about my document as a collection of words. This is obviously only one way to define distance. But there are lots of other possibilities. But I could also think of it as a vector. Non-negative integer.
+
+I think of this as a giant vector. A vector is indexed by all words.
+
+Of lot of them are zero. You could think of every document is as being one of these plots in this common axis. But it's one way to draw the picture. Everybody likes cats and dogs.
+
+The dog you've got basically pointing there. Any others.
+
+OK, we'll go with inner product.
+
+Those match.
+
+The trouble of this is if I have a long document-say, a million words-and it's 99% in common with another document that's a million words long, it's still-it looks super similar. And they're identical.
+
+Their score is maybe only 100. Sorry about that. That's good. It's pretty good. It's just off by an arc cos. I like geometry. That's really easy.
+
+So a sort of algorithm.
+
+And then the third step is to compute the dot product. Some of these will be covered more in future lectures.
+
+There's a lot of ways to do each of these steps. There are lots of sort of versions of this algorithm.1 seconds-super slow. Pathetic. We get down to 164 seconds.3 seconds.5 seconds.8 seconds.2 seconds. So factor of 1,000. This is just in Python. It's all right. It's getting reasonable.
+
+This is not so reasonable. Some of these improvements are algorithmic. Some of them are just better coding. Because this one will never finish. But this one you could run on the bigger examples. This would work if count is something called a count dictionary if you're super Pythonista. If it is there, add one to it.
+
+This will count the number of words-this will count the frequency of each word in the dictionary. This is linear time with high probability.
+
+OK, that's a good algorithm.
+
+There are other ways to do this. And that'll run almost as fast. That was one of these algorithms.
+
+That's a good answer. If you don't know what this means, don't worry about it. Because it's not always linear time. It's good.
+
+You should check them out.

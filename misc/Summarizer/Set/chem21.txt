@@ -1,0 +1,139 @@
+
+But that will probably come.
+You never know.
+And you can see that there is a pretty wide distribution.
+So the average was in the solid B range territory.
+The standard deviation was 12.
+And sometimes some people listen to music, some of the other things.
+That's not the point I want to make.
+That's when you do the work.
+You've got to get through that.
+You've got to know that it takes hard work.
+I'm a noble gas.
+But I also was trying to teach you guys about X-rays.
+There are two kinds of X-rays.
+And we learned about those on Friday.
+But I'll just jump to the two kinds of x-rays that you get.
+So those electrons coming off the cathode are going really fast.
+And that's when they give off this continuous radiation.
+The incoming electron transferred all of its energy to the photon.
+That is Bremsstrahlung.
+And that voltage is high.
+Lots of kinetic energy.
+So now those electrons are hitting the metal.
+Nice.
+Good electrons.
+And there's a metal atom.
+And it gets deflected.
+And that deflection loses energy.
+And that loss of energy goes into a photon.
+They're x-rays.
+Very nice.
+OK.
+Good.
+There's another type of X-ray.
+And that was the second type that we talked about on Friday.
+Those are called characteristic.
+But it's just the quantum numbers.
+Maybe the electron is excited.
+Maybe the electron is kicked out.6 electrons, these are keV of energy.
+These are very high energies.
+It's X-ray high in energy.
+We use the k because that's the final place the electron goes when it decays down.
+You would have the L peaks.
+They don't appear until you get to that certain energy.
+You fired it.
+For copper, it's 8 keV.
+For molybdenum it's 17.5.
+So it all makes sense from the concepts we've learned.
+It's super clear.
+I can increase or decrease-well, I can't go below the threshold.
+But I can't go above it.
+And that peak is characteristic of the metal.
+That's really useful because I've got now a flashlight.
+I can predict what it is.
+We're going to use that flashlight.
+Those are like distances between layers.
+It's called diffraction.
+Many of you may not know what this.
+This is called a CD.
+And this is 500 nanometer light.
+This never gets old.
+And I want to do it onto crystals.
+And there's another plane of atoms beneath that.
+I'm going to have some light shining on this.
+And it's going to be reflected.
+It's going down.
+They're waves.
+They're just waves.
+That's just some simple geometry.
+That's what they said.
+And these are reflected X-rays.
+We're not using X-rays to get the structure of DNA.
+I'm going to show how that works.
+This is true for constructive interference.
+And I'm going to shine them on a sample.
+And I'm going to measure.
+And I shine x-rays.
+I've got a source of x-rays.
+And we'll just filter out one of these lines.
+And I see a spot in my detector.
+You would get some angle where there's interference.
+For cubic crystals, we know d.
+This is distance between Miller planes in cubic crystal.
+I'm saving time.
+I wrote xtal.
+I know d.54 Angstroms.
+This is fixed by the crystal.
+We're not changing that.
+And I'm going to use a copper source.
+So d equals 1.
+It's also equal to that.
+We'll do a little division.
+They must not change.
+That is at the heart of X-ray diffraction.
+That is at the heart of it.
+There's another thing that we can observe.
+You plot X-ray diffraction spectra.
+This is a beautiful thing.
+I'm seeing a crystal.
+Those aren't just peaks.
+Those are planes in a crystal.
+But that's not how we start.
+That's my goal.
+The detector changes by 2 theta.
+This comes from geometry of the planes.
+And that is not all reflections are allowed.
+Any combination of hkl is OK.
+It's the 200 plane.
+It comes in.
+There's a picture I drew.
+There's that first X-ray bouncing off.
+And those are nicely in phase.
+In fact, that's called forbidden.
+You won't see a signal.
+The selection rule is whether it's ever allowed.
+And for a simple cubic, everything's fine, because nothing would cancel out.
+We won't go through and derive them all.
+And there's no forbidden reflections.
+That doesn't mean that there is no 100 plane in those crystals.
+That's OK.
+That's our goal.
+That is what we do in X-ray diffraction.
+And it turns out I got a recipe for you to follow to do this.
+And it's on the previous slide.
+And we've got five more minutes.
+The first peak and the 2 theta is 38.43.1083.
+And the next one, the next peak is 44.67.
+And the sine square of that is 0.1444 so on.
+This is a nice simple recipe to achieve our goal.
+So the next column would simply be sine squared theta divided by sine squared theta min.
+I'm setting the top row to 1.
+Good.
+We're almost there.
+We're almost there.
+That's good.
+It leaves us with a sense of anticipation and excitement.
+I have a simple recipe for you to accomplish this goal.
+That's where we're going with this.
+We're so close.

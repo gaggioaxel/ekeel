@@ -1,0 +1,123 @@
+
+3:35
+None the game playing programs today incorporate any of that
+3:38
+kind of stuff.
+4:16
+It doesn't try anything.
+4:32
+Here are the possible moves.
+4:58
+It's not very powerful.
+5:59
+In the end, there are lots of features of the chessboard.
+6:08
+And we might form some function of those features.
+6:25
+Each of those produces a number fed into this function,
+6:28
+out comes a value.
+7:02
+And that is a linear scoring polynomial.
+7:36
+It doesn't have to rank them.
+7:38
+It doesn't have to give them numbers.
+7:46
+But it's not the only way of doing that.
+8:28
+You do 50 things.
+8:29
+I do 50 things.
+9:50
+It's just b to the d.
+10:32
+It's pretty deep down there.
+11:38
+It used to seem impossible.
+13:12
+14.7 billion.
+13:26
+That's 10 to the 10th years.
+13:50
+Multiply it times the number of atoms in the universe.
+14:08
+It would have to harness together lots of universes.
+14:35
+No good.
+18:51
+It's very simple.
+19:15
+But this is an adversarial game.
+19:33
+There's a game tree.
+19:34
+Do you see how it goes?
+19:38
+Let's see if the system can figure it out.
+20:22
+Those are just random numbers.
+20:43
+It's exponential.
+21:59
+I've got the same structure in the tree.
+22:10
+But none of the static values have been computed yet.
+23:44
+So, one more time.
+24:13
+It doesn't matter.
+24:41
+It's minimax with a flourish.
+24:57
+And it is.
+27:21
+And this value is now exactly 7.
+28:15
+Think about that for a while.
+28:56
+This is called deep cut off.
+30:48
+We already know.
+30:49
+They're alpha and beta.
+31:25
+Let's see what happens when we use the classroom example, the
+31:29
+one I did up there.
+31:45
+2, same answer.
+32:00
+And it's not the smallest number.
+33:40
+It saves an amazing amount of time.
+35:02
+That's not very good.
+35:18
+It's a binary game tree.
+35:23
+This is level d minus 1.
+35:26
+And this is level d.
+35:58
+And there are b to d of those.
+40:59
+That's the dead horse we don't want to beat.
+42:11
+It's something you layer on top of minimax.
+42:26
+That's right.
+42:32
+It's not an approximation.
+42:35
+It cuts off lots of the tree.
+42:36
+It's a dead horse principle at work.
+46:11
+We're competing with another manufacturer.
+46:47
+It's substituting raw power for sophistication.
+47:33
+But it's not our intelligence.
+47:34
+It's bulldozer intelligence.1.

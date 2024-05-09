@@ -1,0 +1,265 @@
+
+0:15
+Those of you who are taking computer science subjects,
+0:18
+you've probably seen in 601.
+0:22
+But we're going to do it for a little different purpose.
+0:31
+And I want to talk a little bit about Search as a model of
+0:35
+what goes on in our heads.4 class, because it was only completed
+0:49
+last spring.
+1:01
+There's Cambridge.
+1:47
+But it's not a very good path.
+2:01
+Not too bad.D. in physics
+2:13
+after his third post-doc.
+2:25
+These are not actually traverse.D. in
+2:44
+physics after his third post-doc.
+2:56
+I'm going to talk to you about procedures that are different
+3:01
+from the way that you just solved this problem.
+3:18
+And we're not going to tell you about how that works,
+3:19
+because we don't know how that works.
+3:47
+We're working on it.
+7:18
+Search is about choice.
+7:19
+And I happen to illustrate these searches with maps,
+7:22
+because they are particularly cogent.
+7:25
+But Search is not about maps.
+7:26
+It's about the choices you make when you're trying to
+7:28
+make decisions.
+7:30
+These things I'm going to be talking to you about today are
+7:34
+choices you make when you explore the map.
+7:37
+You can make other kinds of choices when you're exploring
+7:39
+other kinds of things.
+7:52
+Search is not about maps.
+7:53
+Our first gold star idea, Search is about choice.
+8:27
+And you always go down the left branch by convention.
+8:35
+From a we have two choices.
+8:58
+What are we going to do.
+9:00
+We've got into a dead end, all is lost.
+9:39
+s, a, d now goes to g.
+9:42
+And we're done.
+10:07
+You can't quit when you've found one path.
+10:28
+Count on it.
+10:34
+We consider it to be an optional thing.
+11:35
+We're going level by level.
+12:18
+We'll talk about a sample implementation.
+12:20
+You can write it in any way you want.
+12:59
+It's generating an awful lot of paths.
+13:11
+But we're not going to talk about optimal paths today.
+13:35
+It finds a shorter path, because it's right there in
+13:37
+the middle.
+13:41
+It's pretty stupid.
+13:44
+But that's how it works.
+14:11
+Let's call if a queue.
+14:12
+We're going to develop a queue of paths that are under
+14:14
+consideration.
+14:40
+I need to have some way of representing my paths.
+14:58
+That's the whole path.
+16:03
+And I have to put those paths onto the queue.
+16:21
+I'm going to take this first path off.
+16:24
+I'm going to extend that path.
+16:38
+I'm taking this plunge down deep into the search tree.
+16:55
+I want to put them on the front of the queue.
+17:00
+For Depth-first Search, I want to put them on the
+17:12
+front of the queue.
+17:31
+That's still a valid possibility.
+18:25
+It doesn't go to the goal.
+18:30
+I've reached a dead end.
+18:42
+We're almost home.
+18:43
+I take s, a,d off of queue.
+19:10
+I check to see if I'm done.
+19:32
+That's how the Depth-first Search algorithm works.
+19:42
+Same algorithm.
+20:31
+And we could go home.
+20:37
+And we would like a pretty good path.
+21:13
+And we're going to deal with that in a minute.
+21:16
+But it's even stupider than that.
+21:51
+And it's already extended a path that goes to d.
+22:09
+And we're still going through them.
+22:12
+That's incredibly stupid.
+22:59
+And we're going to extend it.
+23:00
+And it's got a final note.
+24:39
+A lot less.
+24:46
+You remember how tedious that search was.
+25:07
+We better list this as another option.
+25:53
+And we would never do that with our eyes in any case.
+28:57
+It's not the optimal path.
+28:59
+It's not the best path.
+29:02
+That's not always true.
+29:02
+That's just an artifact of this particular example.
+29:25
+We turned off our extended list.
+29:33
+It produces a very roundabout path with 48 enqueueings.
+30:08
+But that's just an artifact of the example.
+30:36
+OK, that's that.
+31:24
+Your problem may not have any heuristic measurement of
+31:28
+distance to the goal.
+31:29
+In which case, you can't do it.
+31:40
+It's called Beam Search.
+32:49
+That's my beam width.
+33:02
+These guys are trimmed off.
+33:05
+I'm only keeping two at every level.
+34:56
+So Hill Climbing is front-sorted.
+35:46
+There's one more that's sometimes talked about.
+36:04
+It's got a bunch of paths that terminate in leaves.
+36:08
+Let me just always work on the leaf node that's
+36:10
+closest to the goal.
+36:12
+It can skip around a little bit from one place to another.
+36:24
+We've actually seen an instance of that in then
+36:28
+integration program.
+37:18
+We're trying to get to the top of the hill before
+37:20
+we freeze to death.
+37:56
+Yes.
+38:50
+And the reason is that there are large lawns on the
+38:53
+shoulders of Mt.
+38:54
+Washington.
+38:54
+It's quite flat.
+39:02
+That space looks like this.
+39:07
+Washington looks like.
+39:29
+But it works like this.
+39:34
+This is a particularly acute problem in
+39:36
+high dimensional spaces.
+39:39
+And I'm going to switch from a regular kind of view to a
+39:44
+contour map.
+40:13
+And you think you're at the top.
+40:19
+That takes you down over a contour line.
+40:54
+This subject is about modeling intelligence.
+42:16
+This is somewhat stylized English.
+42:31
+There's no free lunch.
+43:52
+Pray for internet connectivity.
+44:20
+It's not quite there yet.
+44:21
+It's still reading background knowledge.
+45:54
+All that produced by Search programs who are looking
+45:56
+through this graph.
+46:04
+And you can report them in English.
+46:26
+It looks like Dr.
+46:35
+But you see the point.
+46:46
+It's just looking locally around in the connections in
+46:48
+the goal tree.

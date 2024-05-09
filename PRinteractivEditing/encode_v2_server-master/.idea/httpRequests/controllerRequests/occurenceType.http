@@ -1,0 +1,39 @@
+POST http://localhost:8080/protected/v1/occurrenceTypes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+[{"name": "book2", "description":  "first test", "schemaId": 4}]
+
+###
+
+GET http://localhost:8080/protected/v1/occurrenceTypes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/protected/v1/occurrenceType?occurrence_type_id=3
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+DELETE http://localhost:8080/protected/v1/occurrenceType?occurrence_type_id=5
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/protected/v1/occurrenceType
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+{"id": 3, "name": "bookUpdated", "description":  "test 2"}
+
+###
+
+POST http://localhost:8080/protected/v1/occurrenceType
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0Mzc0MTk0OSwiaWF0IjoxNjQzNzMyMTQ5MjU1fQ.dbtkQY3hFQd4XmOckPrxdm6nrHtJfQjV87DveQVpOhM
+Content-Type: application/json
+
+{"name": "bookSingle", "description":  "first test", "schemaId": 4}

@@ -1,0 +1,138 @@
+TOCW | 2.edu. We're going to get really
+deep into Bitcoin in the next three classes. I know that you've all got a bunch of classes.
+So the survey results. First was technical things. 18 of you said
+understanding blockchain technology. You all talked a
+lot about applications. About six of you said
+something about regulation.
+PROFESSOR: You got it.
+PROFESSOR: This isn't it.
+PROFESSOR: I'm having fun. This is what I'm going to do. I'm just going to have-don't worry about it. It wasn't one of the readings. I'm not going to assign Larry's assignment.
+But regulation is just one of those four forces. And that's why I pause there. You're in a business school. I'm not going to
+go through them.
+So today's study questions. Really just the good faith and credit of the nation that issues it. A fiat currency might be backed by something physical. I'm sorry.
+AUDIENCE: Josh.
+PROFESSOR: Josh.
+What?
+AUDIENCE: Sean.
+PROFESSOR: Sean. There's no government.
+AUDIENCE: Terry.
+PROFESSOR: Terry. This is
+a question that's been debated for decades or centuries. For example, gold is definitely a social construct. Tom? Tomas?
+AUDIENCE: Tomas. One must accept this. So a debt to the government or a
+debt in a store.
+PROFESSOR: Isabel. So people don't think that there is an inherent value.
+PROFESSOR: It's not backed by a central bank or a central authority. I agree with that. And it's a new form of keeping ledgers. There is an element of scarcity.
+PROFESSOR: Correct.
+PROFESSOR: This is good.
+PROFESSOR: Alexis. That way you can teach hours of work. I'm going to be chatting about that in a minute.
+PROFESSOR: A numerical record. I don't know.
+So the readings-we've sort of talked about the readings. We haven't
+chatted yet. And his whole claim was that
+it is real if you believe it is real.
+PROFESSOR: We're going to refer back to each of these readings as we go through the next 45 minutes. There's a government fiat
+monopoly.
+But you raise a very good question.
+One still has to pay your taxes if you're gaining or losing on this investment. The
+fellow on the streets of-I don't remember what city. But I think it's allowed. But you could pay somebody in this. But the taxes need to
+be computed and analyzed and then paid in US dollars. But it failed in committee.
+So just a little walk through the history. This is not that long ago.
+PROFESSOR: Crude oil. I'm going to keep thinking about that. It's not a
+common characteristic of money. Cowrie shells from
+West Africa.
+They got debased when Europeans started to realize that they were accepted as a value.
+Tally sticks in England.
+PROFESSOR: Which one?
+AUDIENCE: The sticks.
+PROFESSOR: The sticks. You have 1/16. For batteries. And what
+debased that currency was when sailors from England came.
+And within a few years, the whole economic system collapsed.
+We moved to metal money. It was just heavy. Bronze in Rome. These were starting to be
+stamped by the official sector. One reason is not enough gold. It
+was just heavy. So the first paper
+monies from China were basically warehouse receipts.
+So the first paper monies were basically warehouse receipts in China. Because whatever it
+was-grain or gold. But that note in China is about 700 years
+old.
+AUDIENCE: Trading.
+AUDIENCE: Trading.
+PROFESSOR: Alpha?
+AUDIENCE: International trading.
+PROFESSOR: International trade.
+PROFESSOR: Lanes?
+AUDIENCE: Lands.
+AUDIENCE: Land.
+PROFESSOR: Land. Land. Tom?
+AUDIENCE: Printmakers.
+PROFESSOR: They were printmakers. I like that. We're not there yet.
+PROFESSOR: A little bit later. They were goldsmiths. You'd be increasing kind of the
+money supply. It's called fractional banking. We'll
+be talking about that in a bit. And in essence, that's what we have now
+with 1,600 different cryptocurrencies. We have sort of a new period of a little bit of private
+currencies. Principal recordings of accounts. But it
+was to try to get the class thinking about ledgers. He was 15 years old when he kept this ledger. And he
+apparently kept ledgers until his death in-let's see. 52 years later.
+So ledgers could be kept just to record the transactions of the day. He's got one up there--
+Mary Washington. Economic activity in a sense of transactions.
+PROFESSOR: Kelly said it-debt. And it goes back to the debate you had in the reading. It may have come from both. Some other blockchains, like Ethereum, stores balances. It's an important part of what is blockchain.
+Some types of ledgers. I just mentioned one-transactions versus balance. He was just keeping a list of
+sales and movements. Any kind of activity that takes
+place, you record in the general ledger. And each of them have their own specific ledgers.
+PROFESSOR: It works for me. I
+didn't feel this slide in. You'll find out it's blank. Immutable, I
+like that. Kelly?
+AUDIENCE: Ownership.
+PROFESSOR: Ownership.
+AUDIENCE: Ross.
+PROFESSOR: Ross. Accuracy.
+PROFESSOR: Accuracy. So Ross says accuracy.
+PROFESSOR: Andrew says a description of the transaction. And last, Mr.
+PROFESSOR: Comprehensive. So all good attributes of a-characteristics.
+Payment systems-I'm just going to say one line about it. I'm
+talking about the financial ledger.
+It's not entirely. There's still some other ways to do finance.
+It's not entirely. There's still some other ways to do finance. What else is there? I want to get to people I haven't talked to. In the
+back. I can't remember your name.
+PROFESSOR: Kyle. They're certainly parts of the payment system. They might be moving it on their own
+ledger. You're asking the right question. So ledgers didn't just come with electricity and computers. I'm in the school that it's just part of the history. It's not
+an asset. It's their liability side. But it's also-guess what? There's a second form of money. Central
+bank is the top gold standard, in a sense.
+Commercial banks are like subledgers, in a sense. I'm not
+afraid. You cannot redeem gold and silver. We had a period of the gold
+standard. We fell off of it during World War I. We went back on it. I'm going to separate it. And they have to record it on
+the ledger of that bank. And you can pay your taxes to our sister over here
+called the government. I'm sorry to let you down. It's not more than that. Sorry, Alan. It's liable.
+Because you can't just issue new notes whenever you need them. You can't just make new
+money out of thin air. This is the
+debate.
+PROFESSOR: Jay Powell. No.
+They brew a cup of coffee. I go to the other side of the counter. That's what legal tender is. We don't take this. We don't take that in paper form. And there's a new little bit of definitional thing going on about legal
+tender. There's also some unique tax treatments, but I'm not going to go through the currency.
+So central banking and money we talked about a little bit. But the central banks at the top is at the center. We're going to talk
+about ledgers.3 trillion.
+AUDIENCE: Trust.
+PROFESSOR: Drugs.
+AUDIENCE: Trust. Trust. Paper currency is a wonderful method of money laundering, drug running, and
+a store of value.
+And he said that society would have a form of money, and you would have credit against it. You could have credit from that merchant. That was the first real
+charge it.
+And the credit boom took off. Visa made it
+better.
+So the role of money we've talked about. But now the
+characteristics of money. What makes a good money? We talked about some of this earlier. They're portable. You could slice
+things up. Uniform and fungible. The
+courts had no jurisprudence on this before 1749. And we're going to talk a lot about the last
+point. There are forms of wholesale money.
+You had a reading from Clark.
+PROFESSOR: Don.
+PROFESSOR: What?
+AUDIENCE: Zhan.
+PROFESSOR: Zhan. Very good. Behind Eric.
+PROFESSOR: That's it. Four things about centralization, the double
+spend. It was 1998. And it was to get movies on your mobile phone.
+Starbucks started in 2011. And mobile apps
+Starbucks stores the value. But the riddle remained. It's not deeply technical. And it's only eight
+or nine pages. The question is whether that's Bitcoin. I couldn't commit the whole course, the
+whole semester. OK.
+PROFESSOR: Caroline. And they were just trying to
+notarize information. And they take-it's in the classifieds
+section. I look forward to seeing you.

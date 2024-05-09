@@ -1,0 +1,193 @@
+PROPROFESSOR PATRICK WINSTON: Ladies and gentlemen, the
+0:10
+engineers drinking song.
+0:37
+It's an interesting song because there are an infinite
+0:39
+number of verses.
+0:41
+Here's the mathematical proof.
+1:05
+I like to build stuff.
+1:07
+I build stuff out of wood.
+1:09
+I build stuff out of metal.
+1:10
+I build stuff out of rocks.
+1:12
+And I especially like to write programs.
+1:23
+I've always been mystified by that.
+2:44
+It's more the other kinds of stuff.
+3:07
+Not bad.
+3:07
+How about B6 on B3?
+3:18
+This program's kind of clever.
+3:56
+OK.
+4:23
+Oh, I see.
+4:25
+My touch pad accidentally got activated.
+4:27
+B1 on B2.
+4:58
+OK.
+5:11
+Let's see.
+6:08
+Yeah.
+7:52
+It has to find space on the target block.
+7:57
+It has to grasp the block that it's been commanded to move.
+9:26
+It's extremely simple.
+9:53
+Here's B1.
+9:58
+Here's BY.
+10:03
+And the task is to put B1 on B2.
+10:19
+We have to find space.
+10:25
+We have to grasp B1.
+11:19
+This is clearing the top of B1, and this is
+11:23
+getting rid of BX.
+11:26
+And the way we get rid of BX is by putting BX on the table.
+12:59
+OK, so that's how it deals with why questions.
+15:49
+But I could still answers questions about behavior.
+18:05
+You think it's going to be complicated.
+18:28
+The rule-based expert systems were developed in a burst of
+18:35
+enthusiasm about the prospects for commercial applications of
+18:38
+artificial intelligence in the mid-1980s.
+19:19
+I'm going to work out an example having to do with
+19:21
+identification.
+19:31
+It was developed to diagnose bacterial
+19:34
+infections in the blood.
+20:39
+Has claws.
+20:45
+Sharp teeth.
+21:04
+And these are all characteristics of carnivores.
+21:44
+Let's see how our program would figure that out.
+24:51
+They're not equipped with anything you might want to
+24:53
+call common sense.
+25:11
+And this one works forward from the facts we give it to
+25:18
+the conclusion off on the right.
+25:43
+Right.
+26:03
+And we already know that you can answer questions about
+26:05
+your own behavior if you leave behind a trace of a goal tree.
+26:10
+So look at this.
+27:25
+And I'm going to approach this zoo in a little different way.
+30:42
+See, in fact world, in deduction world, you're
+30:45
+talking about proving things.D. thesis.
+32:09
+He was interested in the architecture of a Portuguese
+32:13
+architect named Siza.D.
+34:01
+PROFESSOR PATRICK WINSTON: Lisa.
+34:34
+Large items in the bottom.
+34:36
+PROFESSOR PATRICK WINSTON: Large items in the bottom.
+34:44
+So if large, then bottom.
+34:59
+PROFESSOR PATRICK WINSTON: If small, then on top.
+35:09
+So if heavy greater than three, then new bag, or
+35:14
+something like that.
+35:28
+Yeah.
+35:28
+It's outsourced to the customers.
+35:32
+SPEAKER 7: So no squishies on the bottom.
+35:38
+Tomatoes.
+36:12
+They're just taking it up one level of abstraction.
+36:16
+Not a genius.
+36:21
+Amazing people.
+37:22
+We don't have a definition for squishy.
+37:27
+And no one talked about the motor oil.
+38:05
+Heuristic number one, specific cases.
+38:34
+They're both peas.
+39:43
+All right.
+42:46
+For example, we talk about a rule, we could talk about a
+42:50
+rule that knows that you should put the potato chips on
+42:53
+the top of the bag.
+44:36
+MIT.
+44:38
+Guest.
+44:39
+Yeah, that's me.
+44:53
+Sounds good.
+45:32
+I'll get rid of the text box.
+45:35
+And we'll get rid of those changes scale a little bit.
+45:44
+You're MIT students.
+45:56
+And it's going to go along like this.
+46:18
+That's it.
+46:19
+Read that.
+46:28
+It takes about five seconds to read this story.
+46:35
+For one thing, it says that Duncan is murdered.
+46:42
+Duncan is murdered by Macbeth.
+48:38
+In fact, Hamlet and Macbeth are very alike in their plot.
+49:12
+So look at that.

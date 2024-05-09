@@ -1,0 +1,160 @@
+MITOCW | MIT3_091F18_lec06_300k
+Last week we talked about-we went quantum.
+We had Dr.
+These are my two favorite quantum mechanicists of all time.
+I believe that this sign is meant to teach us something about the double slit experiment.
+The electron-we are all waves.
+It's really a thing.
+Because it's true.
+We are all waves.
+You really are.
+It's true.
+We are-right?
+That's deep.
+We are waves.
+All of us.
+We've got that. Eq.
+And it was captured automatically.
+And this is also the quantization.
+Continuous energies.
+So the powerful point here is that from that equation-and we don't need to know this equation.
+We're not going to derive it.
+That's what we're talking about today.
+OK.
+It is a direct result of solving this equation.
+One solution.
+And some energy.
+That's it.
+But there are only certain ones that are going to work.
+And we solve it for an electron waving in the presence of the potential of the atom.
+Which is a positive potential. Eq.
+Schrodinger equation.
+But the way that we're going to do this is in spherical coordinates.
+Spherical coords.
+And that's just a standard way to solve mathematical equations.
+So separate.
+And this is deep.
+OK.
+That's how we speak when we speak quantum.
+I don't know.
+But there's a probability that it's there.
+And this would be n equals 1.
+That electron isn't in one place, but it is.
+But it's not.
+There is a finite probability that that's true.
+They're small, you know.
+There's a chance.
+It's close.
+And that's where we say orbital.
+That's why we stay it.
+We're listing quantum numbers.
+Radial distance.
+And you can see right there.
+Because those higher end functions go to 0.
+And there's more of them.
+Heisenberg said no way.
+In this one place.
+This node.
+It's 0.
+It's literally 0.
+It cannot exist there.
+It's the same electron.
+It skips over a zero probability part, r.
+The probability there is always 0.
+Because there's no classical analog to these things.
+There's no classical analog.
+But this is what electrons do in an atom.
+But it's one electron.
+And this is its probability distribution.
+Force the issue.
+We still don't know.
+That's great.
+I find that incredible.
+It's poetry.
+That's cool.
+Right?
+Quantum mechanics.
+It's quantization of energies.
+It's not very interesting.
+And you take a little tiny piece of it.
+We call that a quantum dot.
+But the electron is up in an energy level, and it left behind a hole.
+A hole is just a positive charge.
+They literally ran out of real estate.
+They ran out of atoms.
+I am squeezing these quantum mechanical objects, this electron and this hole.
+Because I'm changing its quantum mechanical interactions.
+Every element can do more things than we thought possible because we can tune these properties
+related to quantum mechanics.
+That's a very big deal.
+OK.
+For an electron in an atom.
+And what happens with theta is, you get another quantization of that variable.
+And that's the second quantum number.
+OK, so the second one is l.
+And it's the angular quantum number.
+That's it.
+There's no other options.
+This is called spectroscopic notation, because it comes from spectroscopists.
+s was sharp.
+Spherically symmetric.
+p was principle, because it sort of dominated in some experiments. d was more diffuse.
+P orbital.
+Three orientations.
+OK.
+These are quantum numbers.
+OK?
+All right.
+Five d orbitals.
+You get them all.
+We needed to go quantum to answer that.
+That's good.
+And they're going to shoot a classical magnet.
+There's a classical magnet.
+You'd shoot them through a high field, and you don't get anything.
+You get two things.
+Only two.
+All done.
+It could be spinning this way or that way.
+In a way, it helps our classical needs.
+Separate from those experiments.
+The fourth quantum number.
+So many ways to distinguish two things that are opposite.
+Two values that this can have.
+No electrons in the same atom can have the same quantum numbers.
+Orbital.
+OK.
+I got to go-I know.
+I got to go backwards here.
+I got to work on my arm.
+It's extremely exciting.
+And we're going to start by filling elements.
+Two electrons.
+They are just neutral atoms going up above hydrogen.
+This is what you really get in terms of energy.
+And I want to talk about both of them in the last seven minutes of class.
+I'm going over here.
+15.
+Right?
+Now, 15 protons.
+5, 6, 7, 8.
+That's eight electrons.
+And you can already see what's happening.
+They are happy.
+Low energy.
+Right?
+The lower your energy, the happier.
+You're in a lower energy, ground state.
+More bound.
+Those electrons in here-these shield the outer electrons, these shield outer electrons by two
+electrons.
+I see 13-ish.
+That's shielding.
+Those are shielding another eight protons.
+So these ones have sort of an effective-z effective.
+This is not the z of the atom, but it's sort of like those very outer electrons don't see the whole proton
+cloud.
+And that's a very important part of what happens to orbitals when you put a lot of electrons in them.
+That was 2s.
+And that is why these two things are different.
+It finds a lower happy place.

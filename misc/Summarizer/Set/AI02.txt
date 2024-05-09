@@ -1,0 +1,41 @@
+ The one that's disappeared. At one level, you want to have a skill.
+5:53
+AUDIENCE: Trig substitution.
+5:56
+SPEAKER 1: Trig substitution.
+6:10
+These are the safe transformations. There's one more that I'm going to supply
+8:01
+you, because I don't think you'd guess it. That's our first step. And this was the hardest problem that it solved.
+13:20
+It's not an algorithm in the usual sense that we talk about algorithms. But you can't get an A in calculus without
+13:42
+knowing some of them. We'll call this heuristic transformation A. We could do that. But there's another thing we can do. We've got four safe transformations. It's already written as a function of sine and cosine. But we can also rewrite that
+20:35
+in terms of tangent and cosecant. That's g3 up there. Problem reduction tree,
+22:57
+and/or tree, goal tree, all the same thing.
+26:04
+SPEAKER 1: The fewest symbols in it. Military background or something like that. Maybe
+27:30
+he flies airplanes. As this one, I don't know. I can't give
+30:27
+up on that last thing. We've got our complete architecture. 32k of memory, that's 32k of memory. It's amazing
+35:10
+that he was able to do anything with a machine of that size. This failed for
+36:15
+uninteresting reasons on 2 of the 56 problems that it was given to. And that brings
+39:29
+me to the things I've got on that upper right-hand board. There was a similar table of integrals. Knowledge about goal trees was embedded in
+40:43
+the procedure, so it was procedurally represented. You might be surprised by the answer.
+41:36
+First of all, the table of integrals.
+41:58
+How about the transformations here, the safe ones, about 12. How about the heuristic ones,
+42:11
+about 12. It would beat the most dedicated mathematicians at integration.
+43:05
+And its descendents are in MATLAB today.
+43:08
+But this is how it all works. It will make you smarter.

@@ -1,0 +1,1 @@
+This lecture describes an algorithm as a computational procedure to solve a problem, covers the random access machine and pointer models of computation, and introduces the document distance problem.

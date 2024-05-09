@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+  <head>
+    {% block head %} {{ super() }} {% endblock %}
+  </head>
+
+  <body>
+    {% block navbar %} {{ super() }} {% endblock %}
+
+    {% block body %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible" role="alert" style="margin-bottom: 0">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+           {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <div class="jumbotron">
+    <div class="container">
+      <h2 class="display-4">EKEEL Video Annotation</h2>
+      <p>Extract knowledge graph from MOOC videos</p>
+        {% if current_user.is_authenticated %}
+          <p><a class="btn btn-primary btn-lg" href="{{ url_for('video_selection') }}" role="button">Start Annotate »</a></p>
+        {% else %}
+           <p><a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Log in »</a></p>
+        {% endif %}
+    </div>
+  </div>
+
+
+    {% endblock %}
+      
+  </body>

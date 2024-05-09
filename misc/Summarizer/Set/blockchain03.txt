@@ -1,0 +1,138 @@
+MITOCW | 3.edu.
+Bitcoin is just the first use case of blockchain technology.
+And I have a few computer scientists in the room that are going to bail me out if I don't get this
+right.
+GARY GENSLER: Terrible life choice. But he's going to bail us all out.
+I'm not going to do much cold calling. I don't want you to relax too much.
+I list four. Good.
+GARY GENSLER: You read it five years ago. And
+you're taking this class. There are so many of them. And then this whole concept of digital signatures, which
+relates to asymmetric cryptography.
+You can send an email to two people and that's OK. But you can still send it to two places. I watched
+that demo last November, December. That was one of the first things I watched. I don't know if you knew Bosworth. Crazy. We're going to talk a lot
+about consensus next Tuesday when we talk about the consensus protocol on Bitcoin.
+Fiat money is just in that long line. It doesn't mean
+it's going to go away. I'm not a Bitcoin maximalist who thinks that Fiat currencies are going to
+go away. And those records could either be transaction records or balance records. We'll
+see that Bitcoin is set up as a transaction ledger system. But
+transactions and ledgers are at the core of Bitcoin. We know this. It's why I'm not a maximalist. And this is not a value judgment. But in some circumstances, decentralization really will compete and
+beat the centralized intermediary.
+So information, blocks going on. And that leads to basically a database.
+Other blockchains like Ethereum it's about every seven seconds. And this is true in
+all databases.
+GARY GENSLER: It's all right.
+GARY GENSLER: Hash function. I'm going to have 10 on this
+page.
+AUDIENCE: A private and a public key. Leandro.
+AUDIENCE: Addresses.
+GARY GENSLER: Bitcoin addresses. Three.
+AUDIENCE: Timestamp server.
+GARY GENSLER: Timestamp server. That's four of the things. This is going well.
+AUDIENCE: Double payments. But it's--
+AUDIENCE: Miners. Kelly.
+AUDIENCE: The full node versus the lightweight node. So very interesting, this concept of nodes. But nodes in
+the network is a very important design feature.
+GARY GENSLER: Merkle tree structure. Merkle tree
+structure is there. We're going to talk about that. Two more.
+AUDIENCE: Nonce.
+GARY GENSLER: Nodes.
+GARY GENSLER: Nonce. The nonce. OK. So a nonce. That's how I've learned it. Whew.
+AUDIENCE: Pria.
+GARY GENSLER: Pria. Cryptographic hash functions. We're going
+to go through these in more detail. So Merkle trees were discussed. The Bitcoin
+addresses themselves, which interestingly are a little bit different than public keys. Just the network communication. It's not written about a lot.
+There's currently about 10,000 nodes on the Bitcoin network. We don't know where all of them
+are, but they're probably in 180 different countries. And it matters to the economics a lot.
+There's a native currency. This is interesting that it was the one thing that no one said. That's
+an actual technological design feature. It's not only that he created a currency, but the native
+currency is part of the economic incentive system. And we'll have some fun with that. Hugh? Hugo?
+About 17 million Bitcoin right now. And all 17 million have come from this process of proof of
+work and mining. Because
+you weren't getting much incentive.
+AUDIENCE: Sean.03
+a kilowatt hour.02 cents a kilowatt hour to the
+local government officials.
+So cryptography. It's not just communication in the
+presence of adversaries, it's also computation in the presence of adversaries.
+about asymmetric cryptography today. But it has certain properties. But zip
+codes. You might have 50,000 people or 5,000 people all living in one postal district. Problem with zip codes is it will not in any way be a secure hash function.
+It's deterministic. And that's relevant to the background. And you can efficiently compute it.
+You don't want to take a year to do this. You've got to do it in short periods of time. It's always-you only live in one zip code, in a sense. And it's very
+efficient. It just
+wouldn't. So hash functions, I just say this because you can't
+assume that Bitcoin can't be broken. We all call it immutable. It is immutable. Until the hash
+functions that are inside of Bitcoin might be broken.
+And even Satoshi wrote about this in 2010. He got emails. Kelly. You're talking about in his paper. And he doesn't write about that in his paper.
+Second key cryptographic thing. And in fact, if we got it past 26
+people in a room it's over 50% chance that two of you have the same birthday. We don't need
+to get to 183 people in the room, which is half of the days of the year. We can get to about 26
+or 7. It's not impossible. It's infeasible.
+They also look terribly random. You're not going to get tested.
+But there's still-these things could be broken. So much more than one
+quadrillion. And anybody who's
+interested can come to office hours. But it's also used in commitments.
+You'll hear these words. We're not going to delve into them. That's
+like zeros and ones for 256 registries. So Haber and his colleague-yes. You got it.
+GARY GENSLER: That's you roommate. Terrific. He did this
+in 1991. I don't think it took off that much. And they're basically hashing any document. Any document that
+you want a timestamp in that week, you put it in.
+It's not about money. But there is a version number. It's less than 200 gigs. But all of the
+headers, I think, is single digit gigs. So Satoshi was thinking
+in advance.
+So whoops.
+A timestamp, that one's easy. We can get that.
+GARY GENSLER: A random number that's used one. Number once, nonce. And that's hash functions. We are MIT.
+AUDIENCE: No. No. Somebody does recall. There's no dumb questions when it comes to this. They are timestamped. The
+timestamps are very important. But you need the timestamp.
+GARY GENSLER: You need the timestamps. It's
+the order of the blocks.
+GARY GENSLER: I want to hold that question for Tuesday. And that doesn't mean that
+they got identical hashes because the puzzle is not geared to getting an exact hash. The
+Bitcoin puzzle is having a certain number of leading zeros. I'm sorry. It reminds me of that old television show with Johnny Carson. And you just did a
+great setup for the comedian.
+So Merkle Roots, which are a binary data tree, looks something like this. They're each hashed. But in the Bitcoin core
+application, in software that anybody in this room could download the software if you wished. But it
+doesn't seem to use the previous hash. It only changes if some of the data in the
+10,000 transactions change. But that wasn't your question.
+I'm just saying. You'll scoop up the
+next set of transactions. It's a
+good question. There
+you go.
+She wants to encrypt it. He decrypts it
+with his private key. I know. Both people had the key. And the math between
+these two keys don't matter for a class like this. They're bonded together.
+But the critical thing is about digital signatures, there's three functions. You have to generate a
+key pair.
+There is a signature function. You can create a digital
+signature from a message and a private key. You send it over to Isabella.
+GARY GENSLER: She's got to verify it.
+Isabella-you want to do this with me-is going to verify your signature is valid for this
+message because you have the public key.
+Isabella has your public key. It's
+magical math. It's real math. But it's not math we need to study in
+this class. That digital signature was created from the private key. And the
+public key was created from the private key. But she never has to see the private key. And in fact, Kelly does not want
+her to ever see the private key. And it's encrypted with her
+private key. It's also digital signatures. You generate the key pair.
+AUDIENCE: A quick question about the random number generator and the verification function.
+At the heart, I want to skip ahead. I'm not a cyber security expert. There's stronger ones. I put that up. The details
+don't matter much. It's about 512 bits. But these are early forms of
+checks. And there's a signature on the bottom. That's really kind of a Bitcoin address. The address, the Bitcoin address is who it's paid
+for.
+And I promise last slide. We're going to be talking about this next week.
+But the input is a previous transaction. And you're
+going to send value in Satoshis. He named the unit of count for himself. There's a lot of
+Satoshis in every one Bitcoin. That's why we don't hear much about Satoshis.
+And it's sent to a public key. There's a lot. I wonder how many of you are going to
+come back on Thursday.
+No. It's not just that we're at MIT. But we are at MIT. Everybody in
+this room can get these kind of key concepts.
+AUDIENCE: Andrew. And that can't be changed in the future.
+GARY GENSLER: New York Times. And it's secured through hash
+functions. I don't know. You know if somebody has tampered. This is one of the ways to make this data
+tamper proof. But the commercial enterprise, the central authority has a way to
+update the software. We probably sign some terms of use that allows them to do that.
+And that comes both with benefits and costs. You
+can come to your own judgment over the course of this semester. That's what we covered really. But we're going to talk about proof of work,
+the nodes, and the native currency. It is called cryptocurrencies. It's cryptography. So right? Cryptography, consensus mechanism, transactions. And we will get
+through it.

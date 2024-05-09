@@ -1,0 +1,1 @@
+This lecture covers steady state and non steady state diffusion.

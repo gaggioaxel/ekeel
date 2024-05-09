@@ -1,0 +1,98 @@
+TOCW | 1.edu.
+My name is Gary Gensler. That's where we are.
+By the way, I do cold call. How
+many of you actually got the syllabus? This is not going to be graded assignment. I've just got to gauge the
+class. We could talk a lot about things outside of the world of
+finance. And your first name?
+AUDIENCE: Alin.
+GARY GENSLER: Alin. How many agreed with
+Tom? There is more.
+AUDIENCE: Eric.
+GARY GENSLER: Eric.
+GARY GENSLER: Web content. And of course, Amazon is still around today.
+But there was something else going on.
+And the year is 1995.
+But there was one problem.
+GARY GENSLER: You couldn't pay online. You had to pay
+when you showed up with the pizza. We're going to spend a lot of time on
+cryptography.
+GARY GENSLER: Gigi?
+AUDIENCE: Jihee.
+GARY GENSLER: Jihee. Or in essence, it's
+communications in the presence of adversaries.
+And this is true for ancient times. It's at the heart of the internet.
+But it's about-the key thing is communications and the presence of adversaries.
+And MIT is at the center of a lot of that.
+A lot of early cryptography failed on the internet. And it's worthwhile
+knowing about the history of failure.
+GARY GENSLER: Eric.
+So PayPal came along in 1998. I mentioned this. And they were
+trading their minutes as a form of currency.
+And he started with a very simple sentence in his email. It's kind of a modest
+statement.
+I don't really have the answer. I don't think the best minds at MIT could really yet tell you.
+And in this course, we're going to review the minimalist and the maximalist. But that's the key kind of question. And it's time-stamped.
+Satoshi did not invent blockchain. It was way earlier.
+AUDIENCE: Stuart Haber. It's not Bitcoin. And it's been running since the mid '90s.
+But this time-stamped block, block, block, block of data creates a database, an auditable
+database.
+We're going to learn about hash functions. And we have enough computer scientists in this room that
+can sort us out if I say the wrong thing. And there is wide debates about consensus
+protocol. And we'll talk a lot about consensus protocol. And you'll get these slides. I just want some pizzas. And he's offering 10,000 Bitcoins of 2010. Nobody had used
+Bitcoins as a medium of exchange. And he put this
+ad on an email list. He gets his pizzas. And he posts pictures.
+And in many ways, blockchain adds certain costs to the verification through this consensus
+protocol that we'll be studying, but it lowers some other costs of verification, because you're
+not relying on a centralized authority. And we'll learn a lot about smart contracts. And that network is the 7
+billion people that live in this world. It's moving money and risk. Or many of you have.
+But there is a whole host of challenges.
+AUDIENCE: Thomas.
+GARY GENSLER: Thomas.
+AUDIENCE: Unit of account. And I'm sorry.
+AUDIENCE: The valuations. So finance is not just the movement of money. And that's-those are for other classes. But finance can collect a lot of economic rents. And we have a reading.
+But we will talk about the financial crisis and some of the problems. But it's had a lot of crises.
+Fiat currencies have a lot of instabilities, of course. We have centralized intermediaries, as I
+laid out. And we'll talk about collect a lot of economic rents. Central banking, I also have a bunch of legacy
+payment systems.5% to 3% for our
+interchange charges for Visa, MasterCard, and the like.
+And a lot of clearing and settlement still has a lot of counterparty risk. Finance is 7.5
+trillion of revenues.5% to 1% of our economy. It's slow. We might get there.
+Governance is a very big issue we'll talk about. They're doing it with digital assets. That's just
+how they are looking at this.
+You can stay in the class. I just won't give you much advice on it. But I'm OK if that's what you're doing.
+AUDIENCE: Hundreds of trillions. There is
+a bunch of public policy issues. We'll have a lecture.
+I'm a former regulator. We always have to
+infuse what we're doing with the regulation. But it's guarding against illicit activity. And it is true.
+I would always say, just remember poet Riley, the duck test. And Wall Street makes money on volatility.
+And they also like the trading volumes and the spreads. And you can trade stocks for free, no commission. And they make money without charging you commissions.
+I'm not crying for JP Morgan.
+And we'll talk during the semester about some of the incumbents.
+Larry Lessig is honoring me because he's in the back of the class-who is an enormously
+esteemed professor from Harvard. And I did this
+slide before. The tech-we're at MIT.
+From a business perspective, markets matter. The public policy side matters. Larry is probably a little bit center maximalist, I'm guessing. And I'm
+sort of skipping back to the middle. You have a
+startup.5 of
+revenues, or 7. But I always think class participation matters.
+You pick a topic.
+And this isn't business school. You don't have to convince me that something about computer
+science. You'll
+pick. Sorry, I
+like ledgers. It's just a little dollop on that. It's fun. It's just a funny
+little video on what money is.
+There is no need to read Nakamoto's full paper. It's one paragraph. And you're going to be doing blockchain for the next 48 hours.
+I'm not predicting that infirmity for all of you. I'm just saying some of you will have that happen
+to you. The financial crisis
+and things like that are real. That was 1995. They did a sort of B-rated movie about it all. I don't care. And you're incredibly informed about the finance
+side. I'm not that far ahead of you. And we were sitting down for lunch in DC. And we were sitting down for lunch in DC. And it was a good
+time in my life.
+My three girls-I have three daughters. And I'm a single dad. And they were-two are in grad
+school and one are in undergrad. It was a good time in my life. We were still private, which meant if we
+lost money, we were personally-I was a general partner-was kaput. That's a technical word. I was a former partner at Goldman Sachs.
+But we were paying down the debt. It was sort of a fascinating period of time.
+I worked on the redesign of the currency. And I could tell you stories about why it looks the
+way it does, and how you can redesign paper currency. And you can visually see it. And he loved it. He was worried about the political risk of doing it. It was
+a better design. I was his senior
+advisor. I worked and kicked around some political campaigns. We lost two of them. And they're wellsituated. And I love him.
+And you all are great.

@@ -1,0 +1,22 @@
+15/03/21 : presentation of the WP1 (Work Package 1) by Federico Lorrai and Luca Mirenda. 
+They generate the transcript of the videos, thanks to this transcript they are able to highlight the main concepts, link them together and create a first version of the knowledge graph.
+They are also alble to split the videos into thematical parts, based on the transcript and the frames of the viedo
+
+
+22/03/21 : Meeting about user requirement, we understood better the requirements. Some of the functionalities are still undefined by the client, we might need to refine the requirements later 
+
+
+12/04/21 : We showed our progress and the client gave us an updated version of the interface mockup to work with
+
+19/04/21 : We met Ismail, the student who is in charge og the API that our application is going to use.
+
+27/04/21, 3-10-17-24/05/21 : we showed our advances on the projet each week and took in considerations the client's feedback and asked changes. 
+The feature added were mainly : 
+    - update front : disposition of the elements on the pages, style, adding a home page to the site
+    - improving the interactive components of the page that enable video navigation
+    - creating a python backend API to implemment an account management (create/delete account, login/logout, change password and store user data)
+    - creating a front-end interface to give the user the functionalities listed the line above (login, account creation,...)
+    
+14/06/21 : We showed the fisrt version of the system to track if the user has viewed a certain part of the video, and the system to logout, deleteyour account and change your name.
+The client explained us a new feature : adding some pop-up tutorials to explain each functionalities of the app for the first time they visit the app
+

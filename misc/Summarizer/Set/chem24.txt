@@ -1,0 +1,168 @@
+
+And all of this is called the dislocation.
+You take it out.
+You can have that occur in a material that's ionic.
+A-ha.
+But that got me thinking.
+Although the relative valency works well for that select group of alloys, it does not apply to the
+periodic table as a whole.
+This is a new thing for me.
+The valency rule certainly depends on the system.
+It was a great question.
+Zero dimensional, Monday.
+One dimensional, today.
+It starts at MIT in the 1940s.
+MIT students back then were a little bit older, I guess.
+It broke.
+They were studying the relationship of the mechanical breaking to the material of the parachute.
+They just have a tug of war with a parachute.
+And that is where the name comes from.
+We're going talk about it in terms of a wire.
+OK.
+And I'm going to apply a force this way.
+OK.
+They're like springs.
+And that means that it's reversible, as I just said.
+Reversible.
+And the displacement-so it's reversible displacement.
+This is an elastic stretch.
+Hooke's law is going to apply.
+So Hooke's law applies.
+Hooke's law.
+And that is called the plastic regime.
+And this is a permanent shape change.
+Permanent shape change.
+The sea of electrons allows those metals to be ductile.
+And that has to do with the bonding with the electronic structure.
+100 times lower.
+It doesn't stay elastic.
+And in fact, they explain it all.
+They explain it all.
+It's not just deforming in any random way.
+It's deforming in a very specific way.
+It's deforming in a very specific way.
+The plastic deformation mechanism is called slip.
+The mechanism is called slip that leads to plastic deformation.
+This is a 2D picture of a lattice.
+I love this.
+I can just sit and look at this-this is so cool.
+So many planes.
+I'm going to the other side.
+That's one of the planes.
+That's one of the planes.
+Cool.
+That's all from Monday.
+They're just hanging out.
+These are planes.
+These are crystallographic planes.
+That is called a dislocation.
+We'll go back to this.
+That is called a dislocation.
+It's called a dislocation.
+Another way is just get ears of corn.
+I did this last night.
+That's really true.
+And I looked inside.
+This is from the internet.
+It does sometimes.
+There's a dislocation.
+It's very similar to what we're looking at.
+This one, where you insert an extra plane in this way is called an edge dislocation.
+There's another type of dislocation that we won't talk about in this class called the screw dislocation.
+You can look it up.
+It's a different type of line defect.
+An edge dislocation.
+Edge dislocations in corn.
+These are groups of dislocations.
+They're places where you've got this extra plane.
+And the movement is critical.
+The movement is critical.
+Those dislocations and their movement is why this doesn't crack.
+It's why this point is 100 times lower than you might have thought.
+We'll do that on the next slide.
+I'm starting over here and watch the dislocation.
+Or a dislocation could come in and allow me to translate a whole set of bonds over by one.
+One bond at a time, one bond at a time.
+Bam.
+That's why that doesn't happen.
+It just takes too much energy.
+That's OK.
+We share.
+I will never turn down a goody bag.
+It's called a slip plane.
+We got a phone going on there.
+That's what you're doing.
+And I will come back to that.
+It's resolved at the atomic level-and I'll finish this-at the atomic level along that slip plane.
+That's what it does.
+And it resolves it by those dislocations moving.
+In the material, I've got stick and ropes defined by the plane.
+Some of those planes, they're beautiful-the yellow one, but it doesn't have that many atoms per
+area.
+I got it wrong.
+This rug weighs-rugs are really heavy.
+Who knew?
+It's really a pain.
+It doesn't take much force to do that.
+The slip direction is the other part.
+This is what you see.
+No.
+OK. You could also look at the 110 plane.
+The 110 plane.
+Because you can calculate the planar densities.
+It only counts in the plane if the plane goes right through the atom.
+OK.
+Two.
+OK.
+1/6, 1/6, 1/6.
+2.
+I've got the same number of atoms in those planes of the unit cell-of those planes drawn within
+these unit cell boxes.
+That's not going to have a higher packing than that.
+That's going to have the highest planar density.
+You know it.
+That's going to have the highest planar density.
+It's going to deform along its closest packed plane.
+And you can also look at the directions.
+Good.
+The slip plane and the direction.
+That's called the slip system.
+OK.
+Boom.
+They come to the rescue.
+It's very cool.
+They're still kind of tangling.
+But there's something that happens now.
+There's something that happens.
+What's going to happen?
+I can't go anymore.
+I'm blocked.
+I'm blocked.
+There's actually a name for that.
+There's a name for that because it really changes the mechanical properties.
+Cold working.
+I've taken away the plastic deformation.
+It can't do as much plastic deformation, because that only happens by motion of dislocations and I'm
+locking them in.
+I labeled the fracture point.
+That's called the yield because it's where it yields to plastic deformation.
+This is plotting-look at that.
+Cold work is work hardening.
+Work hardening is adding dislocations on purpose-on purpose.
+But the ductility goes down.
+That's not why a paperclip breaks.
+You didn't take 3.
+That's a pretty big crack.
+I am a big fan of wind.
+This is install capacity for wind turbines.
+So the blades here are critical.
+You need to hit just the right balance of ductility.
+By the way, this ice comes off at hundreds of miles an hour in chunks.
+These farmers are not happy about that.
+And those are bugs.
+It also can damage the blade itself.
+It all comes down to understanding this curve.
+And in the broader sense of materials, this to me is a very exciting ask.
+Good.
+Kilograms per meter cubed.
+Different materials are here-rubbers, foams.

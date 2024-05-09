@@ -1,0 +1,1 @@
+Overview of course content, including an motivating problem for each of the modules. The lecture then covers 1-D and 2-D peak finding, using this problem to point out some issues involved in designing efficient algorithms.

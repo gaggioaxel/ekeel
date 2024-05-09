@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:400,500,600,700&display=swap');
+*{
+  /*margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Lato', sans-serif;*/
+}
+
+.wrapperRadio{
+  display: inline-flex;
+  background: #fff;
+  height: 100px;
+  width: 100%;
+  align-items: center;
+  justify-content: space-evenly;
+  border-radius: 5px;
+  padding: 20px 15px;
+  box-shadow: 5px 5px 30px rgba(0,0,0,0.2);
+}
+.wrapperRadio .option{
+  background: #fff;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 0 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0 10px;
+  border: 2px solid lightgrey;
+  transition: all 0.3s ease;
+}
+.wrapperRadio .option .dot{
+  height: 20px;
+  width: 20px;
+  background: #d9d9d9;
+  border-radius: 50%;
+  position: relative;
+}
+.wrapperRadio .option .dot::before{
+  position: absolute;
+  content: "";
+  top: 4px;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  background: dodgerblue;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(1.5);
+  transition: all 0.3s ease;
+}
+.wrapperRadio input[type="radio"]{
+  display: none;
+}
+#data_summary:checked:checked ~ .option-1,
+#agreement:checked:checked ~ .option-2,
+#linguistic:checked:checked ~ .option-3,
+#fleiss:checked:checked ~ .option-4{
+  border-color: dodgerblue;
+  background: dodgerblue;
+}
+#data_summary:checked:checked ~ .option-1 .dot,
+#agreement:checked:checked ~ .option-2 .dot,
+#linguistic:checked:checked ~ .option-3 .dot,
+#fleiss:checked:checked ~ .option-4 .dot{
+  background: #fff;
+}
+#data_summary:checked:checked ~ .option-1 .dot::before,
+#agreement:checked:checked ~ .option-2 .dot::before,
+#linguistic:checked:checked ~ .option-3 .dot::before,
+#fleiss:checked:checked ~ .option-4 .dot::before{
+  opacity: 1;
+  transform: scale(1);
+}
+.wrapper .option span{
+  font-size: 20px;
+  color: #808080;
+}
+#data_summary:checked:checked ~ .option-1 span,
+#agreement:checked:checked ~ .option-2 span,
+#linguistic:checked:checked ~ .option-3 span,
+#fleiss:checked:checked ~ .option-4 span{
+  color: #fff;
+}
+
+#semi:checked:checked ~ .option-1,
+#auto:checked:checked ~ .option-2,
+#video:checked:checked ~ .option-3{
+  border-color: dodgerblue;
+  background: dodgerblue;
+}
+#semi:checked:checked ~ .option-1 .dot,
+#auto:checked:checked ~ .option-2 .dot,
+#video:checked:checked ~ .option-3 .dot{
+  background: #fff;
+}
+#semi:checked:checked ~ .option-1 .dot::before,
+#auto:checked:checked ~ .option-2 .dot::before,
+#video:checked:checked ~ .option-3 .dot::before{
+  opacity: 1;
+  transform: scale(1);
+}
+
+#semi:checked:checked ~ .option-1 span,
+#auto:checked:checked ~ .option-2 span,
+#video:checked:checked ~ .option-3 span{
+  color: #fff;
+}

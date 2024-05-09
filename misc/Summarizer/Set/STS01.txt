@@ -1,0 +1,97 @@
+ And I've taught at Georgetown University a course on science and tech policy for about 12 years. And I teach a different course on energy technology policy at Johns Hopkins SAIS. You're stuck with those realities.
+
+And I had a background in-I was in the executive branch as a child. It was much too interesting and fun. I doubt it. Because it only works if you all own it. And it's very important to change settings after that. So the first couple of classes are really introductory. And that's foundational. And we could call this innovation systems. In other words, innovation occurs in a system, and you have to understand the elements in that system. Thanks, Steph. Because MIT historically was involved in a lot of this. So innovation is owned by people. It occurs in a very face-to-face environment. We're going to take a close look at energy technology. Because the computing revolution was brought about by a new frontier-creating a new frontier territory and innovation. And it's much harder to bring innovation into those sectors. So energy is like the poster child for that problem, and we'll take a real look at that. And IT is going to replace a lot of work theory. And we'll read several things from David.
+
+And we're going to look at some studies that try to take a deep dive into how much work is actually going to be displaced. So David is on leave from MIT this semester because he's doing his robotics startup. And he takes a really deep look. And we'll have a number of readings that will pull us into the international issues.
+
+WILLIAM BONVILLIAN: Good. None of this stuff is locked in stone. I hope all of you will be involved in innovation policy and issues. I'll do less talking in future classes. And we'll talk about what that means. It drove a huge growth in the economy. I'll explain what that is in a bit. But there's some terms that will recur here.
+
+So science-science evolved as a way of understanding the natural world. It came out of natural philosophy. It's an 18th/19th century kind of conceptual framework. It is observational at heart. And it's organized around discovery about that natural world and its order.
+
+Technology is really different. And this systems includes the technical advance plus models to implement that advance. Invention is about applying research knowledge to create a practical idea or device. Invention is really different than innovation.
+
+So this class is about this. Because in the end, people-you all-innovate, not some fancy institution.
+
+Innovation wave theory-in economics, this is called Kondratiev theory. And we'll talk more about this as the class goes on. Innovation tends to come in a wave. And to some extent, the technology drives the nature of the society. It is very big. It's all right. This is where the bubble is. There is always a bubble. And the growth rate will stabilize. You just go on to the next innovation wave. And only the stronger companies with more solid enduring models survive. Because there is just a bubble.
+
+So VCs usually just look at it as two bumps. We're going to dig into this. So all quintiles of the society ended up with a significant gain. But everybody went up in that time period.
+
+I'm stealing my own thunder from later in the class. We'll get into productivity and GDP growth. But that's one of the stories we're going to tell. It does. But I'm running DARPA. And I get nothing out of basic science. And we'll talk about what that means in a bit. You'll have to bear with me. And he's just a wonderful human being. He's still around. He's one of the greats. It's really unusual. Solow has come into the room. And they were just incredibly complimentary. And I really came to like the title Sarge. He had them eating out of his hands. The Romer one is particularly complicated reading, for those of you who've not studied economics. And they never came up with a good answer. Capital supply and labor supply.
+
+It's a static view. But that's what it attempts to do. It is not a dynamic model. It didn't have a reliable base. There were just too many variables. Solow is a neoclassical economist. That's what they're trying to do. Solow is a neoclassical economist. And he is working through this problem of growth. And he forms one. And he said the story told by these classical models felt wrong. And that's his key breakthrough. So capital supply and labor supply are significant. But they're down in the teens. So capital supply here is still significant.
+
+I'll skip some of this.
+
+That's profoundly good news. And I mentioned some of these before. We feel these. Because we see them around us. The productivity gains-that is a real gain in this society. That creates real wealth. Because you're producing more with less. And the society can move ahead. We're out of dismal science. You can't put an innovation system into supply and demand curves.
+
+So Solow sees the power of technological advance. So he treats technological innovation as Exogenous-outside of the economic analytical modeling process that he's involved in.
+
+That's pretty amazing, when you think about it. And this is Paul Romer. And he is a remarkable figure. And I'll never get this passed. But I sat down with him. He said, think like an economist. You just bribe the gatekeepers. That was his phrase. And you bribe them to change their ways. You get something with a textbook. I think that's when he started. I haven't seen him since he started. These systems are too complex.
+
+And it's just an assault on the profession. It hasn't formally been published. But it's definitely circulating around. I'll try and find it for you. And Romer is on this project. He agrees with Solow that growth is driven by technological change.
+
+In other words, you don't just have to do R&D to loosely summarize Solow. He's picking up on Solow's work. But I'll just cite a few examples of what he's trying to think about. Because you get to see the technology. And you can derive ideas about how it's put together.
+
+So technology is unlike any other kind of economic good. They figured out these amazing roads. And it improves communication systems and transport. And then this little thing would spin around, puffing away. If you lack human capital engaged in research, you get economic stagnation. Medieval Europe. The first factor-Solow. You got to do R&D.
+
+So that gives us two factors. But it's an intriguing idea. But it'll help you in making these assessments. So Romer looks at the chemical engineering industry in Europe in the late 1800s.
+
+And he notices that there are two countries that dominate these early chemical industries, Germany and Britain. And other countries are doing stuff in this area. And it's 1848. It's 1848.
+
+What do you think? You find more gold with 250,000 people? You bet. A staggering amount of gold gets found. That's Prospector Theory. But you're going to find more gold if you've got more prospectors on the problem. It's much better if you have trained sophisticated prospectors, like Britain and Germany did, with the chemical engineering sector. You've got to have that human capital engaged in that system of research. Questions. And it's a huge innovation advantage. It's huge. Because they understand this. I don't think we're there yet. It's always an important question. But the prospector theory is pretty straightforward. I mean, look.
+
+And you don't want to restrict the dynamic factor. And that's where the oversupply problem is. That's starting to look pretty good. It makes a big difference. And it was pretty pervasive throughout society. It's too hard. Because venture capital is just doing too well with those models. it's important stuff.
+
+But we are not funding other technology sectors. It's a longer term project. And it's a more expensive scale a process. And we'll talk about this in the next class, In the innovation system. I follow fusion a lot.
+
+But you're right. Still a long term project. And I was disappointed in the lack of consideration for cultural values in promoting R&D in science and technology. And I've had some conversations like this. But they're there.
+
+And you're right on an important point. But it's relevant to many others. And they all basically read the same way. But we'll spend a lot of money on research and development. That is our problem. And we really jump into that in the next class. You all probably know a fair amount of the semiconductor history. And it's an electrical switching device. It enables essentially the whole follow on of digital technology innovation. And that really evolves in 1958. And Fairchild later morphs into Intel. So Jorgenson looks at semiconductors as the core technology advance.
+
+So all kinds of transmission technologies are occurring at this time period. In other words, you're producing more for less with less labor input. And this is how Bill Gates gets rich because the decline in price in software is only 1.6% between '90 and '95 and only 2.4% between '95 and 2000.
+
+And we still haven't tackled this cost of software problem. And it becomes pervasive in the economy. It's in homes. And it's in every business. And it's in government.
+
+And the productivity numbers.5%.2%. These are astonishing numbers. Historical US growth rate is 3%. Productivity falls down to the 1% range.
+
+That's a grim period. And our current productivity rate is in the 1% range. A lot of people are getting left behind.
+
+What we need? New innovation-based growth wave. And they get driven by technological advance. Productivity gains get driven predominantly by technological advance. He essentially proves the model. So questions about this. It's not so much demographics change in that period of time. And I'm going to take a lot of your real wealth. We didn't really have much of that going on in that time period.
+
+But in that period, that's when the competition with Japan hits. And we'll talk more about this. And it organizes its innovation system around leading these innovation waves. And it gets very rich because it's getting the first mover advantage of these innovation waves. But Japan figures out quality manufacturing. It's a whole new way of doing production. What did we do? We brought on another innovation wave. And the headline in the major Japanese newspaper-and there's a major Japanese English language newspaper.
+
+Apple took back a large part of that consumer innovation wave. And that's what's playing out in this time period of the innovation wave. But we'll dive into this when we get to the manufacturing class. That looks very clear that that happens.
+
+AUDIENCE: Chime in. And I think Romer also talks about charter cities where you have less rules. And we'll read about it. We'd just rather do the next big thing. And that's not bad. They're not. There's a problem for everybody.
+
+We do the new thing. We'll do biotech. We'll create the new frontier. We just don't go back and fix the health care delivery system because it's tough. We'd rather do biotech. So a lot of our societal problems are tied up in this stuff. But you get an advance snapshot. But it sure is an important wave.
+
+And you don't want to miss it. And in a capitalist economy, that's not an unimportant task. Innovation drives growth so you want to get on this. You really want to get on these innovation waves. But I haven't asked him. And by the way, it drives the stock market. I don't know. I don't know where that comes from. This is how it happens. That's interesting. It's not just an obscure economist conjury of growth wave. I don't know where the 28 year comes from although the time frames are roughly right.
+
+So the second piece that has to occur they refer to as enablers. And the key tool set in that time period was when IBM did the scanning tunneling electron microscope. And you probably don't remember this.
+
+But to scientists seeing an ability to structure molecules in that kind of way was just absolutely amazing. That was 20 years before. You've got to create research mass. In other words, you got to put talent on the problem. This is human capital engaged in research.
+
+By 2000, there are 1,800 journal articles on nano. In other words, this journal article total signals research mass. It signals prospectors. It signals human capital engaged in research. You need the vision. That's interesting. We've got research mass. Five-plus years is long term. It takes 112 years to do this. Those are long periods of time. These guys are talking about trying to get rich in what we would view as extremely short-term periods.
+
+So they look at a series of opportunities with that idea behind. Everybody is going to need their stuff. But that could take 10 years. But it's a long time. And it works very nicely for IT. And it works for very different reasons that we'll talk about for biotech.
+
+But it's not working in these hard technology sectors because the timetables are just too long and the risks are too high and the uncertainties are too great. Merrill Lynch doesn't look at it as a gap in the innovation system. The short story-and we'll spend a little more time on this. There's still some pieces left. It's just really eroded this. And they're very interesting. And some of them are terrific. But the timetables don't work for venture funding. And part of this-pure space doesn't always solve the problem. You're going to need some bridge funding. So part of this is raising some money.
+
+This is not going to happen with these hard technologies, a number of which will be coming out of Martha's world of energy technology development. Stefania?
+
+AUDIENCE: Estefania.
+
+WILLIAM BONVILLIAN: Estefania. You're going to get me to do this right. I promise.
+
+Because it turns out that there's different kinds of venture models. This class has talked about two direct innovation factors, things that I would argue that you can't do without. And you need to invest in that system. And this is-one of the readings this week was from NSF indicators. And NSF indicators comes out every other year. I don't want you to read it. Just glance at it.
+
+Federal research funding. And you see that discretionary spending on R&D began to approach it's like 17% in 1965. So that blue curve is a slightly different measurement. But that's essentially the decline of federal government support. And great. Problem solved. Because we're essentially at the same percentage of GDP that goes to R&D as we were back in the 1960s. So no problem. Government supports predominantly research. Industry supports predominantly development. To a significant extent, research is going to drive development over an extended period of time.
+
+So then this picture becomes very problematic. It doesn't work. Cold War. And hot war. That does wonders for science investment. And that's investment in basic research. So government dominates basic research. The blue industry dominates development.
+
+This is where it goes.
+
+Other nations are obviously working hard on building their R&D capability. They understand the need for R&D investment. And the pictures are not ones that we really want to have. That's natural science and engineering doctorates in selected countries. That's a very important part of our system. And that's how this curve has taken off. This is the annual growth rate on numbers of researchers by country. But the growth rate is much lower.
+
+This is world share of natural science and engineering publications. Significant increases in first university degrees in natural science and engineering in China against the rest of the world. That's what they're after. They understand its importance. And government dominates research investment as we saw. Things like government labs are obviously government dominated. The federal government dominates higher education support for science and engineering. Industry takes things through the engineering prototyping and production stages. The training system is dominated by industry. It's your talent base. It can't be driving cabs. That's how the economy grew. That enables productivity gains. They acknowledge that it's long term. They're going to focus on a very short part of it.

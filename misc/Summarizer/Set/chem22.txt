@@ -1,0 +1,232 @@
+MITOCW | MIT3_091F18_lec22_300k
+Happy Friday.
+Cool.
+I am excited.
+We're going to keep talking about XRD today.
+We're going to pick up where we left off.
+We were here.
+And in particular, this is a pretty nice image.
+Now a second one doesn't bounce off that top surface.
+It bounces off of the one beneath it.
+So these black atoms are one plane.
+And we say it's reflecting off the mirror.
+And that's if this distance plus that distance is equal to a multiple of the wavelength.
+They've gone the same distance.
+Everything else is destructive.
+No signal.
+But we did one more thing.
+We also said that d for some set of planes.
+I'm going to pick one of these planes.
+And the distance between them is DHKL.
+Bragg plus distance Miller.
+Right?
+Miller cubic.
+That's what we're really combining here.
+And we talked about constance.
+That's some good math.54 angstroms.54.
+It's called a target because you're targeting it with electrons.
+So the copper target, k alpha, lambda constant.
+Constant.
+Constant equals the angle and the plane it's reflecting off.
+And that's where we left off.
+This is what happens when you don't have any money.
+We don't need fancy equipment at MIT.
+I like the way that looks.
+Same thing.
+Right?
+Source.
+Sample.
+Detector.
+OK.
+But you might keep the source x-rays fixed.
+You're keeping this fixed.
+I got aluminum.
+And I shot x-rays.
+At some point, you got to know this.
+This is pretty important.54 angstroms.
+And I'm being asked to get the crystal structure of aluminum and the lattice constant.
+2 theta.
+Peak 1, 2, 3, 4.
+Sin squared of half of that.
+Gesundheit.
+It's just easier.
+I'm just going to divide everything by that.33.67.67.
+But I don't want fractions.
+How about 3 times 3.
+In this case, times 3 equals 3.
+Times 3.
+I'm clearing the fractions for the whole table.
+I'm multiplying by the same number.
+8.
+And that's what I need to work with.
+That works.
+And for 4, 2 0 0.
+I've gone from angles to planes.
+These are planes.
+It means one of those.
+OK.
+OK.
+You got to remember the selection rules.
+Anything.
+And for bcc, it adds to an even number.
+And for FCC, no mixing.
+Odd.
+And I can go even further.
+I can calculate the lattice constant.
+It's right here.
+And that's actually the last step in the recipe.
+X-ray defractioners.
+That's OK.
+We'll make it work.
+You're X-ray diffractioners.
+That's it.
+This is a very powerful tool.
+And it is used all over the place in materials chemistry, physics.
+We have achieved our goal.
+With great power comes great responsibility.
+How you use XRD.
+How you use XRD.
+Worry about hcp. bcc.
+This is called a phase diagram.
+I'm kidding.
+So the crystal structure of something-in this case, it's iron-depends on the pressure and
+temperature.
+And the properties depend on the crystal structure.
+Same element.
+I'm just changing its structure.
+I love this one.
+This is water.
+There are 17 current phases of ice.
+17 different crystalline structures of ice.
+That is incredible.
+And they do.
+Now Earth's operating conditions are right around here.
+And the ice wouldn't float to the top.
+You freeze from the top.
+We can figure out.
+OK.
+It also depends on its shape.
+OK.
+It's 38 degrees.
+38 degrees.
+OK.
+Lambda equals to d sine theta.
+This corresponds to a plane.
+So some distance between some planes corresponds to some angle that gave me constructive
+interference for those planes.
+They're beautiful things.
+And you want to find those.37 angstroms.
+OK.
+But I'm very close.
+Lattice constant.
+Distance between any planes.1 angstroms.
+FCC.
+Automic radius.
+Which one is it?
+It's gold.
+It's gold.
+You have the power to do this.
+You can go back and forth based on your knowledge of crystals and your knowledge
+of x-rays.
+And I will talk about that.
+There's the k alpha for copper.
+20 to 30.
+He did more.
+38 in total.
+So Moseley came up with-he was working on this in 1912.
+1912 was when Rutherford did the gold foil experiments.
+That chemical properties.
+In ordering of the elements.
+Properties win.
+Moseley's experiments told us.6 ev.
+All that looks familiar.
+Times z minus 1 squared.
+That's what he did.
+And this is 3/4.
+So 13.
+We've talked about this.
+You see it in two ways.
+3/4.
+And it works.
+They see z minus 1 if z is related to the atomic number.
+I just want to show you that it is a perfectly straight line.
+These are his different elements.
+But they didn't know that it was connected to the position in the periodic table.
+44 years had come since Mendeleev.
+Periodicity is atomic number.
+That was not known.
+It was a very important discovery.
+He died in 1915.
+That's how important that discovery was.
+OK, zinc melts around 420 C.
+Greater than 900 C.
+So those electrons are coming off with thousands and thousands of KEV.
+The cathode is shaped to focus the electrons onto a small portion of the target, which increases the
+intensity of the x-rays produced.
+But there's so much energy being pumped into this material.
+That metal is getting extremely hot.
+It gets a little break.
+Or you do both.
+But you'll get the zinc lines.
+You'll get the zinc lines.
+And that was why he used brass.
+And that's why you can see you get extra lines in the case of brass.
+Al right.
+Good!
+All right.
+I'm changing that.
+I'm changing it because properties matter.
+And that is why your periodic table is what it is.
+Absolutely critical.
+It put the lantinides in the right place.
+I knew I was talking about Moseley.
+OK.
+And in the middle.
+And this is all for Moseley.
+You know, let's share.
+Sharing is always caring.
+And that was by Van Laway.
+These are x-rays.
+These are x-ray intensities versus wavelength.
+Electrons.
+That's thousands of electron volts of the incoming electron.
+Right?
+OK.
+This continuous spectrum.
+You can imagine that that could lead to all sorts of interesting cascades of absorption and emission.
+That's what leads to this shape.
+But we don't need to know those details.
+And this goes down.
+It's kicking out the 1s electron that gives you characteristic peaks.
+Walter and Paul.
+They took this continuous spectrum.
+I'm not changing the angle.
+You get spots.
+You have a single crystal.
+Theta is fixed.
+But lambda varies continuously.
+OK.
+Pattern reflects the crystal symmetry.
+I don't know.
+They make different spots.
+And that's what those are.
+In those spots, it's more complicated to get crystal structure from those spots.
+It's more complicated.
+But this happened before.
+It resolved the structure of zinc sulfide.
+It was very important work.
+Laue is just on the side for knowledge.
+We won't test on this.
+This tells you something about crystal symmetry.
+That's translational symmetry.
+There's no rotational symmetry.
+Nobody believed him.
+Linus Pauling wrote the book on chemical bonds.
+And Linus Pauling took the lead.
+He took the lead in attacking Shechtman.
+Shechtman had discovered quasi crystals.
+His papers weren't published.
+And for 10 years, nobody believed him.
+And he had his day.
+And he was proven right.
+And these quasi crystals are absolutely fascinating.

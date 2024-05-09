@@ -1,0 +1,21 @@
+#login-form{
+    width: 400px;
+    height: 200px;
+
+    position: relative;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#login-button{
+    background-color: #43d9e7 !important;
+    color: black !important;
+}
+
+#login-button:hover{
+    background-color: #6dbae7 !important;
+    color: black !important;
+}

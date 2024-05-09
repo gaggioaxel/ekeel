@@ -1,0 +1,39 @@
+ We'll be talking about specific sorting algorithms today. One example of that is finding a median. But this is sort of a side effect of having a sorted list. But it's constant time if you have a sorted list.
+
+There are other things that you could do. And you're looking for a specific number or item. And you can do this in logarithmic time. And that automatically finds duplicates.
+
+Document distance can be viewed as a way of compressing your initial input. And it becomes a bunch of words and frequencies. Most of the time, when you render scenes in computer graphics, you have many layers corresponding to the scenes. And we're going to do some simple ones, today. And it is in your document distance Python files. And A of i is going to get inserted into the correct position.
+
+And we're going to do this by pairwise swaps down to the correct position for the number that is initially in A of i. And we're going to take a look at this. That's your key. And you have A of 0 to 0, which is 5. And in this case, you have to do one swap. And you get 2, 4, 5. And you're done with this iteration. 6 is greater than 5. And your key is now at 1. 1, 2, 4, 5, 6, 3. And the way the code that we have for insertion sort does this is by using pairwise swaps. This is the last step. And then 3 needs to get swapped with 5. And then 3 needs to get swapped with 4.
+
+And that's it.
+
+And you're right. And that's theta n.
+
+So each step is theta n swaps.
+
+And in most computers, that's true. So the theta whatever of compares.
+
+AUDIENCE: Binary search.
+
+PROFESSOR: Binary search. That's right. Two cushions for this one.
+
+You do that if you have an array structure, it might get into the middle. And you have to shift things over to the right.
+
+So a binary search in insertion sort gives you theta n log n for compares. But it's still theta n squared for swaps. We just looked at a couple of them. We're never happy. We always want to do a little bit better.
+
+But we'll stick to improving asymptotic complexity. But Erik will take care of that.
+
+It's a standard recursion algorithm-recursive algorithm-similar to a binary search. We split it into two parts, L and R. It happens really later. It happens in the merge routine. You have two arrays of size n over 2. These are two sorted arrays of size n over 2. And we'll do a fairly straightforward example with 8 elements. You have 12, 11, 9, and 1. And in this case, one of them is pointing to L. My right finger is pointing to some element in R prime.
+
+And I'm going to compare the two elements that my fingers are pointing to. And I'm going to put them into the sorted array. And I compared 2 and 1. And which is smaller? 1 is smaller. This is a two finger algo for merge. And I repeat this step. I won't bore you with the rest of the steps.
+
+It's essentially walking up. You have a couple of pointers and you're walking up these two arrays. And you're writing down 1, 2, 7, 9, 11, 12, 13, 20. And that's your merge routine. But that's fairly straightforward. There's a subtlety associated with that that we'll get to in a few minutes. This is it. theta n complexity. So far so good. And we'll look at the recursion tree. And this is the recursive part.042. I'm going to ignore this constant factor because c of n dominates. You could. And c is this constant.
+
+PROFESSOR: Log n plus 1. Number of leaves. You think right. And you have n leaves. So the top level is cn. What symmetry. For the purposes of this description, they're interchangeable. And things like that. It's just a constant multiplicative factor in front of the function that you have.
+
+PROFESSOR: That's exactly right. That's exactly right. So the two guys who answered the questions before with the levels, and you. This says sorted array, A.
+
+The auxiliary space for insertion sort is simply that temporary variable that you need when you swap two elements.
+
+I will say that you can reduce the constant factor of the theta n. And there's a fairly sophisticated algorithm that's sort of beyond the scope of 6. It's a great paper. But it does exist.2 n square microseconds. It's 0.01 n squared microseconds. So a little bit of practice on the side. We do ask you to write code. And this is important. The reason we're interested in algorithms is because people want to run them. And we'll look at the recursion tree for that. And this is n times c. All of the other things are actually less than that. Or I can think of this as being just a constant c. I'll stick with that. That doesn't work. 4c.

@@ -1,0 +1,164 @@
+{% extends "layout.html" %}
+{% set active_page = "analysis" %}
+  <head>
+
+      {% block head %}
+          {{ super() }}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/form_video.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/radio_choices.css') }}"/>
+
+      {% endblock %}
+
+
+
+  </head>
+  <body>
+    {% block navbar %}{{ super() }}{% endblock %}
+    {% block body %}
+    <div style="overflow-x: hidden;margin-top: 10px">
+        <div class="container">
+            <form method="POST" id="analysisForm" >
+            <p class="title" id="title_analysis">Analysis </p>
+
+            <div class="tab" id="tab_analysis_type">
+
+                <p class="titleLower"> Select type of Analysis</p>
+
+                <div class="wrapperRadio">
+                 <input type="radio" class="analysis_type" name="analysis_type" id="data_summary" value="data_summary">
+                 <input type="radio" class="analysis_type" name="analysis_type" id="agreement" value="agreement">
+                 <input type="radio" class="analysis_type" name="analysis_type" id="linguistic" value="linguistic">
+                 <input type="radio" class="analysis_type" name="analysis_type" id="fleiss" value="fleiss">
+
+
+                   <label for="data_summary" class="option option-1">
+                     <div class="dot"></div>
+                      <span>Data summary</span>
+                      </label>
+                   <label for="agreement" class="option option-2">
+                     <div class="dot"></div>
+                      <span>Agreement</span>
+                   </label>
+                    <label for="linguistic" class="option option-3">
+                     <div class="dot"></div>
+                      <span>Linguistic analysis</span>
+                      </label>
+                   <label for="fleiss" class="option option-4">
+                     <div class="dot"></div>
+                      <span>Fleiss kappa</span>
+                   </label>
+                </div>
+            </div>
+
+
+
+            <div class="tab" id="tab_video_selection">
+                <div class="row">
+                    <div class="col">
+                        <p class="titleLower"> Select a video</p>
+                    </div>
+
+                    <div class="input-group rounded searchbar col">
+                      <input type="search" class="form-control rounded" autocomplete="off" placeholder="Search" aria-label="Search"
+                        aria-describedby="search-addon" id="searchbar" onkeyup="search_video()"/>
+                      <span class="input-group-text border-0" id="search-addon" style="color: dodgerblue;">
+                        <i class="fas fa-search"></i>
+                      </span>
+                    </div>
+                </div>
+                <div id="videos" class="center_selection">
+
+                    {% for id in video_choices%}
+                        <label class="video_radio" video="{{ id }}"  >
+                          <input type="radio" name="video" value={{ id }} id={{ id }}>
+                          <img src="https://img.youtube.com/vi/{{ id }}/hqdefault.jpg">
+                          <p class="video_title">{{ video_choices[id].title }}</p>
+                        </label>
+                    {% endfor %}
+
+                </div>
+            </div>
+
+            <div class="tab" id="tab_annotator_selection">
+
+                <div id="selectedParameters">
+                    <table class="table table-responsive">
+{#                      <tr class="d-flex">#}
+{#                        <td class="col-3">Type of analysis</td>#}
+{#                        <th class="col" id="selected_type"></th>#}
+{#                      </tr>#}
+                      <tr class="d-flex" style="border-bottom: 1px solid #dee2e6;">
+                        <td class="col-3">Video title</td>
+                        <th class="col" id="selected_video"></th>
+                      </tr>
+                    </table>
+                </div>
+                <p class="titleLower"> Select an annotator</p>
+
+                <div id="annotators"></div>
+            </div>
+
+            <div class="tab" id="tab_two_annotators_selection">
+                <div id="selectedParameters_agreement">
+                    <table class="table table-responsive">
+{#                      <tr class="d-flex">#}
+{#                        <td class="col-3">Type of analysis</td>#}
+{#                        <th class="col" id="selected_type_agreement"></th>#}
+{#                      </tr>#}
+                      <tr class="d-flex" style="border-bottom: 1px solid #dee2e6;">
+                        <td class="col-3">Video title</td>
+                        <th class="col" id="selected_video_agreement"></th>
+                      </tr>
+                    </table>
+                </div>
+
+
+                <div id="annotators_agreement">
+                    <div class="row">
+                        <div class="col" id="annotator1">
+                            <p class="titleLower"> Select first annotator</p>
+                        </div>
+                        <div class="col" id="annotator2">
+                            <p class="titleLower"> Select second annotator</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div style="margin-top: 6%">
+                <!--<button type="button" id="prevBtn" class="btn btn-dodgerblue btn-primary float-left" onclick="nextPrev(-1)">Previous</button>-->
+                <input type="button" onclick="submitForm()" value="Launch Analysis" id="submitButton"
+                       class="btn float-right btn-dodgerblue btn-primary login_btn" style="display: none">
+
+                <!--<button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>-->
+            </div>
+            </form>
+        <div >
+
+                <!--<div style="text-align:center;margin-top:40px;">
+                  <span class="step"></span>
+                  <span class="step"></span>
+                </div>
+            </div>-->
+
+            <!-- Circles which indicates the steps of the form: -->
+
+
+
+
+            <!--<input type="submit" value="Go" class="btn float-right login_btn">-->
+
+
+    </div>
+
+    <script src="{{ url_for('static', filename='multi_step_form_analysis.js') }}"></script>
+    <script src="{{ url_for('static', filename='search_video.js') }}"></script>
+
+    <script> let $videos = {{ video_choices|tojson }}; </script>
+
+
+    {% endblock %}
+  </body>
+

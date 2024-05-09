@@ -1,0 +1,95 @@
+.editContent {
+  height: 110vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  justify-content: space-around;
+}
+
+.deleteAccountButton{
+    color: red;
+    border: 2px solid red;
+    text-transform: uppercase;
+    display: flex;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 15px;
+    font-family: inherit;
+    width: 45%;
+    height: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+.validateDeletion{
+    text-transform: uppercase;
+    display: flex;
+    padding-bottom: 1%;
+    padding-top: 1%;
+    flex-direction: column;
+    border: 2px solid red;
+    width: 45%;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: space-around
+}
+
+.deleteAccountButton:active {
+    transform: scale(0.98);
+}
+
+.saveChangesButton:active {
+    transform: scale(0.98);
+}
+
+.saveChangesButton {
+  color: green;
+  border: 2px solid green;
+  text-transform: uppercase;
+  display: flex;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 15px;
+  font-family: inherit;
+  width: 45%;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+.editInfo {
+    display: flex;
+    width: 25%;
+    height: 10%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.titleContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.title {
+    font-size: 25px;
+    font-family: inherit;
+    padding-top: 1%
+}
+
+.btnsContainer{
+    display: flex;
+    width: 30%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}

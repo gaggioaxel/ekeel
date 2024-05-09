@@ -1,0 +1,211 @@
+
+1:48
+It's interesting.
+2:42
+But you can't find the best possible path. And the next letter is H. And it ends up
+3:27
+being choice.
+3:30
+Not about maps.
+3:46
+And I did something today that I neglected to do last time.
+3:50
+And that's talk to you about what I meant
+3:52
+by heuristic distance.
+3:53
+It's those pink lines that I just drew on the map.
+4:23
+It would appear that being at node E is a good place to be
+4:26
+because it's not very far from G.
+5:43
+PROFESSOR: S, A, D, G. So Juana asserts
+5:59
+that that is the best path.
+7:47
+And I could have gone this other way to B.
+8:08
+A and B. I can also go
+8:25
+to B. That's 7.
+8:46
+Last time we were talking a lot about
+8:48
+distances to the goal.
+9:05
+I've got 7 and 5. S, A, B.
+10:17
+S, B, A can only go to D.
+10:27
+Nothing else can happen there because that's 12 and I've got
+10:30
+a path of a goal that's 11.
+10:33
+C, I can only go to E.
+10:43
+That's 15.
+11:22
+Let's see. This distance is 0.
+11:49
+I can go either to A or B. That can either got to B
+12:04
+or D.
+12:24
+S, B takes me to A or C. You see the pattern.
+12:39
+Now let's see.
+13:30
+So let's see.
+13:35
+That gets this to the goal.
+13:36
+Boom, we've got it.
+13:38
+And we've got a path length of 11.
+14:01
+That's B, S, A, B. That goes to C. That's 11.
+14:10
+A goes to D. That adds 3.
+14:13
+That's 12.
+14:15
+C goes to E. That adds 6.
+14:18
+That's 15.
+14:58
+We've got a shortest path.
+15:32
+Each of those little flickers is trying another path.
+15:57
+Or it's almost doing British Museum.
+16:38
+We might have a shortest path to the goal.
+17:22
+Alas, it usually isn't.
+18:09
+Well, sort of.
+18:51
+An N queueing list.
+21:18
+So let's see how that would work on the classroom example.
+21:38
+N queued list won't work here.
+22:13
+B goes there.
+22:13
+And those path lengths are 7 and 6. And that goes to G. And the path length is 11. But I've already extended a
+22:46
+path that get to B.
+22:56
+I've already extended B. And
+23:04
+that those then to E with a path length of 15.
+23:07
+And I'm done.
+23:24
+The number of extensions.
+24:00
+I'm going to turn the speed down a little bit so
+24:02
+we can watch it.
+24:04
+It might take the rest of the hour.
+24:05
+Who knows?
+24:13
+Still doing a lot of work.
+24:14
+Still examining a lot of paths.
+24:42
+That's not a different algorithm.
+25:08
+It's a dead horse principle.
+27:10
+So forget that we've got an extended list.
+27:48
+We can go to A or B.
+28:12
+The airline distance from B to G is exactly 6.
+28:53
+Standard arithmetic 13.
+28:57
+The distance S, A, D.
+29:47
+They've got a tie score. And we have to calculate the best possible
+30:05
+distance that goes along those paths.
+30:23
+Also plus 7 plus.
+30:25
+Also 16 plus.
+30:37
+We extend that to G.
+32:23
+By the way, this is called an admissible heuristic.
+33:45
+Oops, that's the wrong adjustment.
+34:12
+It's an easier problem.
+34:27
+That went too fast.
+34:35
+Six extensions.
+35:19
+Look at that.
+36:44
+The number of extensions is 27.
+36:47
+So look at that.
+36:49
+A lot better than either of those working independently.
+37:56
+Sort's expensive.
+37:58
+Do we actually need to sort?
+38:03
+No, we don't actually need to sort.
+38:12
+That's an unnecessary computation.
+39:00
+But that's because I've been working with a map.
+39:51
+And the actual distances are 1, 1, 1, and 10.
+40:17
+But we're not.
+40:17
+We're going to use an admissible heuristic.
+40:25
+This guy is 0.
+40:27
+And this guy is 0.
+41:25
+That's equal to 101.
+42:08
+AUDIENCE: All right.
+43:18
+And that gets me to the goal.
+43:53
+S, A, C.
+43:57
+My accumulate distance it 2.
+44:07
+I've already extended that guy.
+44:13
+I won't find the shortest path because I'm
+44:15
+going to stop there.
+44:27
+This cannot be done as a map on a plane.
+46:31
+But the actual distance is only 2.
+46:38
+And it doesn't work.
+47:37
+And you can even invent pathological cases where it's
+47:39
+exponential and the distance to the goal.
+47:56
+It still holds.
+47:57
+No smoking, no drinking, and no laptops.

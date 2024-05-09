@@ -1,0 +1,102 @@
+
+It's a goody bag day.
+It's a good day.
+So the concentration is equal to the moles per liter.
+What's molarity?
+It's moles per liter.
+There is the rate.
+There's a change in the concentration with time.
+That's called the rate law.
+That's what I want out of a rate law.
+All of these things impact how the reaction happens.
+But I will talk about each of those other items today.
+That's our goal.
+And we're going to talk about how concentration plays a role in reaction rates.
+And it turns into something called B. It's green.
+There's a reaction.
+Now the very first thing that I can think about in this is that nothing is lost.
+Nothing is lost.
+You see that?
+The container is there.
+I haven't lost any mass.
+That's OK.
+That's kind of what we're doing.
+You can see it.
+One is that you'll notice that the rate is always positive.
+But we like positive numbers when we talk about rate.
+But I want a law.
+We're going to do this with the reactants.
+So k times a concentration of A to the m times the concentration of B to the n.
+OK.
+K is equal to a rate constant.
+And this is going to depend on conditions like temperature, pressure, solvent.
+--from experiments.
+No.
+You can't just get that from the way the reaction is written.
+You can get mass conservation and the relationship between rate, rate, rate.
+But you can't get the rate law unless you do some measurements.
+That doesn't change.
+OK?
+So zeroth order.
+If we go with what we just wrote down.
+2 N20 goes to 2 N2 plus O2.
+OK.
+I'm sorry.
+Rate is independent.
+Rate is independent of concentration.
+OK.
+It means something in terms of our rate law.
+And that means that k must have units of molarity over time.
+OK.
+You can feel it.
+The reaction of the liver, the enzymes that are breaking this down is not dependent on the
+concentration.
+But there's another thing we can do with beer, which is we can integrate it.
+This is the integrated rate law.
+That's the integrated law.
+I'm not even going to write it out.
+OK.
+If the concentration of A doubles the rate doubles.
+The rate doubles.
+The overall units are molarity over time.
+Linear lines.
+Straight lines.
+I'm OK with it because it's true.
+That's good.
+If I had a linear plot with Ln concentration versus time you know it's first order.
+This molecule is called cisplatin.
+But it's not active in this state with the two chlorine's there.
+This has to happen in a time frame that we know very well.
+So this rate has been studied very carefully for this reaction.
+That's one way to know what order you have.
+You could take ratios at two different times.
+And by the way, the slope could tell me something about the rate constant.
+Plots, order, linear.
+OK.
+The half life is a very powerful tool.
+A number of you may have heard of carbon dating.
+And we know if these animals are breathing it in.
+We know that they should have that concentration at A0, except this isn't a concentration this is a
+number of atoms.
+The radioactive decay of c14 is a first order process.
+This is it.
+This is everything we just talked about before we switch to temperature.
+The units of the rate constant.
+We're talking about how fast the concentrations change.
+I want to highlight those two factors.
+So energy of the collision.
+We're going to start with the energy of the collision and we're going to talk about that in terms of
+where you get that energy.
+You get it from heat.
+OK.
+You were feeling it.
+Crickets and then intrinsic carriers.
+They have barrier.025 eV.
+That is Arrhenius.
+We would use R or r for a mole.
+OK.
+Catalytic converters is one of the most important technologies for pollution that has been invented in
+over the last 50 years.
+It's changed the game in terms of what comes out of that car.
+Right?
+OK.

@@ -1,0 +1,45 @@
+POST http://localhost:8080/protected/v1/topic
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0NDQwODAyMiwiaWF0IjoxNjQ0Mzk4MjIyODA5fQ.GiQZ7lnH4yy33cFbNBNb68fju6Utknih5AE2Oi0uXdQ
+Content-Type: application/json
+
+{"name": "File3",
+  "subjectLocator": "test9", "subjectIdentifier": "https://google.com", "topicmapId": 4, "topicTypeId":  120,
+  "topicTopicScopes": [
+    {
+      "id": {
+        "topicId": 1,
+        "scopeId": 3
+      },
+      "content": ""
+    }
+  ]}
+
+###
+
+GET http://localhost:8080/protected/v1/topic?topic_id=3
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/protected/v1/topic
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+{"id": 4, "name": "File", "subjectLocator": "test5", "subjectIdentifier": "http://google.com"}
+
+###
+
+DELETE http://localhost:8080/protected/v1/topic?topic_id=4
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+DELETE http://localhost:8080/protected/v1/topics
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+[5]
+
+###

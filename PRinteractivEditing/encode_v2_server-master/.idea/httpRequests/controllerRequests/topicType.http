@@ -1,0 +1,39 @@
+POST http://localhost:8080/protected/v1/topicTypes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+[{"name": "Primary Notion", "description":  "first test", "schemaId": 4}, {"name":  "Secondary Notion", "description":  "second test", "schemaId": 4}]
+
+###
+
+GET http://localhost:8080/protected/v1/topicTypes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/protected/v1/topicType?topic_type_id=5
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+DELETE http://localhost:8080/protected/v1/topicType?topic_type_id=6
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/protected/v1/topicType
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+{"id": 5, "name": "Updated TopicType", "description":  "test 2"}
+
+###
+
+POST http://localhost:8080/protected/v1/topicType
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+{"name": "Primary notion Single ADD", "description":  "first test", "schemaId": 4}

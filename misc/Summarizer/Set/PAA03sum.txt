@@ -1,0 +1,1 @@
+Sorting is introduced, and motivated by problems that become easier once the inputs are sorted. The lecture covers insertion sort, then discusses merge sort and analyzes its running time using a recursion tree.

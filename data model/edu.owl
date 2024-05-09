@@ -1,0 +1,100 @@
+[ {
+  "@id" : "http://www.w3.org/2004/02/skos/core#broader",
+  "@type" : [ "http://www.w3.org/2002/07/owl#AnnotationProperty" ],
+  "http://www.w3.org/2000/01/rdf-schema#domain" : [ {
+    "@id" : "http://www.w3.org/2004/02/skos/core#Concept"
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#range" : [ {
+    "@id" : "http://www.w3.org/2004/02/skos/core#Concept"
+  } ]
+}, {
+  "@id" : "https://github.com/Teldh/edurell/blob/datamodel/edu.owl",
+  "@type" : [ "http://www.w3.org/2002/07/owl#Ontology" ],
+  "http://www.w3.org/2002/07/owl#imports" : [ {
+    "@id" : "http://www.w3.org/ns/oa#"
+  } ]
+}, {
+  "@id" : "https://github.com/Teldh/edurell/blob/datamodel/edu.owl#InstantSelector",
+  "@type" : [ "http://www.w3.org/2002/07/owl#Class" ],
+  "http://www.w3.org/2000/01/rdf-schema#comment" : [ {
+    "@value" : "InstantSelector allows to select a specific point in a video through a specific timestamp. In order to link the video instant with a specific word in the associated ConLL file, two optional properties (conllSentId and conllWordId) may be used to identify the word having ID=conllWordId inside the sentence having sent_id=conllSentId."
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#label" : [ {
+    "@value" : "InstantSelector"
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf" : [ {
+    "@id" : "http://www.w3.org/ns/oa#Selector"
+  } ]
+}, {
+  "@id" : "https://github.com/Teldh/edurell/blob/datamodel/edu.owl#conllSentId",
+  "@type" : [ "http://www.w3.org/2002/07/owl#DatatypeProperty" ],
+  "http://www.w3.org/2000/01/rdf-schema#comment" : [ {
+    "@value" : "When linking a time instant of the video with a word of the associated ConLL file, specifies the sent_id of the sentence the associated word is part of. Must be paired with the conllWordId property to specify the word."
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#domain" : [ {
+    "@id" : "https://github.com/Teldh/edurell/blob/datamodel/edu.owl#InstantSelector"
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#label" : [ {
+    "@value" : "conllSentId"
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#range" : [ {
+    "@id" : "http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+  } ]
+}, {
+  "@id" : "https://github.com/Teldh/edurell/blob/datamodel/edu.owl#conllWordId",
+  "@type" : [ "http://www.w3.org/2002/07/owl#DatatypeProperty" ],
+  "http://www.w3.org/2000/01/rdf-schema#comment" : [ {
+    "@value" : "When linking a time instant of the video with a word of the associated ConLL file, specifies the ID of the associated word. Must be paired with the conllSentId property to specify the sentence referred to."
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#domain" : [ {
+    "@id" : "https://github.com/Teldh/edurell/blob/datamodel/edu.owl#InstantSelector"
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#label" : [ {
+    "@value" : "conllWordId"
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#range" : [ {
+    "@id" : "http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+  } ]
+}, {
+  "@id" : "https://github.com/Teldh/edurell/blob/datamodel/edu.owl#hasMediaFrag",
+  "@type" : [ "http://www.w3.org/2002/07/owl#DatatypeProperty" ],
+  "http://www.w3.org/2000/01/rdf-schema#comment" : [ {
+    "@value" : "Spatial location of the annotated concept in the selected frame, conforming to media-frags space."
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#domain" : [ {
+    "@id" : "https://github.com/Teldh/edurell/blob/datamodel/edu.owl#InstantSelector"
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#label" : [ {
+    "@value" : "hasMediaFrag"
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#range" : [ {
+    "@id" : "http://www.w3.org/2001/XMLSchema#string"
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#subPropertyOf" : [ {
+    "@id" : "http://www.w3.org/2002/07/owl#topDataProperty"
+  } ]
+}, {
+  "@id" : "https://github.com/Teldh/edurell/blob/datamodel/edu.owl#linkingConll",
+  "@type" : [ "http://www.w3.org/2002/07/owl#NamedIndividual", "http://www.w3.org/ns/oa#Motivation" ],
+  "http://www.w3.org/2000/01/rdf-schema#comment" : [ {
+    "@value" : "The motivation for when the user intends to link to a ConLL file with a video resource."
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#label" : [ {
+    "@value" : "linkingConll"
+  } ],
+  "http://www.w3.org/2004/02/skos/core#broader" : [ {
+    "@id" : "http://www.w3.org/ns/oa#linking"
+  } ]
+}, {
+  "@id" : "https://github.com/Teldh/edurell/blob/datamodel/edu.owl#linkingPrerequisite",
+  "@type" : [ "http://www.w3.org/2002/07/owl#NamedIndividual", "http://www.w3.org/ns/oa#Motivation" ],
+  "http://www.w3.org/2000/01/rdf-schema#comment" : [ {
+    "@value" : "The motivation for when the user intends to link a concept with its prerequisite."
+  } ],
+  "http://www.w3.org/2000/01/rdf-schema#label" : [ {
+    "@value" : "linkingPrerequisite"
+  } ],
+  "http://www.w3.org/2004/02/skos/core#broader" : [ {
+    "@id" : "http://www.w3.org/ns/oa#linking"
+  } ]
+} ]

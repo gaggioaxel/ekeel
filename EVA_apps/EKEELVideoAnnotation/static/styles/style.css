@@ -1,0 +1,424 @@
+body{
+    background-color: #f8f9fa;
+}
+
+h1 {
+    padding: .5em;
+    margin: 0;
+    font-size: 2.5em;
+    text-align: center;
+}
+
+.flex-vertical {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    margin:1%;
+}
+
+.flex-vertical h1,
+.flex-vertical .main-container{
+    margin-left: 3em;
+    margin-right: 3em;
+}
+
+.main-grid {
+    display: grid;
+    box-sizing: border-box;
+    grid-template-columns: minmax(auto, 60%) auto;
+    justify-content: center;
+    column-gap: 3em;
+    row-gap: 1em;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.video-player {
+    width: 100%;
+}
+
+.btn-addrelation {
+    justify-self:center;
+    align-self: center;
+    margin-top:.5em;
+    min-width: 100px;
+    /*border: 1px solid rgba(0,0,0,.125);*/
+
+}
+
+.btn-dodgerblue{
+    color:white;
+    background-color: dodgerblue;
+}
+
+
+.buttons{
+    display: flex;
+    justify-content: space-around;
+}
+
+
+* { box-sizing: border-box; }
+
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+input {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+input[type=text] {
+  /*background-color: #f1f1f1;*/
+  width: 100%;
+}
+input[type=submit] {
+  background-color: DodgerBlue;
+  color: #fff;
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+}
+
+.autocomplete-items-custom1 {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  z-index: 99;
+  top: 222px;
+  left: 20px;
+  width: 560px;
+  max-height: 148px;
+  overflow-y: scroll;
+}
+
+.autocomplete-items-custom2 {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  z-index: 99;
+  top: 382px;
+  left: 20px;
+  width: 560px;
+  max-height: 148px;
+  overflow-y: scroll;
+}
+
+.autocomplete-items div {
+  padding: 5px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+
+
+
+/* Style buttons */
+.icon-button {
+  background-color:rgba(0, 0, 0, 0);
+  border: none; /* Remove borders */
+  color: gray; /* White text */
+  padding: 12px 10px; /* Some padding */
+  font-size: 14px; /* Set a font size */
+  cursor: pointer; /* Mouse pointer on hover */
+  float:right;
+}
+
+/* Darker background on mouse-over */
+.icon-button:hover {
+    color:#007bff
+}
+
+.deleteDefinitionIcon {
+  background-color:rgba(0, 0, 0, 0);
+  border: none; /* Remove borders */
+  color: red; /* White text */
+
+  font-size: 16px; /* Set a font size */
+  cursor: pointer; /* Mouse pointer on hover */
+}
+
+/* Darker background on mouse-over */
+.deleteDefinitionIcon:hover {
+    color:#007bff
+}
+
+
+
+.list-group-item{
+  padding: 0.1rem;
+}
+
+.title{
+    font-size: 2rem;
+    font-weight: bold;
+    color:#343a40;
+    margin-top:2%;
+    line-height: 1.2;
+}
+
+.titleLower{
+    font-size: 1.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+}
+
+table {
+    display: flex;
+    flex-flow: column;
+    width: 100%;
+}
+
+thead {
+    flex: 0 0 auto;
+}
+
+tbody {
+    flex: 1 1 auto;
+    display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+tr {
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+}
+
+.result_text{
+    float: right;
+}
+
+/*
+-------------------------
+*/
+
+.m-concept-text {
+  color: #2b73bf;
+  font-size: 15px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.m-synonym-text {
+  color: #51ae28;
+  font-size: 16px;
+  font-family: serif;
+  font-weight: normal;
+  margin-bottom: 10px;
+}
+.m-synonym-text2 {
+  color: #51ae28;
+  font-size: 16px;
+  font-family: serif;
+  font-weight: normal;
+  margin-top:1px;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.spaced-text{
+  padding-right: 8px;
+  margin-bottom: 3px;
+}
+
+.synonym-set-class{
+  color: #51ae28;
+  font-family: serif, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  overflow-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 334px;
+  margin-top: -1.5px !important;
+  margin-bottom: 0px !important;
+}
+
+.selected-concept {
+  margin-left: 9px;
+  font-weight: 600;
+  font-size: 16px;
+  font-family: serif;
+  font-weight: bold;
+  color: #2b73bf;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  margin-top: 1px;
+}
+
+.selected-concept-box {
+  border: 1px solid #c8c8c8;
+  padding: 10px;
+  height: 75px;
+  border-radius: 10px;
+  width: 360px;
+  overflow: auto;
+}
+
+.description-selected-concept {
+  margin-right: 3px;
+}
+
+.margin-left {
+  margin-left: 5px;
+}
+
+.padding-left {
+  padding-left: 14px;
+}
+
+.same-line{
+  display: inline-block !important;
+  vertical-align: top !important;
+  margin-bottom: 1px !important;
+}
+
+.selected-synset-show {
+  margin-bottom: 30px;
+  display: block !important;
+}
+
+.synset-selection-class {
+  margin-bottom: 30px;
+  height: 130px;
+  display: block !important;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+
+.add-syn-selection-class {
+  margin-bottom: 30px;
+  height: 130px;
+  display: block !important;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+
+.button-select-synset {
+  margin-top: 10px;
+  margin-bottom: 8px;
+  width: 50%;
+}
+
+.button-add-syn {
+  margin-top: 10px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.button-rem-syn {
+  margin-top: 10px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.main-vocabulary-body {
+  max-height: 340px;
+}
+
+.conceptList:hover {
+  background-color: white;
+}
+
+.concept-row {
+  display: table;
+}
+
+#conceptVocabularyContent {
+  margin: 15px 0px;
+}
+
+#conceptVocabularyContentBurst {
+  margin: 15px 0px;
+}
+
+.tab-body {
+  height: 400px;
+}
+
+.tab-body-1, .tab-body-2, .tab-body-3 {
+  height: 100%
+}
+
+.tab-body-2, .tab-body-3 {
+  padding-top: 30px;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-bottom: 30px;
+}
+
+.tab-error {
+  color: red;
+  font-style: italic;
+  text-align: center;
+  border-bottom: 1px solid red;
+  width: max-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#conceptsTable {
+  margin-top: 15px;
+}
+
+.custom-modal {
+  width: 600px;
+  height: 550px;
+}
+
+#conceptsTable .list-group-item:first-child {
+  border-top-width: 1px;
+}
+
+#conceptsTable .list-group-item:last-child {
+  border-bottom-width: 1px;
+}
+
+#conceptsTable .list-group-item {
+  padding: 10px 20px !important;
+}
+
+.button-center {
+  justify-content: center;
+}
+
+.selected-concept-text{
+  background-color: #1c7ade63 !important;
+}
+
+.selected-synonyms-text{
+  background-color: #26c30d45 !important;
+}
+
+.trash-concept:hover {
+  color: #ff01017a;
+}
+
+.filter-vocabulary-class {
+  margin-top: 5px !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+  width: 95% !important;
+}

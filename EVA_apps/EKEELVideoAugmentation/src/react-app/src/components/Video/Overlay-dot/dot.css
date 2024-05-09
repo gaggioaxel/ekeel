@@ -1,0 +1,7 @@
+.Dot {
+    position: absolute;
+    bottom: 39px;
+    pointer-events: none;
+    border-radius: 50%;
+    border: 2px solid #fff;
+  }

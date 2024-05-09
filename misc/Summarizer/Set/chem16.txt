@@ -1,0 +1,206 @@
+
+This is much like the last time, when I gave you guys the concept map.
+And you're asked to bring to the quiz the voltmeter and these large LEDs.
+Laura will also send a reminder email about that.
+You and voltmeters.
+You never know when you need a voltmeter.
+You should always carry it with you with the periodic table.
+Today, I really want to focus on this case.5 electron volts.
+I want to spend today talking about semiconductors.
+Those are called semiconductors.
+Semiconductors.
+They're all kind of right.
+These are really special materials, these semiconductors.
+And I'm going to use diamond and graphite as an example.
+This was a 1D model of s orbitals, 1s orbitals.
+All that depends on more than just those atomic orbitals.
+It depends on more.
+It depends on how these things are bonded.
+Its carbon.
+But on the one hand, I've arranged it in a certain way.
+Diamond has a gap of 5 and 1/2 electronvolts.
+5 and 1/2 electronvolts.
+But the only way to do that is to have four equivalent orbitals.
+Those are hybrid orbitals.
+We talked about this when we talked about hybridization.
+And it's going to form those bonds along each direction.
+I'm talking about one mole of SP3.
+That's what diamond is.
+That's not what diamond does.
+The valance band is full.
+The conduction band is empty.
+That's diamond.
+5.5 eV gap.
+One mole of SP3 in diamond.
+It also split.
+It doesn't just depend on the initial states.
+It depends on the structure of those atoms.
+It depends on how those atoms are bonded together.
+We did a lot of this earlier.
+There's a continuum.
+There's no states.
+There's no electron.
+Photon emitted.
+And that gets me to another important point, which is on the absorption side, I can overshoot this.
+And that's called thermalization.
+That's thermalization.
+That's a good thing.
+I might be injecting electrons at different parts of these conduction bands, but this is always green,
+and this is always red.
+And this is what's inside of the emitter.
+It's the same thing.
+But these two semiconductors have different band gaps.
+That's why the light is different.
+They have different band gaps.
+And that's something we're going to talk about today.
+Electrons cannot move around easily if they're in the valence band.
+Shine red light on it.
+With this goody bag, you're touching and feeling semiconductor physics and chemistry.
+Because band gaps in materials are rare.
+This semiconductor range here is in the range of light we care about-visible, UV.
+For LEDs, it was blue.
+In fact, there was a lot of work around gallium nitride.
+There's gallium nitride.
+It's not on here.
+Gallium nitride in other structures have different gaps.
+There's one.
+And that was really hard.
+Because without blue, you can't make white light.
+Band gap engineering is really the centerpiece of the semiconductor revolution.
+We've been talking about connectivity.
+And we'll talk about metals on Friday.
+10 to the minus-wood.
+They're not very good conductors.
+That's why they're called semiconductors.
+But the fact of the matter goes back to what I've been saying.
+I said this on Monday.
+They're stuck in states.
+They need freedom.
+And for an electron, freedom means I can go to any state that's nearby.
+I've got to go this way.
+It's scattering me.
+I'll go this way.
+The conduction band has 10 to the 24 states.
+Freedom.
+Freedom.
+I can move in response to this field that's pushing at me.
+I can conduct.
+I can't do that unless I have conduction, unless I get electrons into the conduction band.
+This is OK.
+And there's two different ways that I want to talk about.
+The first way is simply with heat, and this is why I mentioned this on Monday.
+At room temperature for silicon.1 electronvolt gap.
+Silicon, 1.1 electronvolt band gap.
+It's a really important semiconductor.
+And for silicon, at room temperature, I got about 10 to the 10 electrons in the conduction band per
+centimeter cubed of material.
+This is how we think about it.
+We think about how many of these do I have per volume.
+It's a good way to measure it.
+These are also an electron in a conduction band also is called a carrier.
+Kelvin is the thermodynamic energy scale, temperature scale.
+10 to the 15 carriers per centimeter cubed.
+If I want conduction in these semiconductors, I've got to put electrons up in the conduction band.025 electronvolts.
+That seems way smaller than 1.1 eV.
+It is.
+But that's because that's not what temperature really looks like.
+There's a distribution.
+Hotter means a wider range of energies.
+That's why I've got a little bit of electrons that get up there at room temperature.
+There's the log connectivity of silicon.
+Totally different behavior.
+Today, we're interested in this.
+I can get the connectivity up orders of magnitude higher for silicon.
+I'm populating.
+I'm getting over this gap, and I'm populating the conduction band.
+Chemistry gets us.
+You've got to know your chemistry.
+And in particular, this is not the doping that you may read about in the news related to Olympic
+athletes.
+An impurity is something that wasn't there normally.
+It's like something I mixed in that's not normally there.
+And in this case, I'm talking about the connectivity.
+If I didn't arrange them in this particular way, I might not have that band gap.
+I might not have the same band structures.
+It depends.
+But this is what I get for the silicon arrangement when the band gap is 1.
+Silicon has these four valence electrons.
+It's tetrahedral and stuff.
+That was close.
+But phosphorus is right there.
+That's doping.
+No states.
+I can't go anywhere here.
+It can't go in here, remember.
+This is all filled.
+It's really small.
+I've thought about it.
+There's an extra electron that comes out of that.
+The extra electron needs a state.
+It gets a state.
+That's called a donor state.
+Once I get the electron into the conduction band, I'm home free.
+That's substitutional doping.
+How much phosphorus do I need?
+You can solve that problem.
+I'll just write down a couple of the steps.1 grams per mole.33 grams per centimeter cubed.
+And so one mole of silicon is going to give me 12 centimeters cubed of silicon.
+One mole of silicon is 12 centimeters cubed.
+That's how P atoms I need in this mole of silicon to get what?
+It's one to one.
+Because each P atom had one extra electron.
+Those other electrons are in the bonds.
+They're not going into the conduction band.
+It had one for one.0003 grams
+of phosphorus.
+That's not much.0003 grams of phosphorus, and I've bumped up the number of
+carriers by orders of magnitude.
+Semiconductors are kind of discovered in the 1800s.
+Slack.
+One fewer electrons, but it really wants to make those four bonds.
+The material isn't happy if you break one.
+It takes it.
+And that leaves behind a positive charge.
+This is called a hole.
+That's called a hole.
+If I take an electron off of an atom, it's positively charged.
+That's really important, because these positive charges effectively are like electrons.
+They're like negative charges, but they're positive.
+And you can imagine the brilliance of the naming.
+Those are N type semiconductors.
+It's got negative charge in the conduction band.
+P type, P means positive.
+I'm going to grab it from somebody.
+I don't care who.
+But you get charts like this.
+You see that?
+Because I've got one fewer electron than carbon.
+I could also dope silicon and germanium.
+I'd say carbon, silicon, germanium.
+And that's the first transistor.
+That's the only time metric we can use.
+This is a big deal.
+This led to the whole revolution.
+It's literally 75% of this is in your phone.
+And there's the data on the cost.
+You're literally using this semiconductor to generate electricity by shining light on it.
+This is how we see it in our class.
+And this is already on planet Earth, because you can see those chemistries that are in the
+atmosphere have already absorbed.
+Those are absorbing.
+That's why it doesn't look smooth.
+But the problem is that it's a constrained optimization problem.
+I don't have an atom.
+And I might grab most of that spectrum.
+I might absorb most of it.
+No.
+You won't absorb any photons.
+Energy comes in from the sun.
+It excites an electron.
+This is how PowerPoint sees it.
+Leaves behind a hole, and you get them out.
+That's a solar cell.
+There's some sweet spot.
+And that's what is plotted here.
+It should have a slightly higher gap, and you'd get to higher efficiency.
+And a lot of solar cell research is on getting as close to this point as you can.

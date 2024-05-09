@@ -1,0 +1,23 @@
+PUT http://localhost:8080/protected/v1/editors?topic_map_id=2
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTU3Njg2MzU1OCwiaWF0IjoxNTc2ODUzNzU4NTMyfQ.L59DdSV2ROOEaXkf4lqErxZAg6OQz2-qAYRQ7tMxDnQ
+Content-Type: application/json
+
+["admin@gmail.com", "john.doe@gmail.com"]
+
+###
+
+GET http://localhost:8080/protected/v1/editors?topic_map_id=2
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTU4MjExNTU4MiwiaWF0IjoxNTgyMTA1NzgyOTc2fQ.CI3hymt-EcGmxeVxM5FFBShABsQ7zqBi5dUyhtpDgts
+Content-Type: application/json
+
+###
+
+DELETE http://localhost:8080/protected/v1/editor?topic_map_id=2&editor_email=admin@gmail.com
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTU3Njg2MTA3MiwiaWF0IjoxNTc2ODUxMjcyNzYwfQ.073KI4eWUuG5zfCs7Rwkv7fo0IYaQxjoLiwSrS4ayRk
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/protected/v1/editor?topic_map_id=2&editor_email=admin@gmail.com
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTU3Njg2MTA3MiwiaWF0IjoxNTc2ODUxMjcyNzYwfQ.073KI4eWUuG5zfCs7Rwkv7fo0IYaQxjoLiwSrS4ayRk
+Content-Type: application/json

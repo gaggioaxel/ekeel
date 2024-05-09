@@ -1,0 +1,172 @@
+
+Welcome to 3.091.
+This is the first day.
+And I'm really excited.
+I hope you are too.
+My name is Jeff Grossman.
+And I did a post-doc at Berkeley.
+So one example is in this material.
+And what we do today with this barrel of oil is we mostly burn it.
+A lot of what we do is burn it.
+And that's just one example.
+And that's still working with just one element, carbon.
+And that's what we're going to talk about in this class over the fall.
+Seven.
+27.
+It depends.
+63 elements.
+And I'll mention it when they come around during the year.
+OK, so that's a little intro to me.
+But we also need to know what atoms are there in the first place.
+We can get properties.
+We can get structure.
+We can get performance.
+They're all correlated.
+The electronic structure of the elements holds the key.
+And the first part of this class is really the basic foundations of chemistry.
+Some of you may have seen some of this before.
+We're going to build these elements.
+We're going to talk about them.
+We're going to learn about the electrons and the electronic structure.
+You are not alone.
+You have your TA.
+You have Laura.
+You have the textbook and the internet.
+Who said --that was.
+So the textbook is Averill.
+It's a really good textbook.
+It's a really good textbook.
+Notes, like I said, will be posted on the same day of each lecture.
+I'll post whatever you see on this screen.
+I will post.
+The goody bag.
+And these will be given out nine weeks.
+Everything's related to lecture.
+But at least one will be related to what's in the bag.
+This is a very important part of your homework.
+Some of which you need to bring to the quiz.
+I believe in the soul of MIT.
+I said the soul of MIT.
+You've got a group of really smart people.
+What should we do?
+And they wrote out a plan.
+They wrote out a plan.
+And it's called the institute plan.
+That makes sense, 1860.
+It's a great read.
+That is Mens et Manus.
+That is Mens et Manus.
+Mind and Hand.
+It's so important to MIT that we put it on our logo.
+We put it on our logo.
+We don't put some animal on our logo.
+We don't put the word truth.
+I don't know.
+I know you're in the classroom because you signed up for it.
+Agreement.
+But you are also here because you are going to experience a transition.
+That is MIT.
+That's mens et manus.
+It's on you.
+We feel responsibility.
+OK?
+All right.
+Good.
+I've got a pen.
+It's from around 3,000 BC.
+And the way they made that was by taking stuff from a meteor.
+But from a meteor.
+They called those daggers from heaven.
+And some of you may have heard this.
+There's earth.
+There's fire.
+There's air.
+And there's water.
+And everything is made out of that.
+If I look out into the stars, they don't seem to change much.
+Democritus.
+And atom is indivisible.
+And they fought about this.
+That's a-back in the day, that was a serious diss.
+I was right.
+Democritus.
+And I think a lot of you have seen the scientific method.
+But it was pivotal for chemistry.
+It was pivotal.
+He was going for that core.
+He did it by burning things.
+He studied these reactions that were happening with oxygen and carbon containing matter.
+It was combustion.
+He burned this.
+Priestley wanted to blow stuff up.
+He actually worked with beer.
+And that makes me think about combustion.
+And this is what you're doing.
+You are lighting a candle on fire.
+You're combusting that fuel.
+You could light propane on fire.
+Or you could light hydrogen on fire.
+There's the candle, which is tilting.
+I'm watching it.
+Or you could light hydrogen on fire.
+But I'm going to stop.
+These are bigger boulders.
+You might not feel it.
+You are.
+No, I'm-I love that reaction.
+I love that reaction.
+You are lighting a fire.
+And so this study of combustion was extremely important. He discovered oxygen.
+He also discovered these other gases coming out.
+It's not balanced.
+It's not balanced.
+It's also important in life.
+But it's very important in chemistry.
+I wrote this down.
+I'm just testing you.
+I made a mistake.
+These are balanced.
+These are balanced.
+And balancing reactions is important.
+Once we count atoms, you'll see.
+We're going to count atoms on Friday.
+But it's telling us that you can't just lose stuff.
+You can't just lose stuff.
+No.
+Lavoisier?
+No.
+Lavoisier.
+You can't lose-you can't create or destroy matter when you do chemistry.
+Conservation of mass, Lavoisier.
+But you also can think about whether you have anything-I probably should blow that out.
+Two, three, four.2 grams of FE203.
+There's none left.2 grams of ferric acid, I must have reacted 8.2 grams of oxygen.
+That's conservation of mass.
+But there's another thing you can do with this.2 grams of oxygen.
+I'm going to have excess.
+And the thing is that there's something that's limiting here.
+And he tried to organize them.
+And in some cases, he succeeded fairly well.
+And some of these are actually really good discoveries.
+I want you to experience this.1.
+I've given you five metal strips.
+But I gave you vinegar.
+And you do lots with vinegar.
+Different color, densities.
+But we won't tell President Reif about that.
+You know, think outside the box.
+You've got these strips of pipette.
+And you've got some gloves.
+And that is your first goody bag.
+I will always let you go on time, 11:55.
+So two and a half minutes.
+We name the age we live in often by the element, by the atom, by the material, by the material that
+was most useful at the time.
+I would say we've moved through the industrial age, the age of plastics, the age of silicon.
+I love that you name the age you live in by the material that mattered.
+And that is really important.
+And I mentioned the phone and the 63 elements.
+This is called a revolution.
+In 2012, it became cheaper to print a transistor on a chip than a character in a newspaper.
+And that is our construction set.
+And we will build this on Friday.

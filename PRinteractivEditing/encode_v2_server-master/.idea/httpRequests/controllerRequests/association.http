@@ -1,0 +1,69 @@
+### Create new Association (has to have the right number of associationTopicAssociationRoles to match associationType requirements
+### all associationType Roles have to be fulfilled
+### topics needs to have the right to have this role and appear only once in the association
+
+POST http://localhost:8080/protected/v1/association
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0NDkxODkyNywiaWF0IjoxNjQ0OTA5MTI3NjMyfQ.3EWHLPdVLrm7Jcln_rWpi0Nsdqwsc_BOtFjadXMdE_k
+Content-Type: application/json
+
+{
+  "topicmapId": 4,
+  "associationTypeId":  1,
+  "associationTopicAssociationRoles": [
+    {"roleId":  3, "topicId": 21},
+    {"roleId":  4, "topicId": 22}
+
+  ],
+  "associationAssociationScopes": [
+    {
+      "id":  {
+        "scopeId": 3,
+        "associationId":0
+      },
+      "content": "test association"
+    }
+  ]
+}
+
+###
+
+### Get an Association
+
+GET http://localhost:8080/protected/v1/association?association_id=7
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0NTAzODYxNCwiaWF0IjoxNjQ1MDI4ODE0NDQ4fQ.aSyir9oqWSho8sI2lNzSMggC1ouuqLGLA5rFhR0mvh4
+Content-Type: application/json
+
+###
+
+### Update an Association
+
+PUT http://localhost:8080/protected/v1/association
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjUyNzQ0OCwiaWF0IjoxNjQyNTE3NjQ4NjYzfQ.KOSKFnQ-_-aIyzg1Lrd13XVKpCz8zEfhDekiVMWqg0g
+Content-Type: application/json
+
+{
+  "id": 3,
+  "associationTopicAssociationRoles": [
+    {"id": 3, "roleId":  4, "topicId": 8},
+    {"id": 4, "roleId":  3, "topicId": 6}
+  ],
+  "associationAssociationScopes": [
+    {
+      "id":  {
+        "scopeId": 3,
+        "associationId": 3
+      },
+      "content": "test association"
+    }
+  ]
+}
+
+###
+
+### Delete the whole Association
+
+DELETE http://localhost:8080/protected/v1/association?association_id=15
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTU4MjExNTU4MiwiaWF0IjoxNTgyMTA1NzgyOTc2fQ.CI3hymt-EcGmxeVxM5FFBShABsQ7zqBi5dUyhtpDgts
+Content-Type: application/json
+
+###

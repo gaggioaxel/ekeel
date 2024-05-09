@@ -1,0 +1,60 @@
+.visibleGraphContainer {
+    background-color: #EFEFEF;
+    width: 88%;
+    max-height: 100%;
+    border-radius: 20px;
+    padding: 2%;
+    display: flex;
+    flex-direction: column;
+    flex: 1
+}
+
+.hiddenGraphContainer {
+    background-color: #EFEFEF;
+    max-width: 86%;
+    min-height: 11%;
+    flex: 1;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding-left: 3%;
+    padding-right: 3%;
+}
+
+.graphTitleContainer {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding: 1%;
+    padding-bottom: 2%;
+}
+
+.title {
+    padding-left: 2%;
+}
+
+.graph-logo {
+    width: 25px;
+    height: 25px
+}
+
+.showGraph{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    height: 90vh;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 3vh;
+    padding-bottom: 2vh;
+}
+
+.hideGraph{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 3vh;
+    flex: 1;
+}

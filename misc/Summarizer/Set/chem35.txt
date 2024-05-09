@@ -1,0 +1,214 @@
+
+And I want to talk about how this looks in the context of some of the chemistry that we've learned,
+some of the things that we've learned.
+It's not diffusion.
+But diffusion kind of has taken on this broader meaning.
+And that means to spread out.
+And that is what's happening here.
+You probably don't have any.
+So the concentration of the dye out there is zero.
+OK.
+And this is the original paper that he wrote way back in the early 1800s. What a nice, detailed title.
+That was Brown.
+And he looked at it.
+And it looked like this.
+This is must have to do with biology.
+And things are alive.
+And they did the same thing, they jiggled around.
+And it did the same thing.
+They did the same thing.
+They all did the same thing.
+What was going on?
+This is the microscopic basis.
+This is now called Brownian motion.
+It's random motion due to thermal energy and collisions.
+I got that.
+I see it in the microscope.
+I don't know.
+And it really came from Einstein in 1905.D. work was on this topic.
+And it's diffusing around, diffusing around.D.
+This is in three dimensions.
+If you're in two dimensions, it's 4.
+If you're in one dimension, it's 2.
+But the main point isn't that.
+That was pretty cool.
+That was pretty cool.
+And that's why it's called Brownian motion.
+You're going to normalize it.
+That's also an amount, moles.
+Grams, moles, et cetera, n number of atoms.
+And then the time is usually seconds.
+And Fick's first law is all about that.
+We'll draw an arrow.
+Concentration is C.
+Bracket A, concentration of A, mass per liter, something like that.
+I'll use the letter C, delta C over delta X.
+It didn't take as long as Einstein.
+But this was 1855.
+And I notice that it depends on the concentration difference.
+And in particular, I like it when diffusion is positive.
+And that is Fick's first law.
+Gesundheit.
+There's the concentration gradient.
+And we got a minus sign.
+Notice, movement down a concentration gradient.
+Then the droplet wouldn't spread out.
+When I've got a bigger change in the concentration, I've got faster diffusion.
+There's no time.
+I get that.
+But in a little bit, we're going to connect it to crystals.
+I found these gloves, because I was looking for copolymers.
+This doesn't have it.
+This is butyl rubber.
+It's copolymerized with these two groups.
+They also use the chemical resilience.
+I have a toxin.
+This is why we wear gloves, because we don't want to get methyl chloride into our skin.
+Methyl chloride is toxic at 50 parts per million.
+These feel comfortable.
+The gloves are 0.04 centimeters thick.
+And I'm working with paint remover.
+I'm working with paint room.
+I've got concentration over a length.
+This is a 1 D.
+And you've got the Brownian stuff going on.
+It's all in something.
+There's Brownian motion.
+There's just a lot more of them.
+There's a high concentration.
+I bring the methyl chloride to the glove, to my hand.
+And I keep the concentrations of the endpoints fixed.
+That'll create a diffusion gradient.
+That's why concentration gradients cause diffusion.
+And on the skin I've got 0.04 centimeters.
+And this goes to something like 2.
+But that's important.
+And it would be changing.
+No.
+I should have used the nitrile.
+This is serious stuff.
+This is serious stuff.
+And it's so serious that I want to talk about eggs.
+The rubber glove stops this toxin.
+It's the coolest thing. That's a selective
+membrane.
+This is what you can do with eggs.
+They're so cool.
+We don't need any volume.
+You know this.
+You've done these reactions.
+You soak them in vinegar.
+The egg has a really cool membrane.
+This isn't cooked.
+This is just a raw egg.
+So the concentration gradient is enormous, because the liquid inside the egg doesn't have any sugar
+in it.
+So the water inside the egg wants to diffuse out.
+18 hours, you pick that membrane up.
+It's a really cool membrane, the egg membrane.
+It's a semi-permeable membrane.
+The water inside has left.
+And you can make green ham that way.
+And that's osmosis.
+But it's semi permeable.
+If you want to play with a really cool semi-permeable membrane, that is cool.
+And you really will see Fick's first law at play.
+And we are not going to learn the details of entropy in this class.
+But there's a whole other part that's related to the entropy.
+And we're not going to go into this in detail, like I said.
+You won't be tested on this.
+But I got to bring it up.
+It may be dominated by entropy. No!
+That's not true.
+That is not true.
+They've got the same exact number.
+But in this case, you restricted it.
+But this has a higher entropy.
+And that is what entropy is about.
+Entropy is about the number of possibilities that you have.
+But under the hood of entropy is possibilities.
+A salt atom in the crystal has very few possibilities.
+We talked about diffusion.
+We looked at drops.
+It moved.
+And there's the end.
+You see it moved over by one position.
+There's the atom going through.
+So the vacancy moved that way.
+The atom moved that way.
+It had to get over some activation.
+We looked at it in very simple terms.
+We understood it.
+So one thing you know about that diffusion constant is it will have a temperature dependence.
+We're in our happy place with this.
+It's Svante.
+It's still going to happen.
+You might also get something like this.
+And this goes back to our discussions of defects in crystals.
+You might get an interstitial diffusion.
+And we'll get to an example of that.
+You can really connect it to what we've learned.
+And these are experimental measurements.
+Those voids are bigger.
+There's more space.
+It's not as well packed.
+There's iron, iron in BCC Fe compared to hydrogen in BCC Fe.
+Gesundheit.
+So it might take that path as it diffuses.
+It's going to find the voids.
+Diffusing atoms find the voids.
+You can have an octahedral side.
+You've got tetrahedral sites.
+Those are other voids in the crystals.
+These are some just fairly straightforward questions that you could answer.
+Iron or hydrogen in alpha iron.
+It's like what we just talked about.
+H is smaller.
+These are conceptual questions.
+And then five, Mg, this is a good one, because hydrogen in platinum or hydrogen in magnesium.
+And you look it up.
+But one of them has a larger radius.
+This is happening through the voids.
+This is how batteries are engineered.
+This is why we have a revolution in batteries.
+There so many great review articles on battery technologies.
+And one of them is usually carbon.
+You've got manganates.
+You've got cobalts, cobalt oxide materials.
+There are so many battery materials.
+They all work the same way.
+But the crystal has to stay.
+And that's something goes over to the anode.
+It gets soaked up there.
+You are diffusing them.
+That's what you're doing.
+You are diffusing them through whatever structure you're putting them into.
+These high conduction channels, these highways.
+The lithium diffusion and a battery material is related to the charge time.
+And these are good materials.
+There's the lead-acid battery that's still in your car.
+This is what's in your cell phone.
+I go this way.
+I don't want to go that way.
+I want to go this way.
+Polymers, you could imagine that a polymer is slower.
+We want them for many applications.
+And I want to set this problem up.
+But I want to set it up. The next thing that's related to diffusion is time.
+And it's got to have mechanical integrity.
+It gets too brittle.
+That's cold case hardening.
+It gets into the material through diffusion.
+You've got concentration.
+You've got temperature.
+And you've got time.
+And you have to know those parameters.
+And that is Fick's second law.
+And Fick's second law says that the change in concentration with time is equal to the diffusion
+constant per the second derivative of the concentration.
+That's Fick's second law.
+I kept these fixed.
+And I got a flux.
+We'll do this example of case hardening.
+We'll do a few more comments on the class.
+We'll reserve for you to do evaluations.

@@ -1,0 +1,1 @@
+This lecture covers a symbolic integration program from the early days of AI. We use safe and heuristic transformations to simplify the problem, and then consider broader questions of how much knowledge is involved, and how the knowledge is represented.

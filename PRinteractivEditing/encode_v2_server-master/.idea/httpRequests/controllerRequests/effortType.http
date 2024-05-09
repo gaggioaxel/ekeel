@@ -1,0 +1,39 @@
+POST http://localhost:8080/protected/v1/effortTypes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+[{"metricType": "Timee", "description":  "time time", "schemaId": 4}, {"metricType":  "Books", "description":  "number of books", "schemaId":4}]
+
+###
+
+GET http://localhost:8080/protected/v1/effortTypes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/protected/v1/effortType?effort_type_id=3
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+DELETE http://localhost:8080/protected/v1/effortType?effort_type_id=3
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/protected/v1/effortType
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+{"id": 4, "metricType": "Timeupdate", "description":  "time"}
+
+###
+
+POST http://localhost:8080/protected/v1/effortType
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+{"metricType": "Time", "description":  "time required to know", "schemaId": 4}

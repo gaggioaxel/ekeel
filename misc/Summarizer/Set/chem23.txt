@@ -1,0 +1,66 @@
+ And that's what we'll talk about today. Good. The concept map. Now the thesis of 3. And then the chemistry you put inside. But you see
+the other thing about it is defects. We
+have to understand them. Either way you got to understand them. Pretty cool-every atom's on the surface. you know more publicity on your work. It's three atoms thick. This is reality. That's reality. That's reality. that's called a point defect.
+The periodicity the repeating of the lattice. Alumina. It's in a lot of stuff. It's still got some. That is key. That's just
+color. You know. They don't really go off in a line. They don't go off in a plane or a
+volume. But these are points. Today: this one. That's called a vacancy. It's because there's an atom that's vacant.
+That's another-Why is that a point defect? Because I didn't like tear something out. We're gonna start and focus a lot of our attention on the vacancy. Vacancies. this guy was brilliant. Svante Arrhenius. He was brilliant. But he also worked on immunology. And his predictions were actually pretty darn
+good. He was brilliant. And the
+activation energy for that process. Where we talk about reaction rates. I'll talk about each of these. But this is sort of the rate. The rate of some process. I mean you could think about it as the number of times something happens per second. There's some
+average of the distribution but you're always talking about distributions. That's important for
+understanding Arrhenius. Now this thing here is called the activation energy. Activation
+energy. You can think about it like that. That's why I like this
+analogy because it really gives you intuitive feeling for what's happening here. There's a process.
+The process is pushing the bookcase over. That bookcase has some energy associated with it. Potential energy. You're pushing the bookcase over. Thermal energy.
+They're able to give it more energy. That's what that is. It
+looks kind of hard from this picture. But there's a chance. We will be coming back to this when
+we do reaction rates. But that's
+exactly the point. No. Vacancy is always present.
+There's always a chance that I push a vacancy into the material. There's also always a chance that
+the vacancy gets pushed out.
+the very nice expression for concentration. So the concentration at equilibrium.
+That's how you get a concentration. The number of vacancies divided by the total number of sites is equal to e to
+the minus E vacancy. RT.
+Per mole use RT. This is
+used for a lot of things.
+Gas constant. That's equal to-let's see if i have down here-8.314 joules per mole Kelvin. They got to cancel. One thing-notice that's per Kelvin. Whenever
+you have equations like this that come from thermodynamics, which is where these things come
+from. There is only one temperature unit. And it is Kelvin. All of these
+equations have to use Kelvin. What's the first thing you want to do? I mean it's like an-it's
+almost like an instinctual reaction. You see an exponential. Minus log of n equals E vacancy. That's just taking an exponential, a logarithm of this equation. This pre-exponential factor cancelled. It canceled because I'm taking a concentration. And I get to take a ratio of those.
+That leads me to this expression. That's how you get from Arrhenius rates to some concentration. It's okay. Lattice sites. I have my crystal. I think I'll stop here.
+That energy is literally the energy difference. So that's-Okay.
+E vacancy. That's fine. Alright. That are Arrhenius-like. But this is one of the labs that they have where they
+take crickets and they measure the number of times a cricket chirps. And they count it. Chirps per 13 seconds plotted. But the lattice-the
+number of vacancies is what we want. That concentration is in
+equilibrium at some temperature. The lattice-the number of lattice sites is simply how many
+lattice sites you have, in whatever volume you have, for whatever crystal structure you have, for
+whatever element you have. R. You will see both. You will see both. Alright. It's a straight
+line. It's a straight line. The
+slopes are different. That's why the slopes are different. Alright. It all has to happen on the surface. It all comes to the surface. This is a beautiful paper, where they're showing
+how you get these rings. You know
+what that means. You know what that means. You're just going to apply this Arrhenius-like behavior.
+You're going to apply this equation to figure that out.4 grams per
+mole. And I won't go through the math but it goes something like 2.2 times 10 to the 19th
+vacancies. Vacancies per centimeter cubed. You might also be asked questions like this one. What-Example two. I'm
+actually giving you how many vacancies you got, at some temperature. I'm using kB because look at that.75 eV per atom.9, aluminum
+.75. This seems like-0. No. The vacancy formation. There are exactly 500 beads in this. It's a 2d crystal. This is here.
+There's so many more. There's so many more because I use temperature. This is temperature. You
+are temperature. I'll just quietly go down in
+temperature and I'll get rid of them.
+You'll never get rid of them. You can try to tap it like that. You can't. Everything. This is your goodie
+bag. If I take a sodium atom out. You can't do that. It won't let you. It's got to come too. And there are two types of defects in ionic
+point defects. We're still with point defects. Local disruption in the regularity.
+Cation. Charge neutrality. We know this. You got to keep the charge balanced. We never got above about three
+quarters.
+So Frenkel defect is the other kind of special name we give to a vacancy in an ionic solid, and it's
+where one ion-right-anion or cation. Anion or cation. Moves to some open space. Open space in
+the lattice. Like silver chloride, silver bromide, silver iodide. Those are all good examples
+because what happens there is this ionic structure has a very big mismatch between the atom
+sizes. And you actually can get a conductor, a good conductor, this
+way. We make these solid-state ionic conductors. You need the vacancies.
+You need the vacancies. We've talked about literally
+just one. Those are
+high energy defect. The self-interstitial has an energy of formation of something like you know five electron
+volts.
+Self-interstitial. Self-interstitial. The energy energy of formation is 5ev.9 ev.

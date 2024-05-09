@@ -1,0 +1,24 @@
+pearson	  frosina    chiara   samuele    andrea     marco  ilenia
+frosina  1.000000  0.502648  0.562756  0.316589  0.560976     NaN
+chiara   0.502648  1.000000  0.418927  0.409685  0.697457     NaN
+samuele  0.562756  0.418927  1.000000  0.419566  0.371946     NaN
+andrea   0.316589  0.409685  0.419566  1.000000  0.368816     NaN
+marco    0.560976  0.697457  0.371946  0.368816  1.000000     NaN
+
+
+kendall   frosina    chiara   samuele    andrea     marco  ilenia
+frosina  1.000000  0.251083  0.333624  0.096109  0.290273     NaN
+chiara   0.251083  1.000000  0.278790  0.295086  0.406904     NaN
+samuele  0.333624  0.278790  1.000000  0.180666  0.241585     NaN
+andrea   0.096109  0.295086  0.180666  1.000000  0.262171     NaN
+marco    0.290273  0.406904  0.241585  0.262171  1.000000     NaN
+ilenia        NaN       NaN       NaN       NaN       NaN     NaN
+
+
+spearman  frosina    chiara   samuele    andrea     marco  ilenia
+frosina  1.000000  0.279469  0.389168  0.111137  0.324305     NaN
+chiara   0.279469  1.000000  0.315552  0.323134  0.433303     NaN
+samuele  0.389168  0.315552  1.000000  0.211858  0.276327     NaN
+andrea   0.111137  0.323134  0.211858  1.000000  0.289452     NaN
+marco    0.324305  0.433303  0.276327  0.289452  1.000000     NaN
+ilenia        NaN       NaN       NaN       NaN       NaN     NaN

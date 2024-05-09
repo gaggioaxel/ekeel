@@ -1,0 +1,127 @@
+MITOCW | MIT3_091F18_lec29_300k
+We're going to pick up where we left off on Monday.
+We talked about how things dissolve.
+And that's where I want to start today, and that's silver chloride.
+And I'm putting it into a beaker.
+And the water is l, because it's everywhere.
+So that reaction is going to give us silver ions-with chlorine ions and some more water.
+So oftentimes, we leave the water out.
+Oftentimes we don't really write the water, because it's on both sides.
+It's not necessarily being consumed.
+The concentration of the water isn't changing.
+But the solubility product is focusing in on the dissolution of these ions.
+And that's where we got to on Monday.
+That's Ksp.
+It doesn't change.
+This equilibrium product is fixed.
+And that has a very important meaning.7 times 10 to the minus 10th.
+Units are coming.
+It will depend on temperature.
+But those are equal.3 times 10 to the minus fifth.
+Units in this case, moles per liter squared. I'm at point B.
+And I've got my concentration of chlorine, concentration of silver.
+And I'm here.3 times 10 to the minus fifth.
+And that's kind of boring.
+That's very important.
+That is equilibrium.
+I just add chlorine.
+I have to get to equilibrium.
+That's the only way to do that.
+And that has a name.
+And that's what I want to talk about next.
+That is called the common ion effect.
+OK.
+And that is that position of equilibrium will move.
+It's still equilibrium, but it's moving on that green curve to counteract change.
+This is a very general principle.1 moles per liter of sodium chloride.1 moles per liter of sodium chloride into this container of the silver chloride, I'm basically
+going to get 0.1 moles per liter of chlorine ions that I just
+dumped into the container.
+But the sodium is not going to do anything.
+That's going to mess with my equilibrium.3 times 10 to the minus fifth.1.1 moles per liter of chlorine ions from the salt, from sodium chloride.
+I'm adding a whole bunch of chlorine.
+And so the amount of silver has got to go down.1.
+That's going to react with the silver ions.
+And so the equilibrium is more solid forms.
+That's not a good E. More solid forms.3 times 10 to the minus fifth minus x.1 minus x.
+I've added in a common ion.
+This is the common ion effect.7 times 10 to the minus 10th.1 minus x times 1.
+And this is a really big number in comparison.1.
+That'll make the math a lot easier.1 times 1.3 times 10 to the minus fifth minus x.7 times 10 to the minus ninth.
+That is the common ion effect.
+And it changes the solubility.
+I added in a little bit of some other salt that had chlorine ions.
+And all of a sudden, silver chloride precipitates out.
+This is kind of cool.
+It's pretty cool stuff.
+That is the common ion effect.
+One more question.
+This is cool.
+Which of the following will be required in the least amount to dissolve the same amount of BaSO4?
+I don't need any constants or math.1 molar or 0.
+It's going to precipitate.
+Stick with pure water in this case.
+That's the common ion effect.
+That's it.
+This is called carbonic acid.
+So carbonic acid goes like this.
+And the shell also has an equilibrium reaction that happens.
+The shell of a sea creature is in dynamic equilibrium with the ocean.
+We just went through this.
+Those are what I'm talking about.
+That's why this works.
+Works sounds like a positive thing.
+That is what's happening.
+And we now can understand it in terms of the concepts that we've just learned.
+It depends on which studies you read.18.18.07.8.
+That's why they use 7.8 in the experiments of the pteropods.
+That is what I want to talk about next.
+It has a very definite meaning to it.
+And you could feel it.
+You could feel it in this whole thing.
+So an acid, it's a dissolution reaction, dissolution.
+It's what we've been talking about.
+I'm going to call out the acid and the proton that it gives separately.
+OK, so this is HA.
+You see it's right there.
+H+ is not stable in water.
+But you will see H+ written all over the place.
+OK, H+ in water is not.
+And that is that these are-notice that these are related.
+And there was a lot of experimentation before this.
+B is bitter.
+One reacts with metals.
+This had been going on for centuries, this investigation into properties of acids and bases.
+Quiet snapping.
+I got it.
+I'm there.
+I'm right there.
+But we know that that's H3O+.
+These things lead to really small concentrations.
+And so Soren Sorensen.
+By the way, his research was funded by a beer company, and it was all about the taste of beer.
+He called it looking at proteins, but it was about beer.3 times 10 to the minus fifth.
+That's not efficient.
+But Sorensen wasn't happy with that.
+You simplified it.
+And that's simply minus the log.
+You can.
+I'm going to talk about these ions in solution.
+I don't want to write it out every time.
+I'm just going to have a simple scale.
+By the way, vinegar-OK, wine is around 3 and 1/2.
+Vinegar is around 2.
+It's eager wine.
+And blood.
+That's what we're doing to the ocean.
+These are dissolution reactions.
+But there's a little bit going back as well.
+But you know that it's actually H3O+.
+OK, but you can put H+, no problem.
+It can deliver OHor H3O+.
+There's nothing in it.
+I didn't add anything to it.
+It's just pure water, H3O+.
+That's neutral.
+And in fact, you can see that that pH is 7.
+And that's what we're going to start with on Monday.
+And one more, I'm going deep.

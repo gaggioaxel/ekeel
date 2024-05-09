@@ -1,0 +1,130 @@
+.video_radio {
+    display: inline-grid;
+    margin-bottom: .5rem;
+}
+
+.video_radio {
+  margin-right: 20px;
+  width: 195px;
+  cursor: pointer;
+  font-weight: 300;
+  line-height: 1.2;
+  transition: all .15s ease-in-out;
+}
+
+.video_radio:hover{
+  transform: scale(1.05);
+  transition: 0.1s;
+}
+
+label:hover, annotator-label:hover{
+    transform: scale(1.05);
+
+  cursor:pointer;
+  font-weight: bold;
+  color: dodgerblue;
+}
+
+.annotator-label{
+  font-size: 16px;
+}
+
+.annotator-radio{
+  cursor:pointer;
+  margin-right: 5px;
+}
+
+
+/* HIDE RADIO */
+.video_radio [type=radio]{
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* IMAGE STYLES */
+[type=radio] + img {
+  width: 195px;
+}
+
+.video_radio > p {
+  width: 195px;
+  margin-top: 7px;
+}
+
+/* CHECKED STYLES */
+[type=radio]:checked + img {
+  outline: 2px solid DodgerBlue;
+}
+
+#selectedParameters{
+  font-weight: bold;
+}
+
+/*
+
+MULTI STEP FORM
+
+*/
+
+.button {
+  margin-right: 200px;
+}
+
+.center_selection{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top:1%;
+  /*background-color: white;
+  border-radius: 5px;
+  padding: 20px 15px;
+  box-shadow: 5px 5px 30px rgba(0,0,0,0.2);*/
+}
+
+.analysis_choice{
+  border: .5px solid grey;
+  height: 200px;
+  margin: 1%;
+}
+
+.searchbar{
+  height: 10px;
+}
+
+
+/* Hide all steps by default: */
+.tab {
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+  /*transition: visibility 0s, opacity 0.5s linear;*/
+  /*position: absolute;*/
+  /*right: -1000px;*/
+
+
+  transition: 0.5s ease-in;
+}
+
+/* Make circles that indicate the steps of the form: */
+.step {
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbbbbb;
+  border: none;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.5;
+}
+
+/* Mark the active step: */
+.step.active {
+  opacity: 1;
+}
+
+/* Mark the steps that are finished and valid: */
+.step.finish {
+  background-color: #4CAF50;
+}

@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% set active_page = "login" %}
+
+  <head>
+    {% block head %}
+        {{ super() }}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/login.css') }}"/>
+    {% endblock %}
+
+  </head>
+
+  <body>
+    {% block navbar %} {{ super() }} {% endblock %}
+
+    {% block body %}
+        <br>
+        <div class="container">
+            <div class="d-flex justify-content-center">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" id="loginForm">
+                            {{ form.csrf_token }}
+                            <div class="form-group">
+                                {{ form.email.label (class_='control-label')}}
+{#                                <div class="input-group-prepend">#}
+{#                                    <span class="input-group-text"><i class="fas fa-user"></i></span>#}
+{#                                </div>#}
+                                {{ form.email(class_='form-control')}}
+
+                            </div>
+                            <div class="form-group">
+                                {{ form.password.label (class_='control-label')}}
+                                <div class="input-group">
+                                    <div class="col" style="padding: 0">
+                                        {{ form.password(class_='form-control')}}
+                                        <span toggle="#password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+
+                            <div>
+                                <a style="float: right" href="{{ url_for('forgot_password') }}">Forgot password?</a>
+                            </div>
+                            <div class="input-group form-group align-items-center remember">
+                                 {{ form.remember_me()}} Remember Me
+                            </div>
+                            <div style="color:red;">
+                                {{wtf.form_errors(form) }}
+                            </div>
+                            <div class="form-group logButton">
+                                <input type="submit" value="Login" class="btn float-right login_btn btn-dodgerblue btn-primary">
+                            </div>
+                        </form>
+                        <br><br>
+                        <div class="d-flex justify-content-center links">
+                            Don't have an account?<a href="{{ url_for('register') }}">Sign Up</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<script>
+
+$(".toggle-password").click(function() {
+
+  $(this).toggleClass("fa-eye fa-eye-slash");
+  var input = $($(this).attr("toggle"));
+  if (input.attr("type") == "password") {
+    input.attr("type", "text");
+  } else {
+    input.attr("type", "password");
+  }
+});
+
+</script>
+
+    {% endblock %}
+      
+  </body>

@@ -1,0 +1,101 @@
+### Create new Association Type (and at least 2 Roles)
+
+POST http://localhost:8080/protected/v1/associationType
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0NTE4MTE4NywiaWF0IjoxNjQ1MTcxMzg3MTgyfQ.1NA7O1elCPgy_ozn7IEh3CmF3NpX7_tsJildrpuvcsc
+Content-Type: application/json
+
+{"name": "isPrereq", "description":  "3 test", "schemaId": 4, "associationTypeRoles": [{"name":  "isRel", "description": "small description"}, {"name":  "isSub", "description": "small description"}]}
+
+###
+
+### Create a list of Association Types (and at least 2 roles each)
+
+POST http://localhost:8080/protected/v1/associationTypes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+[{"name": "book", "description":  "first test", "schemaId": 4,"associationTypeRoles": [{"name":  "isRel1", "description": "small description"}, {"name":  "isSub1", "description": "small description"}]}]
+
+###
+
+### Create a new Role for an existing Association Type (works only if the Association Type is not in use)
+
+POST http://localhost:8080/protected/v1/associationType/1/role
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+{"name":  "thirdPart4", "description": "small description"}
+
+###
+
+### Get All User Association Types
+
+GET http://localhost:8080/protected/v1/associationTypes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+### Get an Association Type
+
+GET http://localhost:8080/protected/v1/associationType?association_type_id=1
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+### Update the Association Type (name and description)
+
+PATCH http://localhost:8080/protected/v1/associationType
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+{"id": 1, "name": "isPreq777", "description":  "test 2"}
+
+###
+
+### Update the Role (name and description) of an Association Type
+
+PATCH http://localhost:8080/protected/v1/associationType/1/role
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjUyNzQ0OCwiaWF0IjoxNjQyNTE3NjQ4NjYzfQ.KOSKFnQ-_-aIyzg1Lrd13XVKpCz8zEfhDekiVMWqg0g
+Content-Type: application/json
+
+{"id": 4, "name": "isSub", "description":  "test 1"}
+
+###
+
+### Update the Topic Types of a Role of an Association Type (name and description)
+
+PATCH http://localhost:8080/protected/v1/associationType/1/role/3/topicTypes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjUyNzQ0OCwiaWF0IjoxNjQyNTE3NjQ4NjYzfQ.KOSKFnQ-_-aIyzg1Lrd13XVKpCz8zEfhDekiVMWqg0g
+Content-Type: application/json
+
+[5]
+
+###
+
+### Delete the whole Association Type (with its Roles)
+
+DELETE http://localhost:8080/protected/v1/associationType?association_type_id=2
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+### Delete the Role of the Association Type IF the Association Type isn't used AND the Association Type stays at least binary
+
+DELETE http://localhost:8080/protected/v1/associationType/1/role/?role_id=13
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjUyNzQ0OCwiaWF0IjoxNjQyNTE3NjQ4NjYzfQ.KOSKFnQ-_-aIyzg1Lrd13XVKpCz8zEfhDekiVMWqg0g
+Content-Type: application/json
+
+###
+
+### Delete the TopicType from the list of TopicTypes of the Role of the Association Type
+
+DELETE http://localhost:8080/protected/v1/associationType/1/role/4/topicTypes/?topicType_id=8
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+

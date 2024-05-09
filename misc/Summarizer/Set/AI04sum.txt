@@ -1,0 +1,2 @@
+This lecture covers algorithms for depth-first and breadth-first search, followed by several refinements: keeping track of nodes already considered, hill climbing, and beam search. We end with a brief discussion of commonsense vs. reflective knowledge.
+

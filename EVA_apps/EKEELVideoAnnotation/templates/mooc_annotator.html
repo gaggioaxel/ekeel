@@ -1,0 +1,418 @@
+{% extends "layout.html" %}
+{% set active_page = "video_annotation" %}
+
+  <head>
+    {% block head %}
+        {{ super() }}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/video_annotator.css') }}"/>
+        <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+{% endblock %}
+
+  </head>
+
+  <body>
+  {% block navbar %} {{ super() }} {% endblock %}
+  {% block body %}
+  <div id="explainedConcepts"></div>
+
+  <div id="mainDiv" class="flex-vertical">
+
+    <h1>{{ title }}</h1>
+
+    <div class="main-grid" id="container">
+
+     <div class="flex-vertical">
+
+        <div id="canvas-wrap" class="canvas-wrap">
+{#          <video class="video-player" id="video-active" controls="controls">#}
+{#            <source src="{{url_for('static', filename='videos/'+video_id+'/'+video_id+'.mp4')}}" type="video/mp4">#}
+{#          </video>#}
+            <video
+                    id="video-active"
+                    class="video-js video-player"
+                    controls preload="none"
+                    poster="https://img.youtube.com/vi/{{ video_id }}/maxresdefault.jpg" >
+            <source src="{{url_for('static', filename='videos/'+video_id+'/'+video_id+'.mp4')}}" type="video/mp4">
+
+            <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+        </video>
+        </div>
+
+         <div id="relationText" class="bottomVideo">
+
+         </div>
+         <div id="videoSlider"  class="bottomVideo">
+             <div style="text-align: center" class="playButtonDiv">
+                 <button id="playButton" class='playButton' onclick="playDefinition(this)"></button>
+                 <span id="timeSlider"></span>
+             </div>
+
+         </div>
+
+        <div class="buttons">
+            <button onclick="showRelationDiv()" class="btn btn-primary btn-addrelation btn-dodgerblue">
+              Add Relation
+            </button>
+
+            <button onclick="showDescriptionDiv()" class="btn btn-primary btn-addrelation btn-dodgerblue">
+              Add description
+            </button>
+
+            <button type="button" onclick="showVocabulary($conceptVocabulary)" class="btn btn-primary btn-addrelation btn-dodgerblue" data-toggle="modal" data-target="#conceptsModal">
+              Concepts & Synonyms
+            </button>
+
+            <button onclick="uploadManuGraphOnDB()" class="btn btn-primary btn-addrelation btn-dodgerblue">
+             Save graph
+            </button>
+
+            <button onclick="downloadManuGraphAsJson()" class="btn btn-primary btn-addrelation btn-dodgerblue">
+              Download graph
+            </button>
+        </div>
+        <div id="saveGraphText" style="display:none; text-align:center;">Saving graph...</div>
+
+     </div>
+     
+      <div id="right-body" class="right-body-class">
+        <div id="transcript" class="transcript"></div>
+        <br>
+        <div id="selectedConceptBox" class="selected-concept-box">
+          <p class="padding-left same-line">Selected Concept:<span id="transcript-selected-concept" class="selected-concept same-line">--</span></p>
+          <div class="padding-left">
+              <p class="description-selected-concept same-line">Synonyms: </p>
+              <p id="transcript-selected-concept-synonym" class="m-synonym-text2 margin-left same-line">--</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="relation" class="add-relation-box" style="display:none">
+
+        <div class="relation-box-close-btn">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true" onclick="closeRelationDiv();">&times;</span>
+          </button>
+        </div>
+
+        <h2>Add Relation</h2>
+
+        <div>
+          <label for="target">Target:</label>
+          <div class="row">
+
+              <div class="col-md-7 autocomplete">
+                <input type="text" class="form-control" autocomplete="off" id="target"  placeholder="Enter target">
+              </div>
+
+              <div class="col-md-5">
+                  <button id="drawButton" onclick="initDraw('target')" class="btn btn-primary">Add Box</button>
+              </div>
+          </div>
+        </div>
+
+        <div>
+          <label for="prerequisite">Prerequisite:</label>
+          <div class="row">
+
+            <div class="col-md-7 autocomplete">
+              <input type="text" class="form-control" autocomplete="off" id="prerequisite" placeholder="Enter prerequisite">
+            </div>
+
+            <div class="col-md-5">
+               <!-- <button id="drawButton" onclick="initDraw('prerequisite')" class="btn btn-primary">Add Box</button>-->
+            </div>
+          </div>
+        </div>
+
+        <div>
+            <label for="weight">Weight</label>
+            <select class="form-control" id="weight">
+              <option>Strong</option>
+              <option>Weak</option>
+            </select>
+          </div>
+
+        <button  onclick="addRelation();" class="btn btn-primary">Add Relation</button>
+
+      </div>
+
+      <div id="add-concept-description" class="add-relation-box" style="display:none">
+
+        <div class="relation-box-close-btn">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true" onclick="closeDescriptionDiv();">&times;</span>
+          </button>
+        </div>
+
+        <h2>Add description</h2>
+
+          <div class="autocomplete">
+              <label for="conceptDefined">Concept:</label>
+              <input type="text" class="form-control" autocomplete="off" id="conceptDefined" placeholder="Concept">
+            </div>
+
+          <div>
+          <label for="amount">Description range:</label>
+          <input type="text" id="amount" readonly style="border:0; color:dodgerblue; font-weight:bold;">
+          </div>
+
+        <div>
+            <label for="descriptionType">Type</label>
+            <select class="form-control" id="descriptionType" onchange="changeColor()">
+              <option value="Definition">Definition</option>
+              <option value="Expansion">In depth</option>
+            </select>
+          </div>
+
+        <button  onclick="addDescription()" class="btn btn-primary">Add Description</button>
+
+      </div>
+
+
+    </div>
+
+    <div id="bottomdiv">
+
+      <div class="timeline" id="timeline"></div>
+
+        <div class="row">
+            <div class="col relations" id="relations">
+                <div class="row">
+                    <div class="col">
+                        <h2>RELATIONS</h2>
+                    </div>
+                    <div class="col">
+                      <button type="button" onclick="startVisualization()" class="btn btn-primary btn-addrelation btn-dodgerblue" data-toggle="modal" data-target="#graphModal" style="
+                            float: right; padding:5px;">
+                      Graph
+                      </button>
+                    </div>
+
+                </div>
+
+          <table class="table" style="max-height:450px">
+              <thead>
+                <tr>
+                  <th scope="col">Target</th>
+                  <th scope="col">Prerequisite</th>
+                  <th scope="col">Weight</th>
+                  <th scope="col">Start time</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody id="relationsTable">
+              </tbody>
+          </table>
+
+        </div>
+
+            <div class="col relations" id="definitions">
+            <h2>DEFINITIONS</h2>
+
+          <table class="table" style="max-height:450px">
+              <thead>
+                <tr>
+                  <th scope="col">Concept</th>
+                  <th scope="col">Start</th>
+                  <th scope="col">End</th>
+                  <th scope="col">Type</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody id="definitionsTable">
+              </tbody>
+          </table>
+
+        </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+{% include 'graph.html' %}
+
+<!-- Modal concepts -->
+<div style="top:40px;" class="modal fade" id="conceptsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="right:100px" role="document">
+    <div class="modal-content custom-modal">
+      <!--<div class="modal-header">
+        <h5 class="modal-title" id="conceptsModalLabel">Concepts</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>-->
+
+
+      <!-- Modal Concepts & Synonyms -->
+      <div class="modal-body">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+
+          <!-- Header of the modal Concepts & Synonyms -->
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="concepts-tab" data-toggle="tab" href="#concepts" role="tab" aria-controls="home" aria-selected="true">Vocabulary</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="add-tab" data-toggle="tab" href="#add-concept" role="tab" aria-controls="profile" aria-selected="false">Add new concept</a>
+              <li class="nav-item">
+                <a class="nav-link" id="add-tab" data-toggle="tab" href="#add-synonyms" role="tab" aria-controls="profile" aria-selected="false">Manage synonyms</a>
+              </li>
+          </ul>
+
+          <!-- Body of the modal Concepts & Synonyms -->
+          <div class="tab-content tab-body" id="myTabContent">
+
+            <!-- TAB 1 - Concepts Vocabulary -->
+            <div class="tab-pane fade show active tab-body-1" id="concepts" role="tabpanel" aria-labelledby="concepts-tab" style="max-height:400px;overflow:auto;">
+                <!--<table class="table">
+                  <tbody id="conceptsTable"></tbody>
+                </table>-->
+                <div class="list-group list-group-flush" id="conceptsTable">
+                  <div class="list-group-item list-group-item-action conceptList">
+                    <input type="text" oninput="filterVocabulary(this.value)" class="form-control filter-vocabulary-class" autocomplete="off" id="filter-vocabulary"  placeholder="Search concept...">
+                    <div id="conceptVocabularyContent"></div> 
+                  </div>
+                </div>
+            </div>
+
+            <!-- TAB 2 - Add Concepts -->
+            <div class="tab-pane fade tab-body-2" id="add-concept" role="tabpanel" aria-labelledby="add-tab">
+              <div>
+
+                <div class="row">
+                    <label for="newConcept"> Add Concept:</label>
+                    <input type="text" class="form-control" autocomplete="off" id="newConcept"  placeholder="Enter new concept">
+                </div>
+                  <br>
+                <div class="row">
+                    <button  onclick="addConcept()" class="btn btn-primary">Add new concept</button>
+                </div>
+                  <br>
+                <div class="row tab-error" id="errorConcept" style="display:none">
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 3 - Manage Synonyms -->
+            <div class="tab-pane fade tab-body-3" id="add-synonyms" role="tabpanel" aria-labelledby="add-tab">
+              <div  class="main-vocabulary-body">
+
+                <!-- Synonym set selected -->
+                <div class="row selected-synset-show">
+                  <p class="spaced-text same-line">Selected Synonym Set: </p><p class="synonym-set-class same-line" id="synonymSet"></p>
+                </div>
+
+                <!-- Synonym set selection -->
+                <div id="synset-selection" class="spaced-text synset-selection-class row">
+                  <div class="row">
+                    <label for="selectSynonymSet">Word of Synonym Set:</label>
+                    <input type="text" class="form-control" autocomplete="off" id="selectSynonymSet"  placeholder="Select one of the synonym set word">
+                  </div>
+                  <div class="row button-center">
+                      <button onclick="selectSynonymSet()" class="btn btn-primary button-select-synset">Select Synonym Set</button>
+                  </div>
+                  <div class="row tab-error" id="errorSynonymSet" style="display:none"></div>
+                </div>
+
+                <!-- Add new synonym -->
+                <div id="add-syn-selection" class="spaced-text add-syn-selection-class row">
+                  <div class="row">
+                      <label for="newSynonym">Add/Remove Synonym:</label>
+                      <input type="text" class="form-control" autocomplete="off" id="synonymWord"  placeholder="Enter synonym to add/remove">
+                  </div>
+                  <div class="row">
+                    <div class="col-6">
+                        <button  onclick="addSynonym()" class="btn btn-primary button-add-syn">Add Synonym</button>
+                    </div>
+                    <div class="col-6">
+                      <button  onclick="removeSynonym()" class="btn btn-primary button-rem-syn">Remove Synonym</button>
+                    </div>
+                  </div>
+                  <div class="row tab-error" id="errorNewSynonym" style="display:none"></div>
+                  <div class="row tab-error" id="errorRemoveSynonym" style="display:none"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet">
+  <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+
+
+  <script type="text/javascript" src="https://andywer.github.io/jquery-dim-background/jquery.dim-background.min.js"></script>
+  <script src="{{ url_for('static', filename='draw_box2.js') }}"></script>
+  <script type="text/javascript">
+
+      let $captions = {{ result|tojson }};
+      let $startTimes = {{ start_times|tojson }};
+      console.log($startTimes)
+      let $imagesPath = {{ images_path|tojson }};
+      let $concepts = {{ concepts|tojson }};
+      $concepts.sort()
+      let $conceptVocabulary = {{ conceptVocabulary|tojson }};
+      let $synonymList = [];
+      let $lemmatizedSubs = {{ lemmatized_subtitles|tojson }};
+      let $video_id = {{ video_id|tojson }};
+      let $annotator = {{ annotator|tojson }};
+      let $allLemmas = {{ all_lemmas|tojson }};
+      let videoDuration = {{ video_duration|tojson }};
+      console.log(videoDuration)
+
+      let relations = {{ relations|tojson }};
+      let definitions = {{ definitions|tojson }};
+      let definedConcepts = []
+      let definitionID = definitions.length
+
+      for(let i=0; i<definitions.length; i++){
+          definitions[i].id = i
+          definedConcepts.push(definitions[i].concept)
+      }
+
+
+      console.log(definitions)
+      var options = {
+            fluid: true
+      };
+
+      let player = videojs('video-active', options, function onPlayerReady() {
+
+          this.on('timeupdate', function() {
+            UpdateMarkers(video.currentTime);
+          });
+
+      });
+
+  </script>
+  <script src="{{ url_for('static', filename='graph_visualization.js') }}"></script>
+  <script src="{{ url_for('static', filename='video_range_slider.js') }}"></script>
+  <script src="{{ url_for('static', filename='conceptVocabulary.js') }}"></script>
+  <script src="{{ url_for('static', filename='descriptions.js') }}"></script>
+  <script src="{{ url_for('static', filename='subtitles.js') }}"></script>
+  <script src="{{ url_for('static', filename='segmentation.js') }}"></script>
+  <script src="{{ url_for('static', filename='create_graph.js') }}"></script>
+  <script src="{{ url_for('static', filename='download.js') }}"></script>
+  <script src="{{ url_for('static', filename='autocomplete.js') }}"></script>
+
+
+{% endblock %}
+  </body>
+

@@ -1,0 +1,43 @@
+POST http://localhost:8080/protected/v1/scope
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+{"name": "english", "description":  "scope in english", "schemaId": 4}
+
+###
+
+POST http://localhost:8080/protected/v1/scopes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+[{"name": "english2", "description":  "scope in english2", "schemaId": 4}, {"name": "italiano", "description":  "scope in italiano", "schemaId": 4}]
+
+###
+
+GET http://localhost:8080/protected/v1/scope?scope_id=3
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/protected/v1/scopes
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/protected/v1/scope
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+{"id": 3, "name": "englishUpdated", "description":  "english"}
+
+###
+
+DELETE http://localhost:8080/protected/v1/scope?scope_id=4
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQ0MjU5MCwiaWF0IjoxNjQyNDMyNzkwNDI2fQ.2KVOgk27f9Q8emI_8CRzlWbIScnKFWXlxsgNgZJ0j1g
+Content-Type: application/json
+
+###
+
+

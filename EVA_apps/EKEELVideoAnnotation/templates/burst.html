@@ -1,0 +1,157 @@
+{% extends "layout.html" %}
+{% set active_page = "burst" %}
+  <head>
+
+      {% block head %}
+          {{ super() }}
+          <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/form_video.css') }}"/>
+          <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/radio_choices.css') }}"/>
+
+
+
+      {% endblock %}
+
+
+
+  </head>
+  <body>
+    {% block navbar %}{{ super() }}{% endblock %}
+    {% block body %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <!-- <strong>Title</strong> --> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="container" id="mainContainer" style="margin-top: 10px">
+
+      <p class="title"> Auto-annotation of Prerequisite Relations </p>
+
+
+    <div id="tab_analysis_type">
+
+      <p class="titleLower"> Select modality of extraction</p>
+
+        <div class="wrapperRadio">
+         <input type="radio" class="analysis_type" name="analysis_type" id="semi" value="Semi automatic extraction">
+         <input type="radio" class="analysis_type" name="analysis_type" id="auto" value="Automatic extraction">
+         <!--<input type="radio" class="analysis_type" name="analysis_type" id="video" value="Automatic&Video extraction">-->
+
+           <label for="semi" class="option option-1" title="this mode allows extracted concepts to be edited before starting automatic prerequisite extraction">
+             <div class="dot"></div>
+              <span>Semi automatic</span>
+              </label>
+           <label for="auto" class="option option-2" title="this mode does not allow manual editing: concepts and prerequisite relations are both extracted automatically">
+             <div class="dot"></div>
+              <span>Automatic</span>
+           </label>
+           <!--<label for="video" class="option option-3">
+            <div class="dot"></div>
+             <span>Automatic + Video segmentation</span>
+          </label> -->
+
+        </div>
+    </div>
+
+    <div id="videos" style="display: none">
+    <div class="row">
+        <div class="col">
+            <p class="titleLower"> Select a video</p>
+        </div>
+
+        <div class="input-group rounded searchbar col">
+          <input type="search" class="form-control rounded" autocomplete="off" placeholder="Search" aria-label="Search"
+            aria-describedby="search-addon" id="searchbar" onkeyup="search_video()"/>
+          <span class="input-group-text border-0" id="search-addon" style="color: dodgerblue;">
+            <i class="fas fa-search"></i>
+          </span>
+        </div>
+      </div>
+
+    <div class="center_selection" style="margin-top: 2%;" >
+
+        {% for vid in videos%}
+            <label class="video_radio" video="{{ vid.video_id }}"  >
+              <input type="radio" name="video" value={{ vid.video_id }} id={{ vid.video_id }}>
+              <img src="https://img.youtube.com/vi/{{ vid.video_id }}/hqdefault.jpg">
+              <p class="video_title">{{ vid.title }}</p>
+            </label>
+        {% endfor %}
+
+    </div>
+    </div>
+
+
+
+    <div class="container" id="loading" style="display: none; margin-top: 2%">
+        <div class="text-center" style="margin-top: 4%">
+           <p class="titleLower"> Finding keywords.. </p>
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+    </div>
+
+    </div>
+
+    <form method="POST" id="urlForm" style="display: none">
+      {{ form.csrf_token }}
+       <div class="form-group">
+         {{ form.url(class_='form-control', autocomplete="off", id="youtube_url")}}
+         {{ form.type(class_='form-control')}}
+       </div>
+        <button type="submit" class="btn btn-dodgerblue float-right">
+            Launch burst
+        </button>
+    </form>
+
+
+
+
+  {% endblock %}
+  </body>
+
+{% block scripts %}
+<!--<script src="../static/search_video.js"></script>-->
+<script src="{{ url_for('static', filename='search_video.js') }}"></script>
+
+<script>
+
+
+
+    function loadingVideosInBurst(){
+        document.getElementById("videos").style.display = "none"
+        document.getElementById("loading").style.display = "block"
+        document.getElementById("urlForm").style.display = "none"
+
+    }
+
+
+    $(".video_radio").click(function(e) {
+        e.preventDefault();
+
+        loadingVideosInBurst()
+        document.getElementById("youtube_url").value = this.getAttribute("video")
+        document.getElementById("urlForm").submit();
+    });
+
+    $('.analysis_type').click(function(e) {
+
+      document.getElementById("tab_analysis_type").style.display = "none";
+      document.getElementById("videos").style.display = "block";
+      var attrs = {"semi": "0",
+                   "auto": "1"}//,
+                   //"video": "2"}
+      document.getElementById("type-"+attrs[$(this).attr('id')]).checked = true;
+    })
+
+
+</script>
+{% endblock %}

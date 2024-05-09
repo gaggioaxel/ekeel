@@ -1,0 +1,149 @@
+
+Packing fraction.
+We calculated things like the closed pack direction.
+But you could write the density in terms of the things we talked about on Monday.
+So example, copper.
+Everything.55 grams per mole.
+And I also look up the atomic radius.
+And that's equal to 1.3 angstroms.
+And that got us how we get the radius of the atom.
+But I also know that there's four atoms per unit cell because it's FCC.
+So the volume of these cells are cubic.
+From this information, I can compute the density.
+Bravais lattices.
+It's over there on the right.
+That's not right.
+They are not the things that you put at that point.
+The basis is what you put there.
+And this is my crystal.
+That's OK.
+I have done nothing wrong.
+Because I have simply, according to the rules of crystallography, I've had a lattice and a basis.
+And I've just defined my basis as a cat.
+Those are FCC crystals.
+But at the same time, if my basis-check this out.
+This is salt. This is salt.
+This is not simple cubic because they're different.
+They're different.
+And this has a name.
+It's called the rock salt structure.
+It's called the rock salt structure.
+This is diamond.
+There are actually a number of pairs of that would form this diamond.
+In fact, we specify because there are different types.
+This is called cubic diamond crystal.
+This is the cubic diamond crystal.
+It's FCC.
+But it's still just a pair of atoms.
+That's what diamond is.
+So the symmetry is FCC.
+This looks seriously directionally dependent.
+And it's called anisotropy.
+Directionally dependent.
+And they came up with crystallography over the years.
+And they have very strong ideas about notation.
+x is coming out of the board.
+There's copper.
+This point here.
+This is just where we are.
+We're just getting warmed up.
+And that goes from a point to a vector.
+We know what vectors are.
+And I've got this for the direction and I've got this for the planes.
+No commas.
+This is 0.
+This is 0.
+It didn't go halfway.
+It's not 1/2.
+But along the z direction, it's 1/2.
+We multiply everything by 2.
+We put it in brackets.
+And everyone is happy.
+201.
+That is the 201 direction.
+In this crystal.
+That is the 201 direction.
+They don't like fractions.
+They don't like negative signs.
+0, 1 bar, 0.
+OK, 01bar0.
+These are vectors in crystals.
+That's to stamp.
+Crystallographers, you've got to keep them happy.
+You've got to keep them happy.
+That is direction.
+You push it.
+You pull it.
+You break it.
+You hammer it.
+This is just one example.
+Almost a cube.
+We got one whistle.
+But this never does.
+This never does.
+And it's infinite.
+That's a nice way to fix infinity.
+We use parentheses.
+You don't want to talk about a vector by accident.
+It's the 001 plane in this crystal.
+I have it.
+The 001 plane.
+That's what this is about.
+And that's y.
+And that's x.
+And that's z.
+It's almost a cube.
+I've gone here to 1/2.
+That's 1/2 of the cell length.
+This is 3/4 of the cell length.
+We don't like fractions.
+We got to get rid of fractions.
+And we get 634.
+That is 634 plane.
+In the unit cell, the one that cuts it.
+I'm OK with that.
+It's an infinite set of planes.
+OK.
+If you want to look at it as a set of planes, you've got to put one at the origin.
+That will help you think through what I mean.
+The set of infinite planes also would have one at the origin, one half way, one at the top.
+And this is really important.
+It's an infinite number of them.
+That is enough information.
+The distance between these planes is a.
+And in fact, for a cubic cell, there's a formula that you can use for any two planes.
+The distance and the plane there is equal to a.
+Those are just variables.
+That works.
+If it's 200, that works.
+And it's general.
+That becomes very important.
+And you can see this from this very simple picture.
+There's the 001 plane.
+So the 001 plane and the 001 vector are orthogonal.
+I followed the rules.
+But you don't need to know that derivation so I'm just telling it to you.
+As I said in the beginning.
+There's a simple cubic crystal.
+The basis is one atom.
+The density of atoms in these planes is different.
+And that has a real serious impact on the properties.
+If we look at this example of simple cubic, that's a very easy case.
+Lattice constant a.
+It's being shared by four other squares.
+But the number atoms equal to 1.
+That's a pretty easy case.
+You see that?
+The area in that plane is different.
+So the density of atoms in the plane is different.
+So the density in the plane affects properties.
+And you can see how it breaks.
+You can actually see how it breaks.
+It's breaking along the weakest plane.
+It's breaking along the weakest plane.
+That was deep.
+The property, as I said before, depends heavily on which plane you're in.52 angstroms.
+But I also know that it's BCC.
+Unit cell edge, radius of the atom.5 angstroms.
+Packing density.
+And I can compare this plane with another plane with another plane.

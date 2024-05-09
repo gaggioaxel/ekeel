@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css?family=Numans');
+
+
+
+.container{
+align-content: center;
+}
+
+.card{
+width: 50%;
+height: auto;
+color: #343a40;
+}
+
+
+.card-header h3{
+color: #343a40
+}
+
+.card-body{
+    color: #343a40;
+}
+
+.input-group-prepend span{
+/*background-color: DodgerBlue;*/
+color: #343a40;
+/*border:0 !important;*/
+}
+
+.remember{
+    margin-top: 30px;
+}
+
+.logButton{
+     margin-top: 30px;
+}
+
+.remember input
+{
+width: 20px;
+height: 20px;
+margin-right: 5px;
+}
+
+
+
+.links a{
+margin-left: 4px;
+}
+
+.field-icon {
+  float: right;
+    padding-right: 30px;
+  margin-left: -25px;
+  margin-top: -25px;
+  position: relative;
+  z-index: 2;
+}

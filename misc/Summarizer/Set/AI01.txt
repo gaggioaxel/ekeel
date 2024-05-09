@@ -1,0 +1,265 @@
+
+0:28
+We'll see what happens.
+0:50
+We have lots of Jesses of both genders.
+1:04
+You've changed your hairstyle.
+1:40
+I'm going to walk you through this outline.
+2:00
+I'll explain why we have these covenants at the end.
+2:23
+My definition of artificial intelligence has
+2:26
+to be rather broad.
+2:31
+It's also about perception, and it's about action.
+2:54
+But this is not a philosophy class.
+3:35
+That's what we do at MIT.
+4:14
+You will get smarter.
+4:33
+So let's say that artificial intelligence is about
+4:37
+representations that support the making of models to
+4:52
+facilitate an understanding of thinking,
+4:55
+perception, and action.
+5:03
+Many of you have friends in mechanical engineering.
+5:46
+And we know about representation.
+6:22
+It's very powerful feeling.
+6:26
+Try it.
+6:28
+We need a demonstration.
+7:29
+We know that those are not the right representation.
+8:36
+This is at MIT approach to the farmer, fox,
+8:39
+goose, and grain problem.
+8:40
+It might have stumped you when you were a little kid.
+10:02
+We've got our constraints exposed.
+10:18
+And that's why we build representations.
+11:24
+I'd like to give you one more example.
+11:42
+So here's how it works.
+12:33
+MIT's full of them.
+12:42
+We're going to call it generate and test.
+13:17
+That's what I did with the leaf.
+13:26
+You can start to talk about it.
+13:59
+And that vocabulary gives you power.
+14:10
+This subject is full of powerful ideas.
+14:24
+She's gesturing like mad.
+14:41
+You can say the purpose of an aglet is pretty much like the
+14:44
+whipping on the end of a rope.
+14:58
+Symbolic labels give us power over concepts.
+15:11
+But it's a trivial idea.
+16:27
+We talked about an example of a method.
+16:56
+There's still one more thing.
+17:15
+And you solved that problem with your eyes.
+18:57
+But we can't teach you about stuff we don't understand.
+19:05
+That's a little bit about the definition and some examples.
+19:33
+But it amounts to studying the same sorts of things.
+20:05
+It used to be thought that we share 95% of our DNA with
+20:08
+chimpanzees.
+20:16
+I think we're back down to 94.
+21:10
+Screwball idea that persists to this day.
+21:41
+But Turing wrote his paper in 1950, and that was the first
+21:44
+milestone after Lady Lovelace's comment in 1842.
+22:16
+And you're going to understand exactly how it works.
+22:18
+And you can write one yourself.
+24:20
+It doesn't matter.
+24:21
+Something interesting will come.
+24:25
+OK, your choice.
+24:28
+Teal?
+24:31
+Burton House?
+24:35
+Teal.
+24:59
+The integration program was serious.
+25:01
+This one wasn't.
+25:30
+In the first case you deleted the inside figure.
+25:44
+There's another one.
+25:50
+I've forgotten.
+25:51
+A is to B as C is to 3.
+27:09
+And a program was written at Stanford that did diagnosis of
+27:14
+bacterial infections of the blood.
+27:50
+Here's that you don't know you used, or that was
+27:52
+used on your behalf.
+28:19
+There's Deep Blue.
+29:26
+I like to call at the age of the right way.
+29:55
+We had one example with Africa.
+30:11
+We're going to ask the system to imagine something.
+30:19
+I will imagine that a ball falls into a bowl.
+30:33
+OK.
+30:33
+I will imagine that a man runs into a woman.
+30:48
+I have learned from experience that contact between a man and
+30:52
+a woman appeared because a man runs into a woman.
+31:12
+I will imagine that a man gives a ball to a man.
+31:31
+I will imagine that a man flies.
+31:51
+And I've provided you with a little bit of a glimpse of
+31:54
+what we're going to look at as the semester unfolds.
+33:25
+There are some characteristics of our species that are
+33:30
+informative when it comes to guiding the activities of
+33:34
+people like me.
+35:57
+Descriptions enable us to tell stories.
+36:03
+That's going up.
+36:24
+What happens?
+36:27
+Your leg gets wet.
+36:29
+The water sloshes out.
+36:34
+You've probably never been told that that's what happens
+36:37
+when you run down the street with a full bucket of water.
+36:43
+There was internal imagination simulation.
+37:01
+You're going to stagger.
+38:17
+And each of these has a different purpose.
+38:46
+They're about powerful ideas.
+38:52
+They're about the experience side of the course.
+38:59
+MIT is about two things.
+39:00
+It's about skill building, and it's about big ideas.
+39:13
+But the experience you can only get at MIT.
+39:16
+I know everybody there is to know in artificial
+39:18
+intelligence.
+39:18
+I can tell you about how they think.
+39:20
+I can tell you about how I think.
+39:21
+And that's something you're not going to
+39:22
+get any other place.
+39:43
+They're taught at the same hour on Fridays.
+39:49
+And those are wrapped around past quiz problems.
+39:55
+It's very important component to the subject.
+40:17
+But you are MIT students.
+40:19
+And MIT people always like to look at the data.
+41:37
+And I have mixed feelings about that.
+41:40
+You're adults.
+41:41
+It's your call.
+42:02
+But I don't recommend it.
+42:28
+Here's what we do.
+43:40
+We have these boundaries where we think performance break
+43:43
+points are.
+43:54
+That is that your grade is calculated in several parts.
+44:27
+You get the max of the score you got on those two pieces.
+44:36
+I have a lot of guts.
+44:44
+It has been done.
+44:46
+We don't recommend it.
+45:11
+But that's roughly how it works.
+45:21
+I just want to talk a little bit about how we're going to
+45:24
+communicate with you in the next few days, while we're
+45:27
+getting ourselves organized.
+45:48
+There's the issue of whether we're going to have ordinary
+45:58
+recitation and a mega recitation this week.
+46:00
+So pay attention.
+46:04
+We're not going to have any regular recitations this week.
+And we ask that you look at our home page for further
+information about that as the week progresses.

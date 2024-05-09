@@ -1,0 +1,91 @@
+
+We're now going to add to it.
+They're not regularly repeating.
+And there is a reason for this.
+And he thought about all sorts of things.
+And you can see if you look at this picture, you can draw a box like that.
+It's called a unit cell.
+I can tile all of space.
+I filled all of space.
+I filled all of space.
+Those are called the lattice vectors.
+I didn't really say what I'm putting there.
+In Escher there's ducks.
+That is how we're building up our knowledge of crystals.
+I could take a lattice vector like this.
+This is a square lattice.
+And I've put something at each place-a circle.
+But I might ask a question.
+The area of maximum packing is a very important parameter.
+My sides are equivalent.
+So radius equals 1/2 a.
+I'm in 2D.
+That's what everyone does.
+And we're going from 2D to 3D.
+Those are all great topics.
+And there are only seven.
+In this class, we're only going to focus on one, and that's the cubic system.
+But they take cubic symmetry.
+Each one has a length a.
+That's pretty cool.
+And for the cubic system, there's only three.
+These are the three types of lattices that have cubic symmetry.
+It's really cool.
+And I had wanted for these to be what go in your goody bag.
+You've got to do that.
+It's really cool.
+That's really important.
+And in this case, we're going to take spheres.
+We're going to be taking spheres because that's how we're going to represent atoms.
+I've got to do the same trick I did here.
+I've got to write the radius of the atom in terms of the unit cell.
+I'm going to be drawing a 3D structure.
+And you can see what's going to happen as I do that.
+That is at the max packing.
+It's real.
+These spheres are now atoms.
+We don't know yet.
+But it feels kind of low-52%.
+That's not very-that doesn't feel like a lot.
+Anybody know what it is?
+Of course-it's polonium.
+That's a really good conversation starter.
+I'm just saying.
+That is a great way to meet people.
+They're so high energy they're like close to the speed of light.
+They're relativistic.
+Their mass is heavier.
+All sorts of interesting things happen.
+I promised a video.
+We're coming to it.
+Like you're figuring out how many atoms are in the cell.
+And by the way, this was not 1 over a.
+It was.
+We'll bring more.
+Where's-it's only polonium.
+My lattice is giving me this.
+You get together with friends.
+You get together with friends, and you build even more.
+And that's my cube.
+And you go like this.
+That's BCC.
+For a simple cubic, it's the cube edge.
+There's another one.
+There's actually two atoms in a unit cell.
+There's two of these.
+You've got two.
+With full-size spheres, you can see that the particles don't touch along the edges of the cube.
+Close-packing But each corner particle does touch the one in the center.
+Eight eighths give one particle.
+And it's got more packing.
+And so the nearest neighbors is 12.
+There's two diameters worth that go across that face.
+The number of atoms.
+But each corner does touch a particle in the face.
+Eight-eighths at the corners gives one particle.
+Those larger spaces mean an inefficient use of space.
+Because of this inefficiency, the simple cubic unit cell is seen rarely in nature.
+That simple change leads to 68% of the available volume occupied by the spheres and a structure
+based on the body-centered cubic unit cell.
+For the most efficient stacking-Now watch this.
+That's what he meant to say there.

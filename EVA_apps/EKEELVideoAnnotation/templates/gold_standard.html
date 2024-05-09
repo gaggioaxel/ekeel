@@ -1,0 +1,142 @@
+{% extends "layout.html" %}
+{% set active_page = "gold_standard" %}
+  <head>
+
+      {% block head %}
+          {{ super() }}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/form_video.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/radio_choices.css') }}"/>
+
+      {% endblock %}
+
+
+
+  </head>
+  <body>
+    {% block navbar %}{{ super() }}{% endblock %}
+    {% block body %}
+    <div style="overflow-x: hidden;margin-top: 10px">
+        <div class="container">
+
+            <p class="title" id="title_analysis">Create Gold Standard </p>
+
+            <div  id="tab_video_selection">
+                <div class="row">
+                    <div class="col">
+                        <p class="titleLower"> Select a video</p>
+                    </div>
+
+                    <div class="input-group rounded searchbar col">
+                      <input type="search" class="form-control rounded" autocomplete="off" placeholder="Search" aria-label="Search"
+                        aria-describedby="search-addon" id="searchbar" onkeyup="search_video()"/>
+                      <span class="input-group-text border-0" id="search-addon" style="color: dodgerblue;">
+                        <i class="fas fa-search"></i>
+                      </span>
+                    </div>
+                </div>
+
+                <form method="POST" id="goldForm" >
+                    {{ form.hidden_tag() }}
+                <div id="videos" class="center_selection">
+
+                    {% for choice in form.video %}
+
+                        <label class="video_radio" video="{{ choice.data }}" onclick="setAnnotators(this)">
+                            {{ choice(value=choice.data, id=choice.data) }}
+                          <img src="https://img.youtube.com/vi/{{ choice.data }}/hqdefault.jpg">
+                          <p class="video_title">{{ choice.label }}</p>
+                        </label>
+
+
+                    {% endfor %}
+
+
+                </div>
+                <div id="parameters" style="height:600px; ">
+                    <div class="form-group ">
+                              {{ form.annotators.label (class_='control-label')}}
+                              {{ form.annotators}}
+                    </div>
+                    <div class="form-group ">
+                          {{ form.agreements.label (class_='control-label')}}
+                          {{ form.agreements(class_='form-control')}}
+                    </div>
+
+                    <div class="form-group ">
+                          {{ form.name.label (class_='control-label')}}
+                          {{ form.name(class_='form-control')}}
+                    </div>
+
+                    <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Create Gold Standard">
+                </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+      <script src="{{ url_for('static', filename='search_video.js') }}"></script>
+
+    <script>
+        let $videos = {{ video_choices|tojson }};
+        document.getElementById("annotators").innerHTML = ""
+
+
+        function setAnnotators(e) {
+            //e.preventDefault();
+
+            /*$('html, body').animate({
+                scrollTop: $("#parameters").offset().top
+            }, 1000);*/
+
+            let id = e.getAttribute("video")
+            let annotators = $videos[id].annotators
+
+            document.getElementById("annotators").innerHTML = ""
+
+            for(let i in annotators){
+                document.getElementById("annotators").innerHTML +=
+                    '<li onclick="set_agreement()">' +
+                        '<input id="'+annotators[i].id+'" name="annotators" type="checkbox" value="'+annotators[i].id+'"> ' +
+                        '<label for="'+annotators[i].id+'">' +
+                            annotators[i].name +
+                        '</label>' +
+                    '</li>'
+            }
+        }
+
+    function set_agreement(){
+
+        let values = document.querySelectorAll('input[type="checkbox"]:checked');
+        let num_annotators = Object.keys(values).length
+
+        console.log(num_annotators)
+        let agreements_select = document.getElementById('agreements');
+        agreements_select.innerHTML = '<option value="union"> UNION </option>' +
+            '<option value="intersection"> INTERSECTION </option>';
+    }
+
+
+    {#     agreementsList = []#}
+    {#ann = int(agreements)#}
+    {#for i in range(ann):#}
+    {#      #print(i)#}
+    {#      tot = (i/(ann-1))#}
+    {#      percentage = "{:.0%}".format(tot)#}
+    {#      #print(percentage)#}
+    {#      if percentage == "0%":#}
+    {#          percentage = "UNION"#}
+    {#      elif percentage == "100%":#}
+    {#          percentage = "INTERSECTION"#}
+    {##}
+    {#      agreementsList.append(str(percentage))#}
+    {##}
+    {##print(agreementsList)#}
+    {#return jsonify({'agreements': agreementsList})#}
+
+    </script>
+
+
+    {% endblock %}
+  </body>
+

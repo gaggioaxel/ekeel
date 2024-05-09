@@ -1,0 +1,1041 @@
+{
+    "graph": {
+      "@context": [
+        "http://www.w3.org/ns/anno.jsonld",
+        {
+          "edu": "http://edurell.com/"
+        }
+      ],
+      "@graph": [
+        {
+          "body": "edu:functional_morphology",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno35",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:sexual_dimorphism"
+            },
+            "id": "_:Nd67b50561c3940349c78e93640833c3a",
+            "selector": {
+              "id": "_:N5ae82c9b062a4ff19dd5157360456fff",
+              "type": "edu:TimestampSelector",
+              "value": "00:06:42^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:forehead",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:hip_socket",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno25",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:acetabulum"
+            },
+            "id": "_:N057747791ae848198adc3daf17393047",
+            "selector": {
+              "id": "_:N23f04e0410f14e84b873a7d2eb234d05",
+              "type": "edu:TimestampSelector",
+              "value": "00:04:26^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:sexual_dimorphism",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno1",
+          "motivation": "describing",
+          "target": {
+            "id": "_:Nb07314cb0f5b444bb901db19da1069ca",
+            "selector": {
+              "endSelector": {
+                "id": "_:N579604552dde4a05bb633a544ef2e977",
+                "type": "edu:TimestampSelector",
+                "value": "00:16:45^^xsd:dateTime"
+              },
+              "id": "_:N6a326635a62744cfa390976be9c56c23",
+              "startSelector": {
+                "id": "_:N4ae83a54343a4ba49df8cffbff32bf99",
+                "type": "edu:TimestampSelector",
+                "value": "00:04:28^^xsd:dateTime"
+              },
+              "type": "RangeSelector"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:eye_socket",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:femoral",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno0",
+          "motivation": "describing",
+          "target": {
+            "id": "_:N1e974e922b9a4dcc8ea244ea631a9b80",
+            "selector": {
+              "endSelector": {
+                "id": "_:N0f74f911b1f04d6e8f9d909a1c731876",
+                "type": "edu:TimestampSelector",
+                "value": "00:08:23^^xsd:dateTime"
+              },
+              "id": "_:N0dcde299f5904848bd43784128ff55ff",
+              "startSelector": {
+                "id": "_:Ne5c8d7c72a5e481abaa7506c8c0eaba0",
+                "type": "edu:TimestampSelector",
+                "value": "00:07:35^^xsd:dateTime"
+              },
+              "type": "RangeSelector"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:super_orbital_ridge",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno24",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:hip_socket"
+            },
+            "id": "_:N24ec64502d6441d7bc94b83ae074d995",
+            "selector": {
+              "id": "_:N69b3eebea1e04ab19f6772a8102538c6",
+              "type": "edu:TimestampSelector",
+              "value": "00:04:26^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:musculature",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno34",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:muscle_attachment_point"
+            },
+            "id": "_:N567052c3d2754597a507975fbcdc6b5b",
+            "selector": {
+              "id": "_:N640acf245aad4aa1b0fe4feeb7f28229",
+              "type": "edu:TimestampSelector",
+              "value": "00:06:42^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:nuchal_crest",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno9",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:pelvic_outlet"
+            },
+            "id": "_:N8ac5e5d95b1444b59873174de59446a8",
+            "selector": {
+              "id": "_:Nae1d9bdec5494d1b8de4e28184284e38",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:skull",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno31",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:mastoid_process"
+            },
+            "id": "_:N9f4f5aa26ed449eb96f08217e9ab1940",
+            "selector": {
+              "id": "_:Nc998896da1ef48bb82c1e01cb7c8d798",
+              "type": "edu:TimestampSelector",
+              "value": "00:06:17^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:sciatic_notch",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno10",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:sciatic_notch"
+            },
+            "id": "_:N44409260df0646eaad57449c1c4081d1",
+            "selector": {
+              "id": "_:Na90ecf4484e94f169416fc05669bb9aa",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:sciatic_notch",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno13",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:composite_arch"
+            },
+            "id": "_:N31cbf102afc242b2b4c9c699ae0bdd79",
+            "selector": {
+              "id": "_:N5cf241a8f29d42b9845438e17347dcf6",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:pubic_bone",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:hip_socket",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:functional_morphology",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:female_pubis",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:mastoid_process",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno32",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:zygomatic_arch"
+            },
+            "id": "_:N1832f86596c24b0987cbbfdf3f64b622",
+            "selector": {
+              "id": "_:Nc310d7f79a3d41e0b4ccd10c211de14f",
+              "type": "edu:TimestampSelector",
+              "value": "00:06:26^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:acetabulum",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:male_pelvis",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:sexual_dimorphism",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno2",
+          "motivation": "describing",
+          "target": {
+            "id": "_:Nd9dbb6f67c524835bcb21f02cab75589",
+            "selector": {
+              "endSelector": {
+                "id": "_:N30f7c072df1c4c8aa36ed1512d08feb3",
+                "type": "edu:TimestampSelector",
+                "value": "00:16:45^^xsd:dateTime"
+              },
+              "id": "_:Na603381d25c04c2ca8262f2b7b857870",
+              "startSelector": {
+                "id": "_:N1e1413fc542f4c729402ffbd37958b5e",
+                "type": "edu:TimestampSelector",
+                "value": "00:04:28^^xsd:dateTime"
+              },
+              "type": "RangeSelector"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:subpubic_angle",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:muscle_attachment_point",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:auricular_surface",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno14",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:superior_surface"
+            },
+            "id": "_:N5674ed4f25f740099a60e8cb42811750",
+            "selector": {
+              "id": "_:Na566bc1ad1d84b3ea8ed0ef887889780",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:composite_arch",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:skull",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno28",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:super_orbital_ridge"
+            },
+            "id": "_:Ne0347de78d2c410f9caf5b450080140c",
+            "selector": {
+              "id": "_:Ne5046e591ff34d54a88089acfd6c38dc",
+              "type": "edu:TimestampSelector",
+              "value": "00:04:26^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:skull",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno27",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:eye_socket"
+            },
+            "id": "_:N358df41efec541fc8e5ed35c5c1bfa8e",
+            "selector": {
+              "id": "_:N455c5480369b4204baf24f0070f7fea1",
+              "type": "edu:TimestampSelector",
+              "value": "00:04:26^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno5",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:female_pelvis"
+            },
+            "id": "_:N63f4db96550544acb343ec57060475ae",
+            "selector": {
+              "id": "_:N0c298e23e905412590bbfa68214fb61f",
+              "type": "edu:TimestampSelector",
+              "value": "00:08:58^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:sex_determination",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:male_pubis",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:skull",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno30",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:forehead"
+            },
+            "id": "_:Nc0e04b9b354841189629aed3fd659bb9",
+            "selector": {
+              "id": "_:Ndfc94324fc1041a2811ab58e6da65a1a",
+              "type": "edu:TimestampSelector",
+              "value": "00:06:02^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:superior_surface",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:sexual_dimorphism",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:skull",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno7",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:subpubic_angle"
+            },
+            "id": "_:N99d02690b0b3468cbe357ee86898c43a",
+            "selector": {
+              "id": "_:N70375bd94d174da3bcfc583112ec2637",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:femoral",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:pelvic_inlet",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno23",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:iliopubic_ramus"
+            },
+            "id": "_:N4b1a3487e2904087ae8d67d0c4456ab4",
+            "selector": {
+              "id": "_:Nad65ec9255184ca297f8e28fbd1422f8",
+              "type": "edu:TimestampSelector",
+              "value": "00:04:24^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:genetics",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno36",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:sex_determination"
+            },
+            "id": "_:N1aba084e025d4f5d975342fd51319a4b",
+            "selector": {
+              "id": "_:N884811e1276b4f3dae14efadc4424056",
+              "type": "edu:TimestampSelector",
+              "value": "00:06:42^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:genetics",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:pre_auricular_sulcus",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:iliopubic_ramus",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:female_pelvis",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:female_pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno11",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:v_-_shaped"
+            },
+            "id": "_:N5baa8ea2047b4b2e825f964c7a6ff1ac",
+            "selector": {
+              "id": "_:N037e8d5eec714926819971e631c060fd",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno4",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:male_pelvis"
+            },
+            "id": "_:N3904eff2ec6c49378f93f578a17819da",
+            "selector": {
+              "id": "_:N0f5e5567a79e4f4892844ecbafd114c8",
+              "type": "edu:TimestampSelector",
+              "value": "00:08:58^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:super_orbital_ridge",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno29",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:glabella"
+            },
+            "id": "_:Nac163fcff98b41d9ab4043b612955524",
+            "selector": {
+              "id": "_:N02cd993d22f34ce0b41dcc221fb34593",
+              "type": "edu:TimestampSelector",
+              "value": "00:04:26^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:skeleton",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno26",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:skull"
+            },
+            "id": "_:N9949bd33599b4cbb98f4689fb8bffbe1",
+            "selector": {
+              "id": "_:N561aa280fdde4035b9739a1ec5b4f505",
+              "type": "edu:TimestampSelector",
+              "value": "00:04:26^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:sciatic_notch",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno15",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:auricular_surface"
+            },
+            "id": "_:N35f399d4ab9d4a92b21dd58fe54985ea",
+            "selector": {
+              "id": "_:Nb530342a964147d58cc82657d8f3ef06",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:femoral",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno38",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:condyle"
+            },
+            "id": "_:N80c87e76e208411eaedd3ab6381ce708",
+            "selector": {
+              "id": "_:N673f14470501423a81f43de31a098247",
+              "type": "edu:TimestampSelector",
+              "value": "00:06:42^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno8",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:pelvic_inlet"
+            },
+            "id": "_:N4d6ead03e0fd44deb06024acb352c795",
+            "selector": {
+              "id": "_:Nd01658da3ae642958711613c9e25c441",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:pubic_symphysis",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:male_pubis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno18",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:pubic_symphysis"
+            },
+            "id": "_:N6c36c7103d914a6db9e656be983c95c3",
+            "selector": {
+              "id": "_:N8f0196a910924f7eb69225484edce9c4",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:ventral_arc",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:condyle",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:male_pubis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno21",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:ventral_arc"
+            },
+            "id": "_:Ncba2747d36ab485d9ffee58175330adb",
+            "selector": {
+              "id": "_:Nffc742e69a3849deb778e09f3d8315bb",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:mastoid_process",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:skeleton",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno19",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:female_pubis"
+            },
+            "id": "_:N4b56649384cf43fdb0bbf73186e12944",
+            "selector": {
+              "id": "_:N141dccbe233e4a289689489f90cc48f1",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno6",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:pubic_bone"
+            },
+            "id": "_:Nbaf1f61f3d4c45a4a8c4cb99610f2264",
+            "selector": {
+              "id": "_:Nfe78b31a4ce54d0fb9a3ea81c53b6527",
+              "type": "edu:TimestampSelector",
+              "value": "00:08:58^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:musculature",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:skeleton",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:male_pelvis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno12",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:u_-_shaped"
+            },
+            "id": "_:N429ca686edbc4c63b6bdbebe945a89d5",
+            "selector": {
+              "id": "_:Nfb7b5e0b04864bf9af162edfee867371",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:glabella",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:v_-_shaped",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:u_-_shaped",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:skeleton",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno37",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:femoral"
+            },
+            "id": "_:N3dcac2df98484b41baf8d2c88d9f9df8",
+            "selector": {
+              "id": "_:Ne46c9d862d2949328bd3b4ec9a691b70",
+              "type": "edu:TimestampSelector",
+              "value": "00:06:42^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:auricular_surface",
+          "type": "skos:Concept"
+        },
+        {
+          "id": "edu:videosXLhYStO0m8",
+          "type": "Video"
+        },
+        {
+          "id": "edu:pelvis",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:female_pubis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno17",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:pubic_symphysis"
+            },
+            "id": "_:Nd0dbbed728da48db98989b22a2e86fa1",
+            "selector": {
+              "id": "_:N5ba4efae85814ad58d1d192173c01304",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:auricular_surface",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno16",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:pre_auricular_sulcus"
+            },
+            "id": "_:Ncfa7675f85044b80bfcfb5bcfb86af61",
+            "selector": {
+              "id": "_:Na374f5d1aafb410c834bac6a14d0a9e8",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:skeleton",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno20",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:male_pubis"
+            },
+            "id": "_:Nfa395ed07fa14b31b9377e5af3d299d8",
+            "selector": {
+              "id": "_:N36113ad47d424f13905dd9ef6a31a541",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:pelvic_outlet",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:skull",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno33",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:nuchal_crest"
+            },
+            "id": "_:N1d50c6e5bc8e497da7158a306cfdee40",
+            "selector": {
+              "id": "_:N69e8ffecb1214c8187a410a75e59a7bd",
+              "type": "edu:TimestampSelector",
+              "value": "00:06:36^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "body": "edu:female_pubis",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno22",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:ventral_arc"
+            },
+            "id": "_:Nf769bc6c4c4240fd9ca90f9b5c9f921f",
+            "selector": {
+              "id": "_:N3d70d9db562d46498446ef00af59786e",
+              "type": "edu:TimestampSelector",
+              "value": "00:01:49^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        },
+        {
+          "id": "edu:zygomatic_arch",
+          "type": "skos:Concept"
+        },
+        {
+          "body": "edu:skeleton",
+          "created": "2021-04-07T18:48:37.853070",
+          "dcterms:creator": "Pippo Topolino",
+          "id": "edu:anno3",
+          "motivation": "linking",
+          "skos:note": "StrongPrerequisite",
+          "target": {
+            "dcterms:subject": {
+              "id": "edu:pelvis"
+            },
+            "id": "_:N164fdf77e33c456081f86dc076457995",
+            "selector": {
+              "id": "_:N19111c717e6f462fb4f16dad0797291a",
+              "type": "edu:TimestampSelector",
+              "value": "00:08:58^^xsd:dateTime"
+            },
+            "source": "edu:videosXLhYStO0m8",
+            "type": "oa:specificResource"
+          },
+          "type": "Annotation"
+        }
+      ]
+    }
+  }

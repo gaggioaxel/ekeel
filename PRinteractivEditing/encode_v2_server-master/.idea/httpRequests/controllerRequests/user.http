@@ -1,0 +1,39 @@
+GET http://localhost:8080/protected/v1/refresh-token
+X-Auth:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjM2Mzk0MiwiaWF0IjoxNjQyMzU0MTQyODY4fQ.tTh5YUaAHDhIxPpLz_PtbFqbKHUP81DNny5b7eBHRoA
+Content-type: *\*
+
+###
+POST http://localhost:8080/public/v1/login
+X-Auth:
+Content-Type: application/json
+
+{"email": "henoik.willot@gmail.com", "password": "examplepassword"}
+
+###
+
+POST http://localhost:8080/public/v1/registration
+X-Auth:
+Content-Type: application/json
+
+{
+  "creationDate": "1642351386000",
+  "email": "prova0@prova.com",
+  "username": "prova0",
+  "password": "examplepassword",
+  "firstName": "Utente0",
+  "lastName": "prova0"
+}
+
+###
+
+DELETE http://localhost:8080/protected/v1/user?email=emivaldi1@gmail.com
+X-Auth:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/protected/v1/users
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###

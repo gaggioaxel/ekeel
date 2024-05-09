@@ -1,0 +1,34 @@
+Assigned developer,Start ,End,General description,Sub-description,Front/Back
+Julie,,,User Interface,develop a UI according to the mockups,F
+Julie and Thomas,,,Graph,display knowledge graph of a video,F
+,,,,synchronize video and graph,F
+Julie,,,Notes,register notes of a student on a video,B
+Thomas,,,user management,,
+,,,,create account,B
+,,,,delete account,B
+,,,,change password,B
+,,,,login,B
+,,,,logout,B
+,,,,change password,B
+,,,,store/get user data/history,B
+,,,,,
+,,,,,
+Julie,,,Transcript,download transcript of a video,B
+,,,,display transcript ,F
+,,,,synchronize with the video,F
+,,,,,
+Julie,,,Fragments,display list of fragments of a video,F
+,,,,navigate in video through fragments,F
+,,,,,
+Julie,,,Welcome page,develop welcome page ,F
+Julie,,,Dashboard,develop dashboard page,F
+,,,,display user history (video already watched),F
+,,,,provide a catalog,F/B
+,,,,,
+Thomas,,,Login page (account interface),,
+,,,,create account,F
+,,,,delete account,F
+,,,,change password,F
+,,,,login,F
+,,,,logout,F
+,,,,change password,F

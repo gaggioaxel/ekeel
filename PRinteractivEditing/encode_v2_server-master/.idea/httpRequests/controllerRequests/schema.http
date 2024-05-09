@@ -1,0 +1,33 @@
+DELETE http://localhost:8080/protected/v1/schema?schema_id=3
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/protected/v1/schema?schema_id=3
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/protected/v1/schemas
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/protected/v1/schema
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+{"id": 3, "name": "schema2", "description": "test2"}
+
+###
+
+POST http://localhost:8080/protected/v1/schema
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0MjQzMjcxNSwiaWF0IjoxNjQyNDIyOTE1NTU3fQ.v9s4yCVnw9RuZ9xvLCHKveEJG4QKGBxaXc9fkFwcw08
+Content-Type: application/json
+
+{"name": "schema2", "description": "SchemaTest"}
+
+###

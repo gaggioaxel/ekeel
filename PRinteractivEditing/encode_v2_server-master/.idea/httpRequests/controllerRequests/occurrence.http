@@ -1,0 +1,20 @@
+### Create a new Occurrence
+
+###
+
+POST http://localhost:8080/protected/v1/occurrence
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTY0NTQ2MzE2NSwiaWF0IjoxNjQ1NDUzMzY1MTgzfQ.NqFT92j8JtDwTHSe-pBzt0Be7AvezTo6TVd7gagsb9I
+Content-Type: multipart/form-data;boundary="boundary"
+
+--boundary
+Content-Disposition: name="occurrence"; type:"application/json"
+
+{"dataValue":"haha","topicId":3,"occurrenceTypeId":2}
+
+###
+
+GET http://localhost:8080/protected/v1/occurrence/23/file?file_id=24
+X-Auth: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoZW5vaWsud2lsbG90QGdtYWlsLmNvbSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc0VuYWJsZWQiOnRydWUsImV4cCI6MTU4MjA3MTE3MSwiaWF0IjoxNTgyMDYxMzcxMTkxfQ.QshBYoSvvyzAHu1uuPM7PxT2hforwxSpNF9CLIldd-4
+Content-Type: application/json
+
+###
