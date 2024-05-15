@@ -1,28 +1,15 @@
 import pymongo
-import time
-from pprint import pprint
-from rdflib import Graph, plugin
-import json
-import pyld
-from bson.json_util import dumps
-from bson.son import SON
 from bson import ObjectId
 from environment import MONGO_CLUSTER_USERNAME,MONGO_CLUSTER_PASSWORD
 
-#pip install pymongo
-#pip3 install pymongo[srv]
-
-# client = pymongo.MongoClient(
-#         'mongodb+srv://Luca:edurellMongo@cluster0.ktoan.mongodb.net/edurell?retryWrites=true&w=majority')
-import os
 
 client = pymongo.MongoClient(
-    "mongodb+srv://"+MONGO_CLUSTER_USERNAME+":"+MONGO_CLUSTER_PASSWORD+"@clusteredurell.z8aeh.mongodb.net/edurell?retryWrites=true&w=majority")
+    "mongodb+srv://"+MONGO_CLUSTER_USERNAME+":"+MONGO_CLUSTER_PASSWORD+"@clusteredurell.z8aeh.mongodb.net/ekeel?retryWrites=true&w=majority")
 
-db = client.edurell
+db = client.ekeel
 
-users = db.student
-unverified_users = db.unverified_student
+users = db.students
+unverified_users = db.unverified_students
 
 def string_to_seconds(str):
 
@@ -486,4 +473,5 @@ if __name__ == '__main__':
     #remove_video('PPLop4L2eGk')
     #graph = get_graph("Burst Analysis","PPLop4L2eGk")
     print("***** EKEEL - Video Annotation: db_mongo.py::__main__ ******")
+    #db.drop_collection("videos_statistics")
     #remove_video("FZ1qPqVeMSQ")

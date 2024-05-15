@@ -25,6 +25,14 @@ from sendmail import send_mail, generate_confirmation_token, confirm_token, send
 from create_gold_standard import create_gold
 from synonyms import create_skos_dictionary, get_synonyms_from_list
 
+#@app.before_request
+#def before_request():
+#    if not request.is_secure:
+#        print("replacing http with https")
+#        url = request.url.replace('http://', 'https://', 1)
+#        code = 301
+#        return redirect(url, code=code)
+
 video_segmentations_queue = Manager().list()
 workers_queue_scheduler(video_segmentations_queue)
 
@@ -69,7 +77,7 @@ def register():
 
         # generate a random string of lenght N composed of lowercase letters and numbers
 
-        code = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(6))
+        code = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(6)).upper()
         hashed_code = bcrypt.hashpw(code.encode('utf-8'), bcrypt.gensalt())
         code_on_creation_hash = hashed_code.decode('utf8')
 
@@ -675,7 +683,7 @@ def video_segmentation_refinement():
 #     encoded_img_data = get_image_from_video('sXLhYStO0m8', "auricular_surface", 166, 5,16,29,65)
 #     return render_template('test_image.html', img_data=encoded_img_data.decode('utf-8'))
 # https://www.youtube.com/watch?v=PPLop4L2eGk
-DEBUG = False
+DEBUG = True
 
 def _open_application_in_browser(address):
     from webbrowser import open as open_page
@@ -685,7 +693,7 @@ def _open_application_in_browser(address):
 
 if __name__ == '__main__':
     print("***** EKEEL - Video Annotation: main.py::__main__ ******")
-
+    
     address = '127.0.0.1'
     #_open_application_in_browser(address)    
     app.run(host=address, threaded=True, debug=DEBUG) #, port=5050\

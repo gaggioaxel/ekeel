@@ -66,7 +66,7 @@ class LoginForm(FlaskForm):
 
         #users = db_mongo.users
 
-        user = db_mongo.db.student.find_one({"email": self.email.data})
+        user = db_mongo.db.students.find_one({"email": self.email.data})
 
         if user:
             password = user["password_hash"]

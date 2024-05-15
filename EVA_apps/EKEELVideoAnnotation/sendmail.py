@@ -212,7 +212,6 @@ def send_confirmation_mail(email, code):
     send_mail(email, subject, html)
 
 if __name__ == "__main__":
-
     # plaintext = "Welcome to edurell, \n" \
     #             "Prova.\n"
     #
