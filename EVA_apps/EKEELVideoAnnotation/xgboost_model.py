@@ -15,7 +15,7 @@ class XGBoostModelAdapter:
         try:
             self._model:XGBClassifier = load_model(open(model_path, 'rb'))
         except:
-            raise FileExistsError("cannot find model")
+            raise FileExistsError("cannot find XGBoost model")
     
     def _extract_faces_info(self,detections:'list[Detection] | None'):
         '''
@@ -28,8 +28,8 @@ class XGBoostModelAdapter:
         if detections is None:
             return out_arr
         for detection in detections:
-            bounding_box = detection.location_data.relative_bounding_box
-            xmin,width,height = bounding_box.xmin, bounding_box.width,bounding_box.height
+            bounding_box = detection.bounding_box
+            xmin,width,height = bounding_box.origin_x, bounding_box.width,bounding_box.height
             face_size = width*height
             out_arr[0,1] = max(out_arr[0,1],face_size)
             if out_arr[0,1] == face_size:
@@ -54,7 +54,7 @@ class XGBoostModelAdapter:
         out_arr[0,:16] = image.get_hists(normalize=norm_minmax,bins=16,grayscaled=True)
         if not norm_minmax:
             out_arr[0,:16] /= prod(image.get_img_shape()[:2])
-        out_arr[0,16:] = self._extract_faces_info(image.detect_faces(return_contours=True))
+        out_arr[0,16:] = self._extract_faces_info(image.detect_faces())
         return out_arr
 
     def predict_probability(self, image:ImageClassifier):

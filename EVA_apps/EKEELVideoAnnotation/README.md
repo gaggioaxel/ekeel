@@ -1,4 +1,4 @@
-# EKEEL Video Annotation
+# EDURELL Video Annotation
 
 # Installation
 
@@ -20,21 +20,6 @@ Start by running Anaconda/Conda terminal:
 
 <br>
 
-Create the virtual environment (if first time):
-```
-conda create -n myenv python=3.7 pip pytorch
-```
-    
-Activate the environment:
-```
-conda activate myenv
-```
-
-(Facoltative) Open VSCode with conda (if dev using VScode ide)
-```
-code
-```
-
 Download the repository:
 ```    
 git clone https://github.com/Teldh/edurell.git
@@ -45,31 +30,11 @@ git clone https://github.com/Teldh/edurell.git
 cd {path to the folder EKEELVideoAnnotation}
 ```
 
-Install requirements:
-```    
-pip install -r requirements.txt
-python -m spacy download en
+conda create the python environment from a yml file
 ```
-
-Create a folder "punctuator" (lowercase) in the same level of the .py files, and put inside the file downloaded at the link:
-https://drive.google.com/drive/folders/1NYyehpB5fAlL42_TwTnXLokLz8K-TS3W?usp=sharing
-
-
-Open the python console 
+conda env create -f conda_environment.yml
+conda activate ekeel_anno_env
 ```
-python
-```
-and type:
-
-    >>> import nltk
-    >>> nltk.download('stopwords')
-    >>> nltk.download('punkt')
-    >>> nltk.download('wordnet')
-    >>> nltk.download('omw-1.4')
-    
-now exit from the python console
-
-    >>> exit()
 
 (Facoltative) If you have a gpu, to improve performances:
 
@@ -83,37 +48,7 @@ Installation completed, with the environment activated launch the project with:
 <br>
 
 # Notes:
-
-- Account:
-
-    email account of this app is written in the sendmail.py file
-
-- Dislike count error:  
-
-    YouTube just removed the dislike count, for this reason the pafy package returns an error. 
-    Until there is a patch use:
-
-        > pip uninstall -y pafy
-        > pip install git+https://github.com/Cupcakus/pafy
     
-    If still not working you may addictionally do:
-
-        > python -m spacy download en_core_web_lg
-        > python -m spacy download en_core_web_sm
-    
-    And have a look on this:
-
-    https://exerror.com/oserror-e050-cant-find-model-en_core_web_sm-it-doesnt-seem-to-be-a-shortcut-link-a-python-package-or-a-valid-path-to-a-data-directory/
-
-- Python Version:  
-
-    Updated python version to 3.7.11
-    Packeges must be adapted to that version
-
-- Save burst auto and semiauto on DB
-
-    To save into db the burst results decomment the lines of code (544-569) of main.py
-
 - Get synonyms from wordnet NLTK (manual annotator)
 
   to get synonyms automatically at the start change the commented lines on:   
@@ -148,7 +83,7 @@ Installation completed, with the environment activated launch the project with:
     After some months the email sender could stop working and you can find errors on register or forgot password:
 
     * Login to the google account with this app credentials   
-    (you can find those credentials on file sendmail.py line ~126) 
+    (you can find those credentials on file .env) 
     
     * go to security settings -> allow less secure app
 
@@ -169,7 +104,7 @@ Start by running Anaconda/Conda terminal:
 
 Activate the "myenv" virtual environment:
 
-    > conda activate myenv
+    > conda activate ekeel_anno_env
 
 (Facoltative) Open VSCode with conda (if dev using VScode ide)
 
@@ -182,4 +117,5 @@ With the environment activated launch the app locally with:
 # Deploy and run on server
 
 Follow this guide:
-https://drive.google.com/file/d/1hta5qeYVr-2U9mcQdjT0-a_NacvhYUPC/view?usp=sharing
+#TODO update
+https://raw.githubusercontent.com/Teldh/edurell/201093006ae2117c5aabea1fd356fe08218dfcd0/docs/server_guide.pdf

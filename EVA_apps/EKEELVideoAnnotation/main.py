@@ -13,25 +13,17 @@ from multiprocessing import Manager
 from config import app
 import db_mongo
 from db_mongo import users, unverified_users
-from segmentation import VideoAnalyzer, workers_queue_scheduler
+from segmentation import VideoAnalyzer, workers_queue_scheduler, SemanticText
 from ontology import annotations_to_jsonLD
 from burst_class import create_local_vocabulary, create_burst_graph
 from forms import addVideoForm, RegisterForm, LoginForm, GoldStandardForm, ForgotForm, PasswordResetForm, ConfirmCodeForm, BurstForm
-from words import get_real_keywords
+from words import get_real_keywords, automatic_transcript_to_str
 from conll import conll_gen, create_text
 from analysis import compute_data_summary, compute_agreement, linguistic_analysis, fleiss
 from user import User
 from sendmail import send_mail, generate_confirmation_token, confirm_token, send_confirmation_mail
 from create_gold_standard import create_gold
 from synonyms import create_skos_dictionary, get_synonyms_from_list
-
-#@app.before_request
-#def before_request():
-#    if not request.is_secure:
-#        print("replacing http with https")
-#        url = request.url.replace('http://', 'https://', 1)
-#        code = 301
-#        return redirect(url, code=code)
 
 video_segmentations_queue = Manager().list()
 workers_queue_scheduler(video_segmentations_queue)
@@ -234,42 +226,39 @@ def video_selection():
     try:
         url = form.url.data
         vid_analyzer = VideoAnalyzer(url).download_video() \
-                                         .save_transcript()
+                                         .request_transcript() \
+                                         .analyze_transcript() \
+                                         .create_thumbnails() \
+                                         #.analyze_video()
+        #vid_analyzer.is_slide_video()
         video_id = vid_analyzer.video_id
         
-        # find segmentation in server
-        segmentation_data = db_mongo.get_video_segmentation(video_id,raise_error=False)
-        create_thumbnails = True
-        if segmentation_data is None:
-            # TODO support italian by making a version of the model created by Garrello
-            if vid_analyzer.is_not_too_long() and vid_analyzer.metadata["language"] == "en":
-                #print("Video not already segmented: starting segmentation...")
-                global video_segmentations_queue
-                video_segmentations_queue.append(url)
-            #else: print("The video is too long to be analyzed")
-            # create thumbnails based on the previous segmentation            
+        #vid_analyzer.transcript_segmentation_and_thumbnails()
 
-        else:
-            vid_analyzer.set(segmentation_data['video_slidishness'],slidish_frames_startend=segmentation_data['slidish_frames_startend'])
-            if vid_analyzer.is_slide_video():
-                assert segmentation_data["slide_startends"], "video has been segmented but has been classified as non slidish enough, remove the segmentation info from the db and reload"
-                vid_analyzer.set(slide_startends=segmentation_data["slide_startends"])
-                # create thumbnails based on slide segmentation
-                print('Creating thumbnails...')
-                vid_analyzer.create_thumbnails()
-                create_thumbnails = False
-        print('transcript segmentatation')
-        vid_analyzer.transcript_segmentation(create_thumbnails=create_thumbnails)
-        print('transcript segmentated!!')
-        vid_analyzer.extract_keywords()
+        #if vid_analyzer.is_slide_video():
+        #    # create thumbnails based on slide segmentation
+        #    print('Creating thumbnails...')
+        #    vid_analyzer.create_thumbnails()
+        #    vid_analyzer.analyze_video()
+        # TODO support italian by making a version of the model created by Garrello
+        #if vid_analyzer.is_not_too_long() #and vid_analyzer.metadata["language"] == "en":
+        #    #print("Video not already segmented: starting segmentation...")
+        #    global video_segmentations_queue
+        #    video_segmentations_queue.append(url)
+        # Try this to simplify the job https://chatgpt.com/share/85ab1473-6a96-4dfa-a385-a8317abe6958
+                
+        #vid_analyzer.transcript_segmentation_and_thumbnails(create_thumbnails=must_create_thumbnails)
+        #print('transcript segmentated!!')
+        #vid_analyzer.extract_keywords()
         
-
-        # Comment to prevent uploading to database - VIDEOS MUST BE UPDATED ALL TO LOAD THE LANGUAGE
-        video_metadata = vid_analyzer.metadata
-        db_mongo.insert_video_data(video_metadata,update=True)
-        lemmatized_concepts = video_metadata['extracted_keywords']
-        conll_sentences = conll_gen(video_id,vid_analyzer.transcript)
-        lemmatized_subtitles, all_lemmas = create_text(vid_analyzer.timed_subtitles["timed_text"], conll_sentences)
+        data = vid_analyzer.data
+        # Comment to prevent uploading to database
+        db_mongo.insert_video_data(data,update=True)
+        lemmatized_concepts = vid_analyzer.lemmatize_terms()
+        language = vid_analyzer.identify_language()
+        text = SemanticText(automatic_transcript_to_str(data["transcript_data"]["timed_text"]), language)
+        conll_sentences = conll_gen(video_id,text)
+        lemmatized_subtitles, all_lemmas = create_text(data["transcript_data"]["timed_text"], conll_sentences, language)
         annotator = current_user.complete_name
         relations = db_mongo.get_concept_map(current_user.mongodb_id, video_id)
         definitions = db_mongo.get_definitions(current_user.mongodb_id, video_id)
@@ -298,15 +287,29 @@ def video_selection():
                 lemmatized_concepts.append(rel["prerequisite"])
             if rel["target"] not in lemmatized_concepts:
                 lemmatized_concepts.append(rel["target"])
-
-        return render_template('mooc_annotator.html', result=vid_analyzer.timed_subtitles["timed_text"], video_id=video_id, start_times=video_metadata["segment_starts"],
-                               images_path=vid_analyzer.images_path, concepts=lemmatized_concepts,video_duration=video_metadata['duration'], 
+                
+        return render_template('mooc_annotator.html', 
+                               result=data["transcript_data"]["timed_text"], video_id=video_id, start_times=list(map(lambda x: x[0],data["video_data"]["segments"])),
+                               images_path=vid_analyzer.images_path, concepts=lemmatized_concepts,video_duration=data['duration'], 
                                lemmatized_subtitles=lemmatized_subtitles, annotator=annotator, conceptVocabulary=conceptVocabulary,
-                               title=video_metadata['title'], all_lemmas=all_lemmas, relations=relations, definitions=definitions)
+                               title=data['title'], all_lemmas=all_lemmas, relations=relations, definitions=definitions)
     except Exception as e:
-        print("Exception: ")
-        print(e)
-        flash(e, "danger")
+        import sys
+        import os
+        import traceback
+    
+        tb_details = traceback.extract_tb(sys.exc_info()[2])
+
+        print(f"\033[91mException in video selection: {e}\033[0m")
+        for frame in tb_details:
+            filename = os.path.basename(frame.filename)
+            # Read the specific line of code
+            line_number = frame.lineno
+            with open(frame.filename, 'r') as f:
+                lines = f.readlines()
+                error_line = lines[line_number - 1].strip()
+            print(f"\033[91mFile: {filename}, Function: {frame.name}, Line: {line_number} | {error_line}\033[0m")
+        flash(e, "Danger")
 
     print("***** EKEEL - Video Annotation: main.py::video_selection(): Fine ******")
 
@@ -519,17 +522,16 @@ def burst():
     if form.validate_on_submit():
 
         video_id = form.url.data
-
-        text = get_text(video_id)
+        video = VideoAnalyzer(f"https://youtu.be/{video_id}")
+        text = SemanticText(get_text(video_id), video.identify_language())        
         conll_sentences = conll_gen(video_id, text)
-        # [NOTE] this has been changed to extract my keywords, not those found by the first annotator
         title, keywords = get_real_keywords(video_id,annotator_id = current_user.mongodb_id,title=True)
         
         # semi-automatic extraction
         if form.type.data == "semi":
 
-            vid_analyzer = VideoAnalyzer(video_id).save_transcript()
-            subtitles = vid_analyzer.timed_subtitles["timed_text"]
+            vid_analyzer = VideoAnalyzer(video_id).request_transcript()
+            subtitles = vid_analyzer.data["transcript"]["timed_text"]
             lemmatized_subtitles, all_lemmas = create_text(subtitles, conll_sentences)
 
             return render_template('burst_results.html', result=subtitles, video_id=video_id, concepts=keywords,
@@ -597,13 +599,10 @@ def burst_launch():
 
     data_summary = compute_data_summary(video_id,concept_map,definitions)
     
-    # checks whether video has been segmented and if so if it is classifies ad slide video or not in order to enable refinement
-    segmentation_data = db_mongo.get_video_segmentation(video_id,raise_error=False)
-    can_be_refined = segmentation_data is not None \
-                    and VideoAnalyzer(video_id).set(segmentation_data['video_slidishness']).is_slide_video()
-    
-    can_be_refined = can_be_refined and "slide_titles" in segmentation_data.keys()
-    
+    # checks whether video has been segmented and if it is classifies ad slide video or not in order to enable refinement
+    video = VideoAnalyzer(video_id)
+    can_be_refined = video.is_slide_video() and "slide_titles" in video.data.keys()
+        
     json = {
         "concepts": concepts,
         "concept_map": concept_map,
@@ -652,9 +651,7 @@ def video_segmentation_refinement():
     concept_vocabulary = data["conceptVocabulary"]
 
     # for design this should not return None
-    segmentation_data = db_mongo.get_video_segmentation(video_id, raise_error=False)
     new_concepts,definitions = VideoAnalyzer(video_id) \
-                                .set(segmentation_data['video_slidishness'],segmentation_data['slide_startends'],titles=segmentation_data['slide_titles']) \
                                 .adjust_or_insert_definitions_and_indepth_times(data["definitions"],_show_output=True)
     #from pprint import pprint
     #pprint(definitions)
@@ -676,13 +673,6 @@ def video_segmentation_refinement():
     return {"definitions":definitions,
             "downloadable_jsonld_graph":downloadable_jsonld_graph}
 
-# from color_histogram import get_image_from_video
-# @app.route('/test_image', methods = ['GET', 'POST'])
-# def test_image():
-#
-#     encoded_img_data = get_image_from_video('sXLhYStO0m8', "auricular_surface", 166, 5,16,29,65)
-#     return render_template('test_image.html', img_data=encoded_img_data.decode('utf-8'))
-# https://www.youtube.com/watch?v=PPLop4L2eGk
 DEBUG = True
 
 def _open_application_in_browser(address):
@@ -696,4 +686,4 @@ if __name__ == '__main__':
     
     address = '127.0.0.1'
     #_open_application_in_browser(address)    
-    app.run(host=address, threaded=True, debug=DEBUG) #, port=5050\
+    app.run(host=address, threaded=True, debug=False) #, port=5050\

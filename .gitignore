@@ -1,2 +1,11 @@
+# ignoring output folders
 *__
+
+# ignoring models that can be downloaded
+*.tflite
+
+# ignoring env files
 *.env
+
+# not uploading videos
+/EVA_apps/EKEELVideoAnnotation/static/videos/*

@@ -156,7 +156,7 @@ def aggregate_short_clusters_deprecated(clusters, seconds):
     return refined_clusters
 
 
-def aggregate_short_clusters(clusters, seconds):
+def aggregate_short_clusters(clusters:list[Cluster], seconds):
     merge_times = []
     s = 0
     for e, c in enumerate(clusters):

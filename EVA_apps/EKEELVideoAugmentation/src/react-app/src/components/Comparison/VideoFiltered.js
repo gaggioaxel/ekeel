@@ -120,7 +120,7 @@ const VideoFiltered=forwardRef(({setAnchor2, idx, catalog, querylist,  UpdateCat
 
     if(conceptextra[0]!=undefined ){
    
-        slidishness = (conceptextra[0].video_slidishness*100)+"%"
+        slidishness = (conceptextra[0].slides_percentage*100)+"%"
         
     }
     if(tottime != undefined){
@@ -722,7 +722,7 @@ const VideoFiltered=forwardRef(({setAnchor2, idx, catalog, querylist,  UpdateCat
 
                                                                             <Typography variant="subtitle2" gutterBottom sx={{mt:1,ml:0.5}}>null</Typography>
                                                                             :
-                                                                            (conceptextra[0].video_slidishness===undefined)?
+                                                                            (conceptextra[0].slides_percentage===undefined)?
                                                                             <Typography variant="subtitle2" gutterBottom sx={{mt:1,ml:0.5}}>null</Typography>
                                                                             :
                                                                             <Typography variant="subtitle2" gutterBottom sx={{mt:1,ml:0.5}}>{slidishness}</Typography>

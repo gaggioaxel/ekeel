@@ -1,24 +1,47 @@
 import cv2
 import pytesseract
 import os
+from pathlib import Path
 import mediapipe as mp
-from mediapipe.framework.formats.detection_pb2 import Detection
+from mediapipe import Image, ImageFormat
 from numpy import round, dot, diag, reshape, zeros, uint8, array, inf, mean, var, transpose, all, empty, abs,ones
 from numpy.linalg import norm
 from typing import List, Tuple
 from bisect import insort_left
 
-mp_face_detection = mp.solutions.face_detection
-mp_drawing = mp.solutions.drawing_utils
+
+# URL of the model
+MODEL_URL = "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite"
+MODEL_PATH = Path(__file__).parent.joinpath("models","blaze_face_detector_short_range.tflite")
+
+if not os.path.exists(MODEL_PATH):
+    import requests
+    response = requests.get(MODEL_URL)
+    with open(MODEL_PATH, 'wb') as file:
+        file.write(response.content)
+
+class FaceDetectorSingleton(object):
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(FaceDetectorSingleton, cls).__new__(cls)
+            options = mp.tasks.vision.FaceDetectorOptions(base_options=mp.tasks.BaseOptions(model_asset_path=MODEL_PATH))
+            cls._detector = mp.tasks.vision.FaceDetector.create_from_options(options)
+        return cls._instance
+
+    def detect(self, image):
+        return self._detector.detect(Image(image_format=ImageFormat.SRGB, data=image))
 
 COLOR_BGR:int=0
 COLOR_GRAY = cv2.COLOR_BGR2GRAY
 COLOR_RGB = cv2.COLOR_BGR2RGB
 
+# Distance measurements - Cosine Similairity or Mean Absolute Distance
 DIST_MEAS_METHOD_COSINE_SIM:int=0
 DIST_MEAS_METHOD_MEAN_ABSOLUTE_DIST:int=1
 
-class ImageClassifier:
+class ImageClassifier(FaceDetectorSingleton):
     """
     Wraps an image to find patterns in it
 
@@ -31,13 +54,14 @@ class ImageClassifier:
     """
 
     _texts_with_contour:'list[tuple[str,tuple[int,int,int,int]]] | None' = None
-    _faces:'list[Detection] | None' = None
-    _threshold: 'tuple[float,float,float] or float or None'
+    _image = None
+    _similarity_threshold: 'tuple[float,float,float] or float or None'
     _comp_method:int or None
     
-    def __init__(self,comp_method:int or None=None,threshold:'tuple[float,float,float] or float or None'=None,image_and_scheme=None, image_shape=None) -> None:
+    def __init__(self,comp_method:int or None=None,similarity_threshold:'tuple[float,float,float] or float or None'=None,image_and_scheme=None, image_shape=None) -> None:
         assert comp_method is None or comp_method == DIST_MEAS_METHOD_COSINE_SIM or comp_method == DIST_MEAS_METHOD_MEAN_ABSOLUTE_DIST
-        self._init_params_ = (comp_method,threshold,image_and_scheme,image_shape) # for copy() to work correctly must be in the same positions
+        
+        self._init_params_ = (comp_method,similarity_threshold,image_and_scheme,image_shape) # for copy() to work correctly must be in the same positions
         self._comp_method = comp_method
         if image_shape is not None:
             self._image = zeros(image_shape, dtype=uint8)
@@ -48,47 +72,42 @@ class ImageClassifier:
         else:
             self._image = None
             self._color_scheme = None
-        self._threshold = threshold
+        self._similarity_threshold = similarity_threshold
         
     def copy(self):
         '''
         makes a copy of itself and returns it
         '''
-        new_img = ImageClassifier(*self._init_params_)
+        new_img:ImageClassifier = ImageClassifier(*self._init_params_)
         if self._image is not None:
             new_img._image = self._image
         return new_img
 
-    def detect_faces(self, model:int=1, min_conf=0.2, return_contours=False):
+    def detect_faces(self):
         '''
-        Search and save faces internally
-        
-        Parameters
-        -----------
-        
-        model : int 0 for short range detection (2 meters from camera), 1 for long range detection (> 5 meters)
-        min_conf: minimum confidence for the recognition
+        Detects faces using Google mediapipe FaceDetection Model
 
         Returns
         -----------
-        True if at least one face has been found and return_contours is False
-        otherwise returns the full array of contours for every face
+        list of Detection
         '''
-        assert isinstance(model,int) and 0 <= model <= 1 and 0 <= min_conf <= 1
-        if self._image is not None:
-            with mp_face_detection.FaceDetection(model_selection=model, min_detection_confidence=min_conf) as face_detection:
-                self._image.flags.writeable = False
-                if self._color_scheme == COLOR_BGR:
-                    self._image = cv2.cvtColor(self._image, cv2.COLOR_BGR2RGB)
-                    self._faces = face_detection.process(self._image)
-                    self._image.flags.writeable = True
-                    self._image = cv2.cvtColor(self._image, cv2.COLOR_RGB2BGR)
-                else:
-                    self._faces = face_detection.process(self._image)
-                    self._image.flags.writeable = True
-                if return_contours:
-                    return self._faces.detections
-                return bool(self._faces.detections)
+        #assert isinstance(model,int) and 0 <= model <= 1 and 0 <= min_conf <= 1
+        if self._image is None:
+            raise Exception("No Image to detect")
+        return self.detect(self._image).detections
+            #with mp_face_detection.FaceDetection(model_selection=model, min_detection_confidence=min_conf) as face_detection:
+            #    self._image.flags.writeable = False
+            #    if self._color_scheme == COLOR_BGR:
+            #        self._image = cv2.cvtColor(self._image, cv2.COLOR_BGR2RGB)
+            #        self._faces = face_detection.process(self._image)
+            #        self._image.flags.writeable = True
+            #        self._image = cv2.cvtColor(self._image, cv2.COLOR_RGB2BGR)
+            #    else:
+            #        self._faces = face_detection.process(self._image)
+            #        self._image.flags.writeable = True
+            #    if return_contours:
+            #        return self._faces.detections
+            #    return bool(self._faces.detections)
 
     def _convert_grayscale(self,third_dimension:bool=False):
         '''
@@ -234,29 +253,10 @@ class ImageClassifier:
             return ''.join([elem[0] for elem in self._texts_with_contour])
         return bool(self._texts_with_contour)
 
-    def draw_detected_faces(self):
-        '''
-        Draws detected faces on image and returns the image with contours
-        '''
-        assert self._faces is not None
-        detections = self._faces
-        image = self._image.copy()
-        for detection in detections:
-            mp_drawing.draw_detections(image, detection)
-        return image
-
     def get_detected_text(self,with_contours=True):
         assert self._texts_with_contour is not None
         if with_contours: return self._texts_with_contour
         else: return ''.join([elem[0] for elem in self._texts_with_contour])
-        
-
-    def get_detected_faces(self,with_contours=False):
-        assert self._faces is not None
-        if with_contours:
-            return self._faces
-        else:
-            return len(self._faces)
 
     def get_img_shape(self):
         assert self._image is not None
@@ -268,9 +268,9 @@ class ImageClassifier:
         '''
         comp_method = self._comp_method
         if comp_method == DIST_MEAS_METHOD_COSINE_SIM:
-            return all(self.get_cosine_similarity(other_image) >= self._threshold)
+            return all(self.get_cosine_similarity(other_image) >= self._similarity_threshold)
         elif comp_method == DIST_MEAS_METHOD_MEAN_ABSOLUTE_DIST:
-            return all(self.get_mean_distance(other_image) <= self._threshold)
+            return all(self.get_mean_distance(other_image) <= self._similarity_threshold)
         else:
             return False
 
@@ -364,7 +364,6 @@ class ImageClassifier:
     def set_img(self,img):
         self._image = img
         self._texts_with_contour = None
-        self._faces = None
         return self
 
     def set_color_scheme(self,color_scheme:int):
@@ -420,9 +419,10 @@ def show_image(image,color_scheme=COLOR_BGR):
     plt.show()
 
 if __name__ == '__main__':
-    import os
-    img = cv2.cvtColor(cv2.imread(os.path.join(os.path.dirname(os.path.abspath(__file__)),"svm_dataset","screen01.png")), cv2.COLOR_BGR2RGB)
-    classif = ImageClassifier(image_and_scheme=[img,COLOR_RGB])
-    print(classif.detect_faces())
-    text = classif.extract_text(return_text=True)
-    print(f"text: {text}")
+    print(ImageClassifier())
+    #import os
+    #img = cv2.cvtColor(cv2.imread(os.path.join(os.path.dirname(os.path.abspath(__file__)),"svm_dataset","screen01.png")), cv2.COLOR_BGR2RGB)
+    #classif = ImageClassifier(image_and_scheme=[img,COLOR_RGB])
+    #print(classif.detect_faces())
+    #text = classif.extract_text(return_text=True)
+    #print(f"text: {text}")

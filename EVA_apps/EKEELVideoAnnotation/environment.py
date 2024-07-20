@@ -1,8 +1,14 @@
 from dotenv import load_dotenv
 import os
+from pathlib import Path
 
-if not load_dotenv(os.path.join(os.path.abspath(os.path.join(os.path.abspath(__file__), os.pardir,os.pardir)),"secrets.env")):
+env_file = Path(__file__).parent.parent.joinpath("sharedSecrets").joinpath("secrets.env")
+
+if not env_file.exists():
+    print(env_file)
     raise Exception(f"Missing .env file in EVA_apps directory, add it or ask to the supervisor of the project")
+
+load_dotenv(env_file)
 
 MONGO_CLUSTER_USERNAME = os.getenv("MONGO_CLUSTER_USERNAME")
 MONGO_CLUSTER_PASSWORD = os.getenv("MONGO_CLUSTER_PASSWORD")

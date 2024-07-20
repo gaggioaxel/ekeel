@@ -1,5 +1,5 @@
 from RAKE import Rake
-from stopwordsiso import stopwords
+#from stopwordsiso import stopwords
 import phrasemachine
 import spacy
 from spacy import Language as SpacyModel
@@ -32,6 +32,24 @@ from collections import Counter
 #################################################################################
 
 from nltk.tokenize import sent_tokenize
+import nltk
+
+#try:
+#    nltk.data.find('corpora/wordnet')
+#except LookupError:
+#    nltk.download("wordnet")
+
+try:
+    nltk.data.find('corpora/words')
+except LookupError:
+    nltk.download("words")
+
+
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download("punkt")
+
 from sentence_transformers import SentenceTransformer
 
 import db_mongo
@@ -39,88 +57,124 @@ from locales import Locale
 
 TOKENIZERS_PARALELLISM = True
 
+
 class NLPSingleton(object):
     '''
-    Singleton for Natural Language Processing
-
-    language: must be provided as ISO639-1 (pt1 or 2 letters 'en' for 'english') 
+    Multilanguage NLP Singleton
     '''
     _instance = None
-
-    def __new__(cls,language:str=None):
+    _punct:PunctuationModel
+    _spacy_models:'dict[str,SpacyModel]'
+    _embedder:'dict[str,SentenceTransformer]'
+    
+    def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super(NLPSingleton, cls).__new__(cls)
-            cls.rake_models:dict[str,Rake] = {}
-            cls.spacy_models:dict[str,SpacyModel] = {}
-            cls.models_names = {'spacy': {'en':'en_core_web_sm',
-                                          'it':'it_core_news_sm'},
-                                'punctuator': {"en": "oliverguhr/fullstop-punctuation-multilang-large", 
-                                               "it": "oliverguhr/fullstop-punctuation-multilang-large"},
-                                'sentence_transformer': {"en": 'paraphrase-distilroberta-base-v2', #TODO-TORRE using berta even if other models perform better? https://www.sbert.net/docs/pretrained_models.html
-                                                         "it": 'paraphrase-multilingual-MiniLM-L12-v2'} # No italian paraphraser but just multilingual. Consider training one?
-                               }
-            cls._title_openings = {'it':'[Dd]efinizione|[Ii]ntroduzione|\n', 
-                            'en':'[Dd]efinition|[Ii]ntroduction|\n'}
-            cls.punctuator_models:dict[str,PunctuationModel] = {}
-            cls.sentence_transformer_models:dict[str,SentenceTransformer] = {}
-        if language is not None:
-            cls._instance.load_language(language)
+            cls._punct = PunctuationModel()
+
+            models_name = { 'en':'en_core_web_sm',
+                            'it':'it_core_news_sm'}
+            cls._spacy_models = {}
+
+            # Dictionary comprehension to download and load models
+            cls._spacy_models = {
+                language: spacy.load(models_name[language]) 
+                for language in Locale().get_supported_languages() 
+                if models_name[language] in spacy.util.get_installed_models() or not spacy.cli.download(models_name[language])
+            }
+
+            cls._embedder = {
+                language: SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+                for language in Locale().get_supported_languages()
+            }
         return cls._instance
 
 
-    def load_language(self,language:str) -> bool:
-        if language not in Locale().get_supported_languages():
-                return False
-        
-        if not language in self.rake_models.keys():
-            self.rake_models[language] = Rake(list(stopwords(language)))
-            self.spacy_models[language] = spacy.load(self.models_names['spacy'][language])
-            self.sentence_transformer_models[language] = SentenceTransformer(self.models_names['sentence_transformer'][language])
-            self.punctuator_models[language] = PunctuationModel(self.models_names["punctuator"][language])#Punctuator(os.path.join(os.path.dirname(os.path.abspath(getfile(self.__class__))), "punctuator", self.models_names['punctuator'][language]))
-        return True
-    
-    def unload(self,language:str=None) -> None:
-        if language is not None:
-            if language in self.rake_models.keys():
-                self.rake_models.pop(language)
-                self.spacy_models.pop(language)
-                self.sentence_transformer_models.pop(language)
-                self.punctuator_models.pop(language)
-            return
-        else:
-            for language in self.rake_models.keys():
-                self.rake_models.pop(language)
-                self.spacy_models.pop(language)
-                self.sentence_transformer_models.pop(language)
-                self.punctuator_models.pop(language)      
+
+#class NLPSingleton(object):
+#    '''
+#    Singleton for Natural Language Processing
+#
+#    language: must be provided as ISO639-1 (pt1 or 2 letters 'en' for 'english') 
+#    '''
+#    _instance = None
+#
+#    def __new__(cls,language:str=None):
+#        if cls._instance is None:
+#            cls._instance = super(NLPSingleton, cls).__new__(cls)
+#            cls.rake_models:dict[str,Rake] = {}
+#            cls.spacy_models:dict[str,SpacyModel] = {}
+#            cls.models_names = {'spacy': {'en':'en_core_web_sm',
+#                                          'it':'it_core_news_sm'},
+#                                'punctuator': {"en": "oliverguhr/fullstop-punctuation-multilang-large", 
+#                                               "it": "oliverguhr/fullstop-punctuation-multilang-large"},
+#                                'sentence_transformer': {"en": 'paraphrase-distilroberta-base-v2', #TODO-TORRE using berta even if other models perform better? https://www.sbert.net/docs/pretrained_models.html
+#                                                         "it": 'paraphrase-multilingual-MiniLM-L12-v2'} # No italian paraphraser but just multilingual. Consider training one?
+#                               }
+#            cls._title_openings = {'it':'[Dd]efinizione|[Ii]ntroduzione|\n', 
+#                            'en':'[Dd]efinition|[Ii]ntroduction|\n'}
+#            cls.punctuator_models:dict[str,PunctuationModel] = {}
+#            cls.sentence_transformer_models:dict[str,SentenceTransformer] = {}
+#        if language is not None:
+#            cls._instance.load_language(language)
+#        return cls._instance
+#
+#
+#    def load_language(self,language:str) -> bool:
+#        if language not in Locale().get_supported_languages():
+#                return False
+#        
+#        if not language in self.rake_models.keys():
+#            self.rake_models[language] = Rake(list(stopwords(language)))
+#            self.spacy_models[language] = spacy.load(self.models_names['spacy'][language])
+#            self.sentence_transformer_models[language] = SentenceTransformer(self.models_names['sentence_transformer'][language])
+#            self.punctuator_models[language] = PunctuationModel(self.models_names["punctuator"][language])#Punctuator(os.path.join(os.path.dirname(os.path.abspath(getfile(self.__class__))), "punctuator", self.models_names['punctuator'][language]))
+#        return True
+#    
+#    def unload(self,language:str=None) -> None:
+#        if language is not None:
+#            if language in self.rake_models.keys():
+#                self.rake_models.pop(language)
+#                self.spacy_models.pop(language)
+#                self.sentence_transformer_models.pop(language)
+#                self.punctuator_models.pop(language)
+#            return
+#        else:
+#            for language in self.rake_models.keys():
+#                self.rake_models.pop(language)
+#                self.spacy_models.pop(language)
+#                self.sentence_transformer_models.pop(language)
+#                self.punctuator_models.pop(language)      
 
 
 
 ############## Used to download all the missing models at the startup ##################
-for model in NLPSingleton().models_names['spacy'].values():
-    if not model in spacy.util.get_installed_models():
-        spacy.cli.download(model)
+#for model in NLPSingleton().models_names['spacy'].values():
+#    if not model in spacy.util.get_installed_models():
+#        spacy.cli.download(model)
 
 ############## Download other models on request (because it instanciate them) ###########
 #for language in Locale().get_supported_languages():
 #    NLPSingleton(language)
 #########################################################################################
-    
 
 
-class SemanticText:
+class SemanticText(NLPSingleton):
     _text:str
-    _tokenized_text:str
+    _tokenized_text:'str or None'
     _language:str
-    _nlp_processors:NLPSingleton
+    _nlp:NLPSingleton
 
     def __init__(self,text:str,language:str) -> None:
         assert text is not None and language is not None, 'must set both text and language'
         self._text = text
-        self.language = language
-        self._nlp_processors = NLPSingleton(language)
+        self._tokenized_text = None
+        self._language = language
 
     def set_text(self,text:str,language:str=None):
+        '''
+        If language is None, it's assumed the same 
+        '''
         self._text = text
         if language is not None:
             self._language = language
@@ -129,15 +183,15 @@ class SemanticText:
     def get_text(self):
         return self._text
 
-    def has_text(self):
-        return self._text is not None
+    def get_language(self):
+        return self._language
     
     def lemmatize_abbreviations(self):
-        if self.language == Locale.get_pt1_from_full('English'):
+        '''
+        Used for english
+        '''
+        if self._language == Locale.get_pt1_from_full('English'):
             self._text = self._text.replace("'ve", " have").replace("'re", " are").replace("'s", " is").replace("'ll", " will")
-    
-    def get_title_opening(self,default:str=' '):
-        return self._nlp_processors._title_openings.get(self.language,default)
     
     def extract_keywords(self,maxWords:int=3,minFrequency:int=1):
         self.lemmatize_abbreviations()
@@ -179,24 +233,36 @@ class SemanticText:
         return concepts
     
     def extract_keywords_from_title(self):
-        str_text = re.sub(self.get_title_opening(),' ',self._text.lower())
-        return [keyword[0] for keyword in self._nlp_processors.rake_models[self.language].run(str_text, maxWords=3, minFrequency=1)] 
+        # TODO redo
+        #str_text = re.sub(self.get_title_opening(),' ',self._text.lower())
+        return None #[keyword[0] for keyword in self._nlp_processors.rake_models[self._language].run(str_text, maxWords=3, minFrequency=1)] 
     
-    def punctuate(self):
-        if self.has_text():
-            self._text = self._nlp_processors.punctuator_models[self.language].restore_punctuation(self._text)
-            print("text punctuated")
-        return self._text
-    
+    def _upper_first_cases_after_point(self):
+        # Upper first character after a full stop
+        self._text = self._text[0].upper() + re.sub(r'(?<=\.\s)([a-z])', lambda match: match.group(1).upper(), self._text[1:])
+
+    def punctuate(self, upper_first_word:bool= True):
+        assert self._text is not None
+        self._text = self._punct.restore_punctuation(self._text)
+        if upper_first_word:
+            self._upper_first_cases_after_point()
+
+    def lemmatize(self):
+        assert self._text is not None
+        return [token.lemma_ for token in self._spacy_models[self._language](self._text)]
+
     def tokenize(self):
-        self._tokenized_text = sent_tokenize(self._text,Locale.get_full_from_pt1(self.language))
+        if self._tokenized_text is None:
+            self._tokenized_text = sent_tokenize(self._text,Locale.get_full_from_pt1(self._language))
         return self._tokenized_text
     
     def get_embeddings(self,convert_to_tensor=True):
         if self._tokenized_text is None:
             self.tokenize()
-        return self._nlp_processors.sentence_transformer_models[self.language].encode(self._tokenized_text,convert_to_tensor=convert_to_tensor)
+        return self._embedder[self._language].encode(self._tokenized_text,convert_to_tensor=convert_to_tensor)
 
+def automatic_transcript_to_str(timed_transcript:'list[dict]'):
+    return " ".join(timed_sentence["text"] for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
 
 
 class TextCleaner:
@@ -209,10 +275,11 @@ class TextCleaner:
         return ' '.join(self.pattern.sub(' ',text).split()).lower()
 
 
-class TimedAndFramedText:
+class VideoSlide:
     """
-    Structure made of:
-        - _full_text: full string built for comparison purposes
+    Representation of a Slide in a video
+    A slide made of:
+        - _full_text: full string built for comparison purposes (not to be changed)
         - _framed_sentences: list of portions of a full_text composed field and their absolute location on the screen 
         - start_end_frames: list of tuples of num start and num end frames of this text
         
@@ -235,7 +302,7 @@ class TimedAndFramedText:
         self._full_text = full_text
  
     def copy(self):
-        tft_copy = TimedAndFramedText(framed_sentences=None,start_end_frames=self.start_end_frames)
+        tft_copy = VideoSlide(framed_sentences=None,start_end_frames=self.start_end_frames)
         tft_copy._framed_sentences=self._framed_sentences
         tft_copy._full_text = self._full_text
         return tft_copy
@@ -263,7 +330,7 @@ class TimedAndFramedText:
         full_text = self._full_text
         return [((full_text[start_char_pos:end_char_pos]),bb) for (start_char_pos,end_char_pos),bb in self._framed_sentences]
 
-    def merge_adjacent_startend_frames(self,max_dist:int=15) -> 'TimedAndFramedText':
+    def merge_adjacent_startend_frames(self,max_dist:int=15) -> 'VideoSlide':
         '''
         Merges this object adjacent (within a max_dist) frame times
         '''
@@ -281,7 +348,7 @@ class TimedAndFramedText:
         self.start_end_frames = merged_start_end_frames
         return self
 
-    def __lt__(self, other:'TimedAndFramedText'):
+    def __lt__(self, other:'VideoSlide'):
         return self.start_end_frames[0][0] < other.start_end_frames[0][0]
     
     def __repr__(self) -> str:
@@ -322,7 +389,7 @@ class TextSimilarityClassifier:
         self._words = set(words.words())
         self._noise_classifier = pipeline('text-classification', model='textattack/bert-base-uncased-imdb')
 
-    def is_partially_in(self,TFT1:TimedAndFramedText,TFT2:TimedAndFramedText) -> bool:
+    def is_partially_in(self,TFT1:VideoSlide,TFT2:VideoSlide) -> bool:
         '''
         Finds if the framed_text1 is part of the framed_text2
 
@@ -610,6 +677,10 @@ if __name__ == '__main__':
     text3 = 'YY\nS [ 2blteeretiny\n\nLeaves'
     text4 = 'Machine Learning definition'
     text5 = 'La divina commedia di Dante Alighieri è divisa su tre libri'
+
+    print(SemanticText("esperti","it").lemmatize())
+    raise Exception()
+
 
     print(SemanticText(text2,'en').extract_keywords_from_title())
     print(SemanticText(text4,'en').extract_keywords_from_title())

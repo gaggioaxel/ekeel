@@ -9,6 +9,7 @@ from numpy import round,empty,sum,array,clip,all,average,var,zeros,where,ones,dt
 
 
 import os
+from pathlib import Path
 from inspect import getfile
 import cv2
 from youtube_transcript_api import YouTubeTranscriptApi as YTTranscriptApi
@@ -24,7 +25,7 @@ from conllu import parse
 from re import match, search
 from pytube import YouTube
 import pafy
-import yt_dlp as youtube_dl
+import yt_dlp
 import requests
 
 from image import *
@@ -35,16 +36,12 @@ from collections_extension import LiFoStack
 from conll import get_text
 from Cluster import create_cluster_list, aggregate_short_clusters
 import db_mongo
-from audio import identify_language_audio
 from words import *
 from locales import Locale
+from NLP_API import *
+os.environ['LIBGL_ALWAYS_SOFTWARE'] = '1'
 
-
-# from lexrank import LexRank
-# from lexrank.mappings.stopwords import STOPWORDS
-
-# riassunto con bert
-# from summary import LectureEnsembler
+MAX_VIDEO_SECONDS = 18000
 
 '''
 variables to consider:
@@ -56,20 +53,6 @@ variables to consider:
     * add_sentence vs deprecated,
     * color_histogram threshold and frame range,
 '''
-
-#video_quello_corto = "https://www.youtube.com/watch?v=qgCvnogeN2s"
-#video_quello_medio = "https://www.youtube.com/watch?v=0K2qhSTrXtE&ab_channel=DocSpotDocSpo"
-#video_quello_lungo = "https://www.youtube.com/watch?v=DHXwC0xt1hk&t"
-#video_quello_indexato = "https://www.youtube.com/watch?v=URtsnESYcPk&ab_channel=DerekBanas"
-
-#mooc_intro = "https://www.youtube.com/watch?v=KuMRk-arGAk&list=PLV8Xi2CnRCUm0QOaRfPuMzFNUVxmYlEiV"
-#mooc_1 = "https://www.youtube.com/watch?v=sXLhYStO0m8&list=PLV8Xi2CnRCUm0QOaRfPuMzFNUVxmYlEiV&index=2"
-#mooc_2 = "https://www.youtube.com/watch?v=g8w-IKUFoSU&list=PLV8Xi2CnRCUm0QOaRfPuMzFNUVxmYlEiV&index=3"
-#mooc_3 = "https://www.youtube.com/watch?v=D4PGqxGWCT0&list=PLV8Xi2CnRCUm0QOaRfPuMzFNUVxmYlEiV&index=4"
-#mooc_4 = "https://www.youtube.com/watch?v=UuzKYffpxug&list=PLV8Xi2CnRCUm0QOaRfPuMzFNUVxmYlEiV&index=5"
-#mooc_5 = "https://www.youtube.com/watch?v=wbqpzILKENI&list=PLV8Xi2CnRCUm0QOaRfPuMzFNUVxmYlEiV&index=6"
-
-#mooc = mooc_1
 
 
 
@@ -90,40 +73,52 @@ class VideoAnalyzer:
     url:str
     video_id:str
     images_path:list = None
+    data:dict = None
     timed_subtitles:dict = None
-    transcript:SemanticText = None
-    _text_in_video: List[TimedAndFramedText] or None = None # type: ignore
-    _video_slidishness = None
+
+    _text_in_video: List[VideoSlide] or None = None # type: ignore
     _cos_sim_img_threshold = None
     _frames_to_analyze = None
     _slide_startends = None
     _slide_titles = None
 
 
-    def __init__(self, url:str, _testing_path:str=None) -> None:
+    def __init__(self, url:str, _testing_path=None) -> None:
         if self.is_youtube_url(url):
+            url = self.standardize_url(url)
             self.video_id = self.get_video_id(url)
             self.url = url
         else:
             raise Exception("not implemented!")
+
+        response = requests.get(url)
+        if response.status_code == 200 and ("Video non disponibile" in response.text or "Video unavailable" in response.text):
+            raise Exception("Video unavailable")
         
-        self.metadata = db_mongo.get_video_metadata(self.video_id)
-        if self.metadata is None:
-            self.metadata = {'video_id':self.video_id}
-            response = requests.get(url)
-            if response.status_code == 200 and ("Video non disponibile" in response.text or "Video unavailable" in response.text):
-                raise Exception("Video unavailable")
-
-            self.metadata['title'] = search(r'"title":"(.*?)"', response.text).group(1)
-            self.metadata['creator'] = search(r'"ownerChannelName":"(.*?)"', response.text).group(1)
-            self.metadata['duration'] = str(int(search(r'"approxDurationMs":"(\d+)"', response.text).group(1)) // 1000)
-
-        if _testing_path is not None:
-            self.folder_path = _testing_path
-        else:
-            class_path = os.path.dirname(os.path.abspath(getfile(self.__class__)))
-            self.folder_path = os.path.join(class_path,'static','videos',self.video_id)
+        self.data = db_mongo.get_video_data(self.video_id)
+        if self.data is None:
+            self.data = {'video_id': self.video_id,
+                         'title': search(r'"title":"(.*?)"', response.text).group(1),
+                         'creator': search(r'"ownerChannelName":"(.*?)"', response.text).group(1),
+                         'duration': str(int(search(r'"approxDurationMs":"(\d+)"', response.text).group(1)) // 1000),
+                         'upload_date': search(r'"uploadDate":"(.*?)"', response.text).group(1)
+                        }
+            if int(self.data["duration"]) > MAX_VIDEO_SECONDS:
+                raise Exception("The video is too long, please choose another video.")
             
+        if _testing_path is None:
+            self.folder_path = Path(__file__).parent \
+                                            .joinpath('static') \
+                                            .joinpath('videos') \
+                                            .joinpath(self.video_id)
+        else:
+            self.folder_path = _testing_path
+
+    @staticmethod
+    def standardize_url(url: str) -> str:
+        pattern = r'(?:=|\/|&)([A-Za-z0-9_\-]{11})(?=[=/&]|\b)'
+        id = re.findall(pattern,url)[0]
+        return "https://www.youtube.com/watch?v="+id
     
     @staticmethod
     def is_youtube_url(url:str) -> bool:
@@ -133,7 +128,6 @@ class VideoAnalyzer:
             '(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})')
 
         return match(youtube_video_regex, url) is not None
-    
 
     @staticmethod
     def get_video_id(url:str):
@@ -145,12 +139,10 @@ class VideoAnalyzer:
             return video_link.split('=')[-1]
         return video_link.split('/')[-1]
 
-
     def download_video(self):
         '''
         Downloads the video from the url provided (YouTube video)\n
         If the video has been removed from youtube, it attempts to remove the folder from both the drive and the database, then raises an Exception\n
-        _path parameter is used for testing purposes and should be left None
 
         --------------
         # Warning
@@ -163,8 +155,7 @@ class VideoAnalyzer:
         video_id = self.video_id
         folder_path = self.folder_path
 
-        if not os.path.exists(folder_path):
-            os.mkdir(folder_path)
+        os.makedirs(folder_path, exist_ok=True)
 
         if os.path.isfile(os.path.join(folder_path,video_id+'.mp4')):
             return self
@@ -192,7 +183,11 @@ class VideoAnalyzer:
         if not downloaded_successfully:
             try:
                 #print("using ytdl")
-                youtube_dl.YoutubeDL({'format': 'best[height<=480]', 'quiet': True}).download([url])
+                yt_dlp.YoutubeDL({  'quiet': True,
+                                    'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]',
+                                    'outtmpl': video_id+'.mp4',
+                                    'merge_output_format': 'mp4'
+                                      }).download([url])
                 downloaded_successfully = True
             except Exception as e:
                 print(e)
@@ -204,19 +199,19 @@ class VideoAnalyzer:
                 downloaded_successfully = True
             except Exception as e:
                 print(e)
-                raise Exception("There are no libraries to download the video because each one gives an error, cwd:"+os.getcwd())
+                raise Exception("There are no libraries to download the video because each one gives an error")
 
         os.chdir(prev_cwd)
 
         for file in os.listdir(folder_path):
-            if file.endswith(".mp4") or file.endswith(".mkv"):
-                os.rename(os.path.join(folder_path,file),os.path.join(folder_path, video_id+"."+file.split(".")[-1]))
-                vidcap = cv2.VideoCapture(os.path.join(folder_path,video_id+"."+file.split(".")[-1]))
+            if file.endswith(".mp4"):
+                os.rename(folder_path.joinpath(file),folder_path.joinpath(video_id+"."+file.split(".")[-1]))
+                vidcap = cv2.VideoCapture(folder_path.joinpath(video_id+"."+file.split(".")[-1]))
                 if not vidcap.isOpened() or not min((vidcap.get(cv2.CAP_PROP_FRAME_WIDTH),vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))) >= 360:
                     raise Exception("Video does not have enough definition to find text")
                 break    
         return self
-    
+  
 
     def _create_keyframes(self,start_times,end_times,S,seconds_range, image_scale:float=1,create_thumbnails=True):
         """
@@ -286,45 +281,34 @@ class VideoAnalyzer:
                 if all(changes_found): break
     
         if not create_thumbnails:
-            return start_times, end_times
+            return list(zip(start_times, end_times))
         
         # saving images to show into the timeline
         images_path = []
+        folder_path = Path(__file__).parent.joinpath("static","videos",self.video_id)
         for i, start_end in enumerate(start_end_frames):
             vidcap.set(cv2.CAP_PROP_POS_FRAMES, start_end[0])
             ret, image = vidcap.read()
-            assert ret
             image = cv2.resize(image,(array([image.shape[1],image.shape[0]],dtype='f')*image_scale).astype(int))
-            current_path = os.path.dirname(os.path.abspath(__file__))
-            image_name = str(i) #str(cluster_starts[i]).replace(".","_")
-            saving_position = os.path.join(current_path, "static", "videos", self.video_id, image_name + ".jpg")
+            name_file = folder_path.joinpath(str(i) + ".jpg")
             #print(saving_position)
             #saving_position = "videos\\" + video_id + "\\" + str(start) + ".jpg"
-            cv2.imwrite(saving_position, image)
-            images_path.append("videos/" + self.video_id + "/" + image_name + ".jpg")
+            cv2.imwrite(name_file.__str__(), image)
+            images_path.append("videos/" + self.video_id + "/" + str(i) + ".jpg")
         vsm.close()
         #print(images_path)
         self.images_path = images_path
-        return start_times, end_times
+        return list(zip(start_times, end_times))
         
 
-    def identify_language(self, format:Literal['full','pt1']='pt1') -> str:
+    def request_transcript(self, punctuated=True):
         '''
-        Recognizes the video language (currently implemented ita and eng so it raises exception if not one of these)
+        Downloads the transcript associated with the video and returns also whether the transcript is automatically or manually generated \n
+        Preferred manually generated
         '''
-        if not 'language' in self.metadata.keys():
-            self.metadata['language'] = identify_language_audio(self.folder_path, self.video_id)
-            
-        locale = Locale()
-        if not locale.is_language_supported(self.metadata['language']):
-            raise Exception(f"Language is not between supported ones: {locale.get_supported_languages()}")
-        return self.metadata['language'] if format =='pt1' else locale.get_full_from_pt1(self.metadata['language'])
 
-
-    def save_transcript(self):
-        '''
-        Downloads the speech associated with the video and returns also whether the transcript is automatically or manually generated
-        '''
+        if "transcript_data" in self.data.keys():
+            return self
         
         transcripts = YTTranscriptApi.list_transcripts(self.video_id)
         language = self.identify_language()
@@ -340,12 +324,39 @@ class VideoAnalyzer:
         subs_dict = transcript.fetch()
         for sub in subs_dict: sub["end"] = sub["start"] + sub.pop("duration")
 
-        self.timed_subtitles = {"timed_text": subs_dict, "is_autogenerated": autogenerated}
+        text = " ".join([sub["text"] for sub in subs_dict if sub['text'][0] != "["])
+        
+        sub_text = SemanticText(text, language)
+        if punctuated:
+            sub_text.punctuate()
+            with open(Path(self.folder_path).joinpath("punctuated_transcript.txt"), "w") as f:
+                f.write(sub_text._text.replace(". ", ".\n"))
+        punctuated_transcript = sub_text._text
+        timed_subtitles = []
+        punctuated_lowered = punctuated_transcript.lower()
+        for entry in subs_dict:
+            # Create a regex pattern for the current text entry
+            music_flag = "[" in entry["text"]
+            if not music_flag:
+                pattern = " ".join(r'[' + word[0].upper() + r'|' + word[0] + r']' + word[1:] + r'[.,:]?' 
+                                   for word in entry['text'].split())
+                regex = re.compile(pattern, re.IGNORECASE)
+                match = regex.search(punctuated_lowered)
+            if music_flag or match:
+                timed_subtitles.append({
+                    'text': entry["text"] 
+                                    if music_flag else punctuated_transcript[match.start():match.end()],
+                    'start': entry['start'],
+                    'end': entry['end']
+                })
+        self.data["transcript_data"] = {"timed_text": timed_subtitles, 
+                                        "is_autogenerated": autogenerated
+                                        }
         
         return self
 
 
-    def transcript_segmentation(self, c_threshold=0.22, sec_min=35, S=1, frame_range=15, create_thumbnails=True):
+    def transcript_segmentation_and_thumbnails(self, c_threshold=0.22, sec_min=35, S=1, frame_range=15, create_thumbnails=True):
         """
         :param c_threshold: threshold per la similarità tra frasi
         :param sec_min: se un segmento è minore di sec_min verrà unito con il successivo
@@ -357,122 +368,100 @@ class VideoAnalyzer:
         language = self.identify_language()
 
         # get punctuated transcription from the conll in the db
-        transcription:str = get_text(video_id)
-        if transcription is None:
-            if self.timed_subtitles is None:
-                self.save_transcript()
+        #transcription:str = get_text(video_id)
+        #if transcription is None:
+        #    if self.timed_subtitles is None:
+        #        self.request_transcript()
+#
+        #    '''Get the transcription from the subtitles'''
+        #    transcription:str = " ".join([sub["text"] for sub in self.timed_subtitles["timed_text"]])
+        #    if language == Locale().get_pt1_from_full('English'):
+        #        transcription:str = transcription.replace('\n', ' ').replace(">>", "") \
+        #                                         .replace("Dr.","Dr").replace("dr.","dr") \
+        #                                         .replace("Mr.","Mr").replace("mr.","mr")
+        #print("Checking punctuation...")
+        semantic_transcript = SemanticText(automatic_transcript_to_str(self.data["transcript_data"]["timed_text"]),language)
 
-            '''Get the transcription from the subtitles'''
-            transcription:str = " ".join([sub["text"] for sub in self.timed_subtitles["timed_text"]])
-            if language == Locale().get_pt1_from_full('English'):
-                transcription:str = transcription.replace('\n', ' ').replace(">>", "") \
-                                                 .replace("Dr.","Dr").replace("dr.","dr") \
-                                                 .replace("Mr.","Mr").replace("mr.","mr")
-        print("Checking punctuation...")
-        semantic_transcript = SemanticText(transcription,language)
-        if not (transcription.count(".") > 5 and transcription.count(",") > 5):
-            print("Adding punctuation!")
-            # TODO-TORRE parlare di modello italiano mancante
-            semantic_transcript.punctuate()
-
-        video = db_mongo.get_video(video_id)
+        #video = db_mongo.get_video(video_id)
         
+        '''Divide into sentences the punctuated transcription'''
+        print("Extracting sentences..")
+        sentences = semantic_transcript.tokenize()
 
-        # if segments times are not already in the db
-        if video is None or "segment_starts" not in video.keys():
-            if self.timed_subtitles is None:
-                self.save_transcript()
-
-            '''Divide into sentences the punctuated transcription'''
-            print("Extracting sentences..")
-            sentences = semantic_transcript.tokenize()
-            print(len(sentences))
+        '''For each sentence, add its start and end time obtained from the subtitles'''
+        timed_sentences = get_timed_sentences(self.data["transcript_data"]["timed_text"], sentences)
 
 
-            '''For each sentence, add its start and end time obtained from the subtitles'''
-            timed_sentences = get_timed_sentences(self.timed_subtitles["timed_text"], sentences)
+        '''Define the BERT model for similarity'''
+        print("Creating embeddings..")
+        #model = SentenceTransformer('paraphrase-distilroberta-base-v1')
+        #model = SentenceTransformer('stsb-roberta-large')
+
+        '''Compute a vector of numbers (the embedding) to idenfity each sentence'''
+        #embeddings = model.encode(sentences, convert_to_tensor=True)
+        embeddings = semantic_transcript.get_embeddings()
+
+        '''Create clusters based on semantic textual similarity, using the BERT embeddings'''
+        print("Creating initials segments..")
+        clusters = create_cluster_list(timed_sentences, embeddings, c_threshold)
 
 
-            '''Define the BERT model for similarity'''
-            print("Creating embeddings..")
-            #model = SentenceTransformer('paraphrase-distilroberta-base-v1')
-            #model = SentenceTransformer('stsb-roberta-large')
+        '''Aggregate togheter clusters shorter than 40 seconds in total'''
+        refined_clusters = aggregate_short_clusters(clusters, sec_min)
 
-            '''Compute a vector of numbers (the embedding) to idenfity each sentence'''
-            #embeddings = model.encode(sentences, convert_to_tensor=True)
-            embeddings = semantic_transcript.get_embeddings()
-            
+        start_times = []
+        end_times = []
 
-            '''Create clusters based on semantic textual similarity, using the BERT embeddings'''
-            print("Creating initials segments..")
-            clusters = create_cluster_list(timed_sentences, embeddings, c_threshold)
+        '''Print the final result'''
+        for c in refined_clusters:
+            start_times.append(c.start_time)
+            end_times.append(c.end_time)
+        self.data["video_data"] = {"segments": list(zip(start_times, end_times))}
 
-
-            '''Aggregate togheter clusters shorter than 40 seconds in total'''
-            refined_clusters = aggregate_short_clusters(clusters, sec_min)
-
-            start_times = []
-            end_times = []
-            #print("Clusters done")
-
-            '''Print the final result'''
-            for c in refined_clusters:
-                start_times.append(c.start_time)
-                end_times.append(c.end_time)
-            self.metadata["segment_starts"] = start_times
-            self.metadata["segment_ends"] = end_times
-        else:
-            start_times = video["segment_starts"]
-            end_times = video["segment_ends"]
 
         print("Reached the part of finding clusters")
 
         '''Find and append to each cluster the 2 most relevant sentences'''
         #num_sentences = 2
         #sumy_summary(refined_clusters, num_sentences)
-        self.transcript = semantic_transcript
+        #self.transcript = semantic_transcript
 
 
         '''Adjust end and start time of each cluster based on detected scene changes'''
-        current_path = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.join(current_path, "static", "videos", video_id)
-        if not create_thumbnails:
-            start_times, end_times = self._create_keyframes(start_times, end_times, S, frame_range, create_thumbnails=False)
-            self.metadata['segment_starts'] = start_times
-            self.metadata['segment_ends'] = end_times
-            return
-
-        if not any(File.endswith(".jpg") for File in os.listdir(path)):
-            start_times, end_times = self._create_keyframes(start_times, end_times, S, frame_range)
-            self.metadata['segment_starts'] = start_times
-            self.metadata['segment_ends'] = end_times
-            print("Done creating keyframes")
-        else:
-            print("keyframes already present")
-            images = []
-            for File in os.listdir(path):
-                if File.endswith(".jpg"):
-                    images.append(File.split(".")[0])
-            images.sort(key=int)
-            self.images_path = ["videos/" + video_id + "/" + im + ".jpg" for im in images]
+        #path = Path(__file__).parent.joinpath("static", "videos", video_id)
+        #if not create_thumbnails:
+        #    self.data["video_data"]['segments'] = self._create_keyframes(start_times, end_times, S, frame_range, create_thumbnails=False)
+        #    return
+#
+        #if not any(File.endswith(".jpg") for File in os.listdir(path)):
+        #    self.data["video_data"]['segments'] = self._create_keyframes(start_times, end_times, S, frame_range)
+        #else:
+        #    print("keyframes already present")
+        #    images = []
+        #    for File in os.listdir(path):
+        #        if File.endswith(".jpg"):
+        #            images.append(File.split(".")[0])
+        #    images.sort(key=int)
+        #    self.images_path = ["videos/" + video_id + "/" + im + ".jpg" for im in images]
         return
     
 
-    def extract_keywords(self,maxWords:int=1,minFrequency:int=3) -> None:
-        video_doc = db_mongo.get_video_metadata(self.video_id)
-        if video_doc is None:
-            if self.transcript is None:
-                self.transcript_segmentation(create_thumbnails=False)
-            self.metadata["extracted_keywords"] = self.transcript.extract_keywords(maxWords, minFrequency)
-            return
-        self.metadata["extracted_keywords"] = video_doc["extracted_keywords"]
+    #def extract_keywords(self,maxWords:int=1,minFrequency:int=3) -> None:
+    #    video_doc = db_mongo.get_video_metadata(self.video_id)
+    #    if video_doc is None:
+    #        if self.transcript is None:
+    #            self.transcript_segmentation_and_thumbnails(create_thumbnails=False)
+    #        self.data["extracted_keywords"] = self.transcript.extract_keywords(maxWords, minFrequency)
+    #        return
+    #    self.data["extracted_keywords"] = video_doc["extracted_keywords"]
 
 
-    def is_not_too_long(self,max_seconds=18000):
+    def is_too_long(self,max_seconds=MAX_VIDEO_SECONDS):
         video = VideoSpeedManager(self.video_id).get_video()
-        return video.get_count_frames() / video.get_fps() <= max_seconds
+        return video.get_count_frames() / video.get_fps() > max_seconds
 
 
+#######################
     def _preprocess_video(self, vsm:VideoSpeedManager,num_segments:int=150,estimate_threshold=False,_show_info=False):
         '''
         Split the video into `num_segments` windows frames, for every segment it's taken the frame that's far enough to guarantee a minimum sensibility\n
@@ -498,8 +487,8 @@ class VideoAnalyzer:
         with holes between segments 4-5 and 7-8
         '''
         num_frames = vsm.get_video().get_count_frames()
-        speed = floor(num_frames / (num_segments))
-        vsm.lock_speed(speed)
+        step = floor(num_frames / (num_segments))
+        vsm.lock_speed(step)
         iterations_counter:int = 0
         txt_cleaner = TextCleaner()
         if estimate_threshold:
@@ -507,7 +496,8 @@ class VideoAnalyzer:
 
         # Optimization is performed by doing a first coarse-grained analysis with the XGBoost model predictor
         # then set those windows inside the VideoSpeedManager
-        scene_model = XGBoostModelAdapter(os.path.dirname(os.path.realpath(__file__))+"/xgboost/model/xgboost500.sav")
+        model = XGBoostModelAdapter(Path(__file__).parent.joinpath("models","xgboost500.sav").__str__())
+        #XGBoostModelAdapter(os.path.dirname(os.path.realpath(__file__))+"/xgboost/model/xgboost500.sav")
 
         start_frame_num = None
         frames_to_analyze:List[Tuple[int,int]] = []
@@ -515,25 +505,34 @@ class VideoAnalyzer:
         curr_frame = ImageClassifier(image_and_scheme=[None,vsm._color_scheme])
         prev_frame = curr_frame.copy()
         frame_w,frame_h,num_colors = vsm.get_video().get_dim_frame()
+        
+        # Loops through num segments and for every segment checks if is a slide
+        # When at least one 
+        # Iterates over num segments
         while iterations_counter < num_segments:
+            
+            # Stores two frames
             prev_frame.set_img(vsm.get_frame())
             curr_frame.set_img(vsm.get_following_frame())
-            if scene_model.is_enough_slidish_like(prev_frame):
+            if model.is_enough_slidish_like(prev_frame):
                 frame = prev_frame.get_img()
+
                 # validate slide in frame by slicing the image in a region that removes logos (that are usually in corners)
-                region = (slice(int(frame_h/4),int(frame_h*3/4)),slice(int(frame_w/4),int(frame_w*3/4)))
+                region = (slice(int(frame_h/11),int(frame_h*8/9)),slice(int(frame_w/8),int(frame_w*7/8)))
                 prev_frame.set_img(frame[region])
+
                 # double checks the text  
                 is_slide = bool(txt_cleaner.clean_text(prev_frame.extract_text(return_text=True)).strip())
+                #from matplotlib import pyplot as plt; plt.figure("Figure 1"); plt.imshow(frame); plt.figure("Figure 2"); plt.imshow(prev_frame.get_img())
             else:
                 is_slide = False
             answ_queue.appendleft(is_slide); answ_queue.pop()
 
             # if there's more than 1 True discontinuity -> cut the video
             if any(answ_queue) and start_frame_num is None:
-                start_frame_num = int(clip(iterations_counter-1,0,num_segments))*speed
+                start_frame_num = int(clip(iterations_counter-1,0,num_segments))*step
             elif not any(answ_queue) and start_frame_num is not None:
-                frames_to_analyze.append((start_frame_num,(iterations_counter-1)*speed))
+                frames_to_analyze.append((start_frame_num,(iterations_counter-1)*step))
                 start_frame_num = None
 
             if estimate_threshold:
@@ -554,34 +553,34 @@ class VideoAnalyzer:
             else:
                 print(f"Cosine_similarity threshold: {cos_sim_img_threshold}")
             print(f"Frames to analyze: {frames_to_analyze} of {num_frames} total frames")
-        self._video_slidishness = sum([frame_window[1] - frame_window[0] for frame_window in frames_to_analyze])/(num_frames-1)
+        self.data["video_data"]["slides_percentage"] = sum([frame_window[1] - frame_window[0] for frame_window in frames_to_analyze])/(num_frames-1)
         self._cos_sim_img_threshold = cos_sim_img_threshold 
         self._frames_to_analyze = frames_to_analyze
 
-    def _merge_and_cleanup(self,TFT_list:'list[TimedAndFramedText]',vsm: VideoSpeedManager,frame:ImageClassifier,frames_dist_tol:int):
+    def _merge_and_cleanup(self,TFT_list:'list[VideoSlide]',vsm: VideoSpeedManager,frame:ImageClassifier,frames_dist_tol:int):
         
         txt_classif = TextSimilarityClassifier()
 
-        def compact_embedding_partial_words(TFT_list:'list[TimedAndFramedText]',text_classifier:TextSimilarityClassifier,frames_max_dist:int):
+        def compact_embedding_partial_words(TFT_list:'list[VideoSlide]',text_classifier:TextSimilarityClassifier,frames_max_dist:int):
             '''
-            Merge near TimedAndFramedText elements of the list\n
+            Merge near VideoSlide elements of the list\n
             Goes in both directions reversing the array and lastly iterates over all the elements with an (optimized) nested loop\n
 
             ----------
             Parameters
             ----------
             TFT_list : list of texts
-            text_classifier : utility class for text similarity comparison used by TimedAndFramedText for finding partial texts
+            text_classifier : utility class for text similarity comparison used by VideoSlide for finding partial texts
 
             Returns
             -------
             Same length or shorter list with elements merged
             '''
             input_list = TFT_list
-            elem1:TimedAndFramedText
-            elem2:TimedAndFramedText
+            elem1:VideoSlide
+            elem2:VideoSlide
             for _reverse in [False, True]:
-                output_list:'list[TimedAndFramedText]' = []
+                output_list:'list[VideoSlide]' = []
                 for elem1, elem2 in pairwise_linked_iterator(input_list,reversed=_reverse):
                     if text_classifier.is_partially_in(elem1,elem2): elem2.extend_frames(elem1.start_end_frames)
                     else: output_list.append(elem1)
@@ -605,9 +604,9 @@ class VideoAnalyzer:
         txt_classif.set_comparison_methods([COMPARISON_METHOD_TXT_SIM_RATIO,
                                             COMPARISON_METHOD_TXT_MISS_RATIO])
         
-        def remove_classification_errors(lst: List[TimedAndFramedText],vsm: VideoSpeedManager,img_classif:ImageClassifier,txt_classif: TextSimilarityClassifier,min_seconds_duration=2):
+        def remove_classification_errors(lst: List[VideoSlide],vsm: VideoSpeedManager,img_classif:ImageClassifier,txt_classif: TextSimilarityClassifier,min_seconds_duration=2):
             '''
-            for every element of the input list of TimedAndFramedText checks if at every start frame the text recognized is approximatly the same\n
+            for every element of the input list of VideoSlide checks if at every start frame the text recognized is approximatly the same\n
             checks also that the text has a minimum len and the segment's duration is long enough\n
             otherwise it pops that startend frames or removes the whole element if it's too distant from the real one found 
             '''
@@ -630,8 +629,7 @@ class VideoAnalyzer:
 
         return remove_classification_errors(TFT_list,vsm,frame,txt_classif)
     
-
-    def analyze_video(self,color_scheme_for_analysis:int=COLOR_BGR,_show_info:bool=False,_plot_contours=False):
+    def analyze_video(self,color_scheme_for_analysis:int=COLOR_BGR,_show_info:bool=True,_plot_contours=False):
         '''
         Firstly the video is analized in coarse-grained way, by a ML model to recognize frames of slides
         and the threshold for the difference between two frames is concurrently estimated. \n
@@ -652,32 +650,32 @@ class VideoAnalyzer:
         None but sets internal text that can be retrieved with ``get_extracted_text()``
         '''
         assert color_scheme_for_analysis is not None and (color_scheme_for_analysis == COLOR_BGR or color_scheme_for_analysis == COLOR_RGB)
-        start_time = time.time()
         vsm = VideoSpeedManager(self.video_id,color_scheme_for_analysis)
-        if self._video_slidishness is None:
-            self._preprocess_video(vsm,_show_info=_show_info)
-        else:
-            self._cos_sim_img_threshold = ones((1,vsm.get_video().get_dim_frame()[2]))*0.9999
-        img_diff_threshold, frames_to_analyze = self._cos_sim_img_threshold, self._frames_to_analyze
-        vsm.reset()
-        if frames_to_analyze is None:
+        if not self.is_slide_video():
             self._text_in_video = []
-            return
+            return self
+        self._cos_sim_img_threshold = ones((1,vsm.get_video().get_dim_frame()[2]))*0.9999
+        #img_diff_threshold, frames_to_analyze = self._cos_sim_img_threshold, self._frames_to_analyze
+        img_diff_threshold = self._cos_sim_img_threshold
+        vsm.reset()
+        #if frames_to_analyze is None:
+        #    self._text_in_video = []
+        #    return self
         
         curr_frame = ImageClassifier(   comp_method = DIST_MEAS_METHOD_COSINE_SIM,
-                                        threshold = img_diff_threshold,
+                                        similarity_threshold = img_diff_threshold,
                                         image_and_scheme = [None,color_scheme_for_analysis]   )
         prev_frame = curr_frame.copy()
 
-        output_TFT_stack:LiFoStack[TimedAndFramedText] = LiFoStack()
+        output_TFT_stack:LiFoStack[VideoSlide] = LiFoStack()
         iterations_counter:int = 0
-        collisions_TFT_list:'list[TimedAndFramedText]' = []
+        collisions_TFT_list:'list[VideoSlide]' = []
        #max_speed = 0
         txt_classif = TextSimilarityClassifier(comp_methods=[COMPARISON_METHOD_TXT_SIM_RATIO,
                                                              COMPARISON_METHOD_TXT_MISS_RATIO])
        #vsm.lock_speed()
-        if not vsm.is_full_video(frames_to_analyze):
-            vsm.set_analysis_frames(frames_to_analyze)
+        #if not vsm.is_full_video(frames_to_analyze):
+        #    vsm.set_analysis_frames(frames_to_analyze)
 
         while not vsm.is_video_ended():
         
@@ -689,7 +687,7 @@ class VideoAnalyzer:
             if len(collisions_TFT_list) == 0 and curr_frame.extract_text():
                 num_start_frame = vsm.collide_and_get_fixed_num_frame()
                 curr_frame.set_img(vsm.get_frame_from_num(num_start_frame))
-                collisions_TFT_list.append(TimedAndFramedText( framed_sentences= curr_frame.extract_text(return_text=True,with_contours=True),
+                collisions_TFT_list.append(VideoSlide( framed_sentences= curr_frame.extract_text(return_text=True,with_contours=True),
                                                                startend_frames= [(num_start_frame,-1)]))
 
             #   otherwise put the text not visible any more in the output stack
@@ -710,7 +708,7 @@ class VideoAnalyzer:
                 for indx_in_stack in sorted(where(~coll_TFT_stack_mask)[0],reverse=True):
                     coll_TFT_elem = collisions_TFT_list.pop(indx_in_stack)
                     merged = False
-                    output_TFT_elem:TimedAndFramedText  # hinting variables for the IDE 
+                    output_TFT_elem:VideoSlide  # hinting variables for the IDE 
                     #  match on every element of the list sorted reversed because highly possible that 
                     for output_TFT_elem in output_TFT_stack: 
                         #   if already in the list append the starting and ending frames to the field in the struct 
@@ -742,7 +740,7 @@ class VideoAnalyzer:
 
         if _show_info:        
             print("video analysis completed!"+" "*30)
-            print(f"total time = {round(time.time()-start_time,decimals=3)}"+" "*20)
+            #print(f"total time = {round(time.time()-start_time,decimals=3)}"+" "*20)
 
         if _plot_contours:
             video = vsm.get_video()
@@ -793,6 +791,60 @@ class VideoAnalyzer:
                         plt.show()
 
         self._text_in_video = output_TFT_list
+        return self
+
+    #def analyze_videoVSimple(self,_show_info:bool=True):
+
+
+#######################
+
+
+############ New Methods ###########
+    def identify_language(self, format:Literal['full','pt1']='pt1') -> str:
+        '''
+        Recognizes the video language (currently implemented ita and eng so it raises exception if not one of these)
+        '''
+        if not 'language' in self.data.keys():
+            self.data['language'] = list(YTTranscriptApi.list_transcripts(self.video_id)._generated_transcripts.keys())[0] 
+            
+        locale = Locale()
+        if not locale.is_language_supported(self.data['language']):
+            raise Exception(f"Language is not between supported ones: {locale.get_supported_languages()}")
+        return self.data['language'] if format =='pt1' else locale.get_full_from_pt1(self.data['language'])
+
+    def analyze_transcript(self, async_call=False, lemmatize_terms=False):
+        '''
+        TODO can concat the slides content to further refine the analysis
+        '''
+        #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
+        if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
+            return self
+        
+        transcript = automatic_transcript_to_str(self.data["transcript_data"]["timed_text"])
+        language = self.identify_language()
+        api_obj = ItaliaNLAPI()
+        doc_id = api_obj.upload_document(transcript, language = language, async_call=async_call)
+        api_obj.wait_for_pos_tagging(doc_id)
+        terms = api_obj.execute_term_extraction(doc_id)
+        if lemmatize_terms:
+            terms["term"] = terms["term"].apply(lambda t: " ".join(SemanticText(t.lower(),language=language).lemmatize()))
+
+        try:
+            self.data["transcript_data"].update({ "ItaliaNLP_doc_id":   doc_id, 
+                                                  "terms":              terms.to_dict('records')})
+        except Exception:
+            raise Exception("Error extracting terms with the API")
+        
+        self.transcript_segmentation_and_thumbnails()
+        
+        return self
+        
+    def lemmatize_terms(self):
+        assert "transcript_data" in self.data.keys() and "terms" in self.data["transcript_data"].keys(), "Error in pipeline in segmentation.py -> lemmatize_terms()"
+        terms = self.data["transcript_data"]["terms"]
+        lang = self.identify_language()
+        return [" ".join(SemanticText(term["term"], language=lang).lemmatize()) for term in terms]
+####################################
 
 
     def get_extracted_text(self,format:Literal['str','list','list[text,box]','set[times]','list[text,time,box]','list[time,list[text,box]]','list[id,text,box]']='list'): 
@@ -804,7 +856,7 @@ class VideoAnalyzer:
         ------------
         - format (str): The desired format of the output. Defaults to 'list[text_id, timed-tuple]'.
             - 'str': single string with the text joined together.\n
-            - 'list': list of TimedAndFramedTexts\n
+            - 'list': list of VideoSlides\n
             - 'set[times] : list of unique texts' times (in seconds) (used for creation of thumbnails)
             - 'list[time,list[text,box]]': a list of (times, list of (sentence, bounding-box))
             - 'list[text,box]': list of texts with bounding boxes
@@ -860,7 +912,7 @@ class VideoAnalyzer:
                             for startend in tft.start_end_frames]
         return None
 
-    def is_slide_video(self,slide_frames_percent_threshold:float=0.5,return_value=False,return_slide_frames=False,_show_info=False):
+    def is_slide_video(self,slide_frames_percent_threshold:float=0.5,_show_info=True):
         '''
         Computes a threshold against a value that can be calculated or passed as precomputed_value
         
@@ -870,17 +922,9 @@ class VideoAnalyzer:
         else\n
         True and slide frames if percentage of recognized slidish frames is above the threshold
         '''
-        if self._video_slidishness is None:
+        if not "slides_percentage" in self.data["video_data"].keys():
             self._preprocess_video(vsm=VideoSpeedManager(self.video_id,COLOR_RGB),_show_info=_show_info)
-        self._video_slidishness:float
-        
-        if return_value:
-            returned_elements = self._video_slidishness
-        else:
-            returned_elements = self._video_slidishness > slide_frames_percent_threshold
-        if return_slide_frames:
-            returned_elements = (returned_elements, self._frames_to_analyze)
-        return returned_elements
+        return self.data["video_data"]['slides_percentage'] > slide_frames_percent_threshold
 
     def extract_slides_title(self,quant:float=.8,axis_for_outliers_detection:Literal['w','h','wh']='h',union=True,with_times=True) -> list:
         """
@@ -897,7 +941,7 @@ class VideoAnalyzer:
             
         Prerequisites :
         ------------
-        Must have runned analyze_video()
+        Must have runned analyze_video()ffmpeg -i /home/gaggio/Documents/Research/ekeel/EVA_apps/EKEELVideoAnnotation/static/videos/lskmIRldsyU/lskmIRldsyU.mp4 -o /home/gaggio/Documents/Research/ekeel/EVA_apps/EKEELVideoAnnotation/static/videos/lskmIRldsyU/lskmIRldsyU.wav
         
         Parameters :
         ----------
@@ -926,7 +970,7 @@ class VideoAnalyzer:
         slides_group = []
         # group by slide
         # x[0] is one element of indices_above_threshold to compare, x[1] is another
-        # [1] accesses the startend seconds of that TimedAndFramedText  [text, startend, bounding_boxes]
+        # [1] accesses the startend seconds of that VideoSlide  [text, startend, bounding_boxes]
         # [0] picks the start second of that object [start_second, end_second]
         for _,g in groupby(enumerate(indices_above_threshold),lambda x: texts_with_bb[x[0]][1][0] - texts_with_bb[x[1]][1][0]):
             slides_group.append(list(reversed(list(map(lambda x:x[1], g)))))
@@ -953,68 +997,39 @@ class VideoAnalyzer:
         return [itemgetter(*indices_above_threshold)(texts_with_bb)]
         
         
-
     def create_thumbnails(self):
         '''
         Create thumbnails of keyframes from slide segmentation
-
-        --------------
-        Prerequisites
-        --------------
-        Must have runned analyze_video() or set(slide_startends)
-
-        -------------------------------
-        it's used to replace previous creation of keyframes when video is enough slidish\n
         '''
-
-        assert self._slide_startends is not None or self._text_in_video is not None, "Must firstly either set slides startends or analyze the video"
-        
-        times = self._slide_startends
-        print(times)
-        if times is None:
-            times = sorted(self.get_extracted_text(format='set[times]'))
-        else:
-            times = sorted(times)
+                
+        #times = self._slide_startends
+        #if times is None:
+        #    times = sorted(self.get_extracted_text(format='set[times]'))
+        #else:
+        #    times = sorted(times)
 
         images_path = []
-        images_already_present = False
-        current_path = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.join(current_path, "static", "videos", self.video_id)
+        path = Path(__file__).parent.joinpath("static","videos",self.video_id) #os.path.dirname(os.path.abspath(__file__))
         if any(File.endswith(".jpg") for File in os.listdir(path)):
-            thumbnails = [File for File in os.listdir(path) if File.endswith(".jpg")]
-            if len(times) == len(thumbnails):
-                for i in range(len(thumbnails)):
-                    for File in os.listdir(path):
-                        if File.startswith(str(i)+"."):
-                            images_path.append("videos/" + self.video_id + "/" + File)
-                assert len(thumbnails) == len(images_path), "Images are incorrectly labeled!"
-                images_already_present = True
-            else:
-                for File in os.listdir(path):
-                    if not File.endswith(".mp4"):
-                        print("removing "+File)
-                        os.remove(os.path.join(path,File))
-                images_already_present = False
-
-        start_times = []
-        end_times = []
-        video = LocalVideo(self.video_id)
-        for i,(start_seconds,end_seconds) in enumerate(times):
-            start_times.append(start_seconds)
-            end_times.append(end_seconds)
-            if not images_already_present:
-                video.set_num_frame(video.get_num_frame_from_time(start_seconds+0.5))
-                image = video.extract_next_frame()
-                assert image is not None
-                file_name = str(i) + ".jpg"
-                image_file_dir = os.path.join(path, file_name)
-                cv2.imwrite(image_file_dir, image)
-                images_path.append("videos/" + self.video_id + "/" + file_name)
+            for file in sorted(os.listdir(path)):
+                if file.endswith(".jpg"):
+                    images_path.append(f"videos/{self.video_id}/{file}")
+            self.images_path = images_path
+            return self
         
-        self.metadata["segment_starts"] = start_times
-        self.metadata["segment_ends"] = end_times
+        times = self.data["video_data"]["segments"]
+        video = LocalVideo(self.video_id)
+        for i,(start_seconds,_) in enumerate(times):
+            video.set_num_frame(video.get_num_frame_from_time(start_seconds+0.5))
+            image = video.extract_next_frame()
+            file_name = str(i) + ".jpg"
+            image_file_dir = path.joinpath(file_name)
+            cv2.imwrite(image_file_dir.__str__(), image)
+            images_path.append(f"videos/{self.video_id}/{i}.jpg")
+        
         self.images_path = images_path
-        return
+
+        return self
 
     def adjust_or_insert_definitions_and_indepth_times(self,burst_concepts:List[dict],definition_tol_seconds:float = 3,_show_output=False):
         '''
@@ -1034,7 +1049,7 @@ class VideoAnalyzer:
         
         
         # extract definitions and in-depths in the transcript of every title based on slide show time and concept citation (especially with definition)
-        timed_sentences = get_timed_sentences(self.save_transcript()[0],[sent.metadata["text"] for sent in parse(get_text(self.video_id,return_conll=True)[1])])
+        timed_sentences = get_timed_sentences(self.request_transcript()[0],[sent.data["text"] for sent in parse(get_text(self.video_id,return_conll=True)[1])])
 
         video_defs = {}
         video_in_depths = {}
@@ -1050,7 +1065,7 @@ class VideoAnalyzer:
                 if len(title_keyword) > 0:
                     title_keyword = title_keyword[0]
                 else:
-                    title_keyword = SemanticText(title['text'],self.metadata['language']).extract_keywords_from_title()[0]
+                    title_keyword = SemanticText(title['text'],self.data['language']).extract_keywords_from_title()[0]
                 for sent_id, timed_sentence in enumerate(timed_sentences):
                     if title_keyword not in video_defs.keys() and \
                        abs(start_time_title - timed_sentence['start']) < definition_tol_seconds and \
@@ -1164,55 +1179,14 @@ class VideoAnalyzer:
                     
         return added_concepts,burst_concepts
 
-    def reconstruct_slides_from_times_set(self):
-        '''
-        From the slides_startends previously set, reads the text in the first frame for each slide and converts it into TimedAndFramedText
-        '''
-        assert self._slide_startends is not None, "Must firstly load (set) startend frames read from database to run this function"
-        slide_startends = self._slide_startends
-        frame = ImageClassifier(image_and_scheme=[None,COLOR_BGR])
-        loc_video = LocalVideo(self.video_id)
-        TFT_list = []
-        for slide_start_seconds,slide_end_seconds in slide_startends:
-            slide_frames_startend = (loc_video.get_num_frame_from_time(slide_start_seconds),loc_video.get_num_frame_from_time(slide_end_seconds))
-            loc_video.set_num_frame(slide_frames_startend[0])
-            frame.set_img(loc_video.extract_next_frame())
-            text_extracted = frame.extract_text(return_text=True,with_contours=True)
-            TFT_list.append(TimedAndFramedText(text_extracted,[slide_frames_startend]))
-        self._text_in_video = TFT_list
-        
-
-
-    def set(self,video_slidishness=None,slidish_frames_startend=None,slide_startends=None,titles=None):
-        '''
-        Set parameters at various steps:
-            - video_slidishness : percentage of slide frames overall
-            - slidish_frames_startend : list of timeframes of probably slides computed after the preprocess
-            - slide_startends : list of timeframes of the exact slides
-            - titles : list of TimedAndFramedTexts that represent titles of their respective slides
-        '''
-        if video_slidishness is not None:
-            self._video_slidishness = video_slidishness
-        if slidish_frames_startend is not None:
-            self._frames_to_analyze = slidish_frames_startend
-        if slide_startends is not None:
-            self._slide_startends = slide_startends
-        if titles is not None:
-            self._slide_titles = titles
-        return self
-
 
 def _run_one_segmentation_job(video_id):
     pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
     #print(db_mongo.get_video_segmentation(video_id,raise_error=False))
     vid_analyzer = VideoAnalyzer(video_id)
     if not vid_analyzer.is_not_too_long():
-        segmentation_data = {'video_id':video_id,'video_slidishness':0.0,'slidish_frames_startend':[]}
+        segmentation_data = {'video_id':video_id,'slides_percentage':0.0,'slidish_frames_startend':[]}
     else: 
-        # if there's no data in the database check the video slidishness
-        video_slidishness,slide_frames = vid_analyzer.is_slide_video(return_value=True,return_slide_frames = True)
-        # prepare data for upload
-        segmentation_data = {'video_id':video_id,'video_slidishness':video_slidishness,'slidish_frames_startend':slide_frames}
         if vid_analyzer.is_slide_video():
             # if it's classified as a slides video analyze it and insert results in the structure that will be uploaded online
             vid_analyzer.analyze_video()
@@ -1251,12 +1225,9 @@ def _run_jobs(queue):
                 #print("Segmentation job on "+video_id+" starts  working...")
                 video_analyzer = VideoAnalyzer(url)
                 if not video_analyzer.is_not_too_long():
-                    segmentation_data = {"video_id":video_id, 'video_slidishness':0.0, 'slidish_frames_startend':[]}
+                    segmentation_data = {"video_id":video_id, 'slides_percentage':0.0, 'slidish_frames_startend':[]}
                 else: 
-                    # if there's no data in the database check the video slidishness
-                    video_slidishness,slide_frames = video_analyzer.is_slide_video(return_value=True,return_slide_frames = True)
-                    # prepare data for upload
-                    segmentation_data = {'video_id':video_id,'video_slidishness':video_slidishness,'slidish_frames_startend':slide_frames}
+                    
                     if video_analyzer.is_slide_video():
                         # if it's classified as a slides video analyze it and insert results in the structure that will be uploaded online
                         video_analyzer.analyze_video()
@@ -1277,38 +1248,12 @@ def workers_queue_scheduler(queue:'ListProxy[any]'):
     '''
     Creates a separated process that runs the segmentation of every video in the queue
     '''
-    #from threading import Thread
     Process(target=_run_jobs,args=(queue,)).start()    
-
-
-def _test_and_save_segment_video(vid_id):
-    video = VideoAnalyzer(vid_id)
-    try:
-        segmentation_data = db_mongo.get_video_segmentation(vid_id)
-        video.set(segmentation_data['video_slidishness'],segmentation_data['slidish_frames_startend'])
-        if video.is_slide_video():
-            video.set(slide_startends = segmentation_data['slide_startends'])
-            video.reconstruct_slides_from_times_set()
-            pprint(video.extract_slides_title())
-    except Exception as e:
-        print("Error: ")
-        print(e)
-
-        # Pre-process the video
-        video_slidishness,slide_frames = video.is_slide_video(return_slide_frames=True,return_value=True,_show_info=True)
-        segmentation_data = {'video_id':vid_id,'video_slidishness':video_slidishness,'slidish_frames_startend':slide_frames}
-
-        # Analyze the video
-        video.analyze_video(_show_info=True)
-        segmentation_data = {**segmentation_data,
-                             **{'slide_startends': video.get_extracted_text(format='set[times]'),
-                                'slide_titles':[{'start_end_seconds':start_end_seconds,
-                                                 'text':title,
-                                                 'xywh_normalized':bb} 
-                                                 for (title,start_end_seconds,bb) in video.extract_slides_title()]}}
-        db_mongo.insert_video_text_segmentation(segmentation_data,update=True)
 
 
 
 if __name__ == '__main__':
+    vid = VideoAnalyzer("https://youtu.be/NuhXMDs8Cxw")
+    vid.is_slide_video()
     pass
+

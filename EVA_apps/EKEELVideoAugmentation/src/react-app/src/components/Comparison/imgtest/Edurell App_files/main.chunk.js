@@ -2651,13 +2651,13 @@ function Comparison() {
     //tipo di lezione
     if (listfilters[2] == "withslide") {
       catalogfiltered = catalogfiltered.filter(video => {
-        console.log("wihslide ", catalogExtra.filter(videoExtra => videoExtra.video_id == video.video_id)[0]["video_slidishness"]);
-        return catalogExtra.filter(videoExtra => videoExtra.video_id == video.video_id)[0]["video_slidishness"] > 0.1 ? true : false;
+        console.log("wihslide ", catalogExtra.filter(videoExtra => videoExtra.video_id == video.video_id)[0]["slides_percentage"]);
+        return catalogExtra.filter(videoExtra => videoExtra.video_id == video.video_id)[0]["slides_percentage"] > 0.1 ? true : false;
       });
     } else if (listfilters[2] == "withoutslide") {
       catalogfiltered = catalogfiltered.filter(video => {
-        console.log("withoutslide ", catalogExtra.filter(videoExtra => videoExtra.video_id == video.video_id)[0]["video_slidishness"]);
-        return catalogExtra.filter(videoExtra => videoExtra.video_id == video.video_id)[0]["video_slidishness"] <= 0.1 ? true : false;
+        console.log("withoutslide ", catalogExtra.filter(videoExtra => videoExtra.video_id == video.video_id)[0]["slides_percentage"]);
+        return catalogExtra.filter(videoExtra => videoExtra.video_id == video.video_id)[0]["slides_percentage"] <= 0.1 ? true : false;
       });
     }
     console.log("definizione");
@@ -7489,7 +7489,7 @@ function VideoFiltered(_ref2) {
   let duratatot = 0;
   let slidishness = 0;
   if (conceptextra[0] != undefined) {
-    slidishness = conceptextra[0].video_slidishness * 100 + "%";
+    slidishness = conceptextra[0].slides_percentage * 100 + "%";
   }
   if (tottime != undefined) {
     let hours = Math.floor(tottime / 3600);

@@ -70,15 +70,22 @@
 
         <div id="videos" class="center_selection" style="margin-top: 2%;">
 
-            {% for vid in videos%}
-                <label class="video_radio" video="{{ vid.video_id }}"  >
-                  <input type="radio" name="video" value={{ vid.video_id }} id={{ vid.video_id }}>
-                  <img src="https://img.youtube.com/vi/{{ vid.video_id }}/hqdefault.jpg">
-                  <p class="video_title">{{ vid.title }}</p>
-                </label>
-            {% endfor %}
-
-        </div>
+          {% for creator, vids in videos|groupby('creator') %}
+              <div class="creator-group">
+                  <h3 style="color: #343a40;">{{ creator }}</h3>
+                  <hr>
+                  {% for vid in vids|sort(attribute='title') %}
+                      <label class="video_radio" video="{{ vid.video_id }}">
+                          <input type="radio" name="video" value="{{ vid.video_id }}" id="{{ vid.video_id }}">
+                          <img src="https://img.youtube.com/vi/{{ vid.video_id }}/hqdefault.jpg">
+                          <p class="video_title">{{ vid.title }}</p>
+                      </label>
+                  {% endfor %}
+              </div>
+              <br> <!-- Add space between different creators -->
+          {% endfor %}
+      
+      </div>
       </div>
     </div>
     
@@ -131,7 +138,9 @@
   </div>
 </div>
   {% endblock %}
-  </body>
+</body>
+
+
 
 {% block scripts %}
 <!--<script src="../static/search_video.js"></script>-->
@@ -173,6 +182,12 @@
     //    console.log('Checkbox is not checked');
     //  }
     //});
+
+    $('#addVideoModal').on('shown.bs.modal', function () {
+        if (document.getElementById('frontPopupWindowTextContainer').style.display !== 'none') {
+            document.getElementById('youtube_url').focus();
+        }
+    });
 
     $("#urlForm").submit(function() {
       addVideoLoading()

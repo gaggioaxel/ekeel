@@ -314,7 +314,7 @@ class Burst:
         concept_map = []
         definitions = []
 
-        subtitles, _ = VideoAnalyzer(self.video_id).save_transcript()
+        subtitles, _ = VideoAnalyzer(self.video_id).request_transcript()
         if not use_conll:
             sentences = tokenize.sent_tokenize(self.text)
         else:

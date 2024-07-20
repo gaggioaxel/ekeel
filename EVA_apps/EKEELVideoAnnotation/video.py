@@ -10,6 +10,7 @@ from inspect import getfile
 from typing import Tuple
 
 from image import ImageClassifier,COLOR_BGR,COLOR_RGB,COLOR_GRAY
+from pathlib import Path
 
 
 class LocalVideo:
@@ -73,6 +74,9 @@ class LocalVideo:
         '''
         returns a tuple of ( WIDTH , HEIGHT , NUM_COLORS )
         '''
+        if self._frame_size is not None:
+            return (*self._frame_size,self._num_colors)
+        
         return  int(self._vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)), \
                 int(self._vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)), \
                 self._num_colors
@@ -369,7 +373,37 @@ class VideoSpeedManager:
     def set_analysis_frames(self,frames:'list[tuple[int,int]]'):
         self._frames = sorted(frames,reverse=True)
        
+class SimpleVideo:
 
+    def __init__(self,video_id:str):
+        self.video = cv2.VideoCapture(Path(__file__).parent.joinpath("static","videos",video_id,video_id+".mp4").__str__())
+        if not self.video.isOpened():
+            raise Exception("Error loading video in SimpleVideo")
+        self.step = 1
+        self._curr_frame = 0
+        
+    def close_video(self):
+        self.video.release()
+
+    def get_count_frames(self) -> int:
+        return int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    def get_frame(self):
+        step = self.step
+        if step > 1:
+            self.video.set(cv2.CAP_PROP_POS_FRAMES,self._curr_frame + self.step-1)
+        has_frame, image = self.video.read()
+        self._curr_frame += step
+        if has_frame: return image
+        return None
+    
+    def get_following_frame(self):
+        prev_step = self.step
+        self.step = 1
+        frame = self.get_frame()
+        self.step = prev_step
+        return frame
+    
 
 
 
@@ -381,7 +415,7 @@ if __name__ == '__main__':
     #vid_id = 'GdPVu6vn034'
     #download('https://youtu.be/ujutUfgebdo')
     #print(download('https://www.youtube.com/watch?v='+vid_id))
-    print(download_video("https://www.youtube.com/watch?v=D4PGqxGWCT0"))
+    print(download_video("https://www.youtube.com/watch?v=jKF2QLmZi1Q"))
     VideoSpeedManager("D4PGqxGWCT0")
     
     #color_scheme_for_analysis = ColorScheme.BGR

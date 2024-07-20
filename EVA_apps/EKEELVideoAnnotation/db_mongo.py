@@ -89,21 +89,12 @@ def insert_conll_MongoDB(data):
     if collection.find_one({"video_id": data["video_id"]}) is None:
         collection.insert_one(data)
 
-def get_video_metadata(video_id:str):
+def get_video_data(video_id:str):
     collection = db.videos
     metadata = collection.find_one({"video_id": video_id})
     if metadata is not None:
         metadata.pop('_id')
     return metadata
-
-
-def get_video_segmentation(video_id:str, raise_error:bool=True):
-    collection = db.video_text_segmentation
-    item = collection.find_one({"video_id":video_id})
-    if item is None and raise_error:
-        raise Exception("Video has not been segmented yet, it must be firstly analyzed")
-    return item
-
 
 def insert_video_data(data,update=False):
     collection = db.videos
@@ -125,7 +116,7 @@ def insert_video_text_segmentation(data,update=False):
         collection.insert_one(data)
 
 
-def get_conll(video_id):
+def get_conll(video_id:str):
     collection = db.conlls
     document = collection.find_one({"video_id":video_id})
     return None if document is None else document["conll"]
@@ -156,7 +147,8 @@ def get_graph(user, video):
 def get_videos():
     print("***** EKEEL - Video Annotation: db_mongo.py::get_videos() ******")
     collection = db.videos
-    return list(collection.find({}).sort([("creator", pymongo.ASCENDING)]))
+    videos = list(collection.find({}).sort([("creator", pymongo.ASCENDING)]))
+    return videos
 
 
 
@@ -420,14 +412,6 @@ def get_vocabulary(annotator, video_id):
     print("***** EKEEL - Video Annotation: db_mongo.py::get_vocabulary(): Fine ******")
 
     return conceptVocabulary
-
-
-
-def get_video(video_id):
-    print("***** EKEEL - Video Annotation: db_mongo.py::get_video() ******")
-
-    collection = db.videos
-    return collection.find_one({"video_id":video_id})
     
 
 def remove_video(video_id):
@@ -435,7 +419,7 @@ def remove_video(video_id):
     ### WARNING!!! NOT FULLY TESTED MAY BREAK THE DB DUE TO DATA ENTANGLEMENT
     '''
     query = {"video_id":video_id}
-    collections = ['videos','graphs','video_text_segmentation','conll']
+    collections = ['videos','graphs','video_text_segmentation','conlls']
     #collections = ['video_text_segmentation']
     for coll_name in collections:
         collection = db.get_collection(coll_name)

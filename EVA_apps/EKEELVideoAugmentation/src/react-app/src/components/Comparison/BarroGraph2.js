@@ -37,7 +37,7 @@ export default function Barro({catalog, catalogExtra, graphcontrol}){
 
     //dataset to display 
     const data = {
-        labels: catalogExtra.map(video=>(video.video_slidishness*100).toString()+"%"),
+        labels: catalogExtra.map(video=>(video.slides_percentage*100).toString()+"%"),
         datasets:[
             {
 
@@ -57,7 +57,7 @@ export default function Barro({catalog, catalogExtra, graphcontrol}){
             {
 
                 label:'Slide',
-                data:catalogExtra.map(video=>video.video_slidishness*catalog.filter(cat=>cat.video_id == video.video_id)[0].duration),
+                data:catalogExtra.map(video=>video.slides_percentage*catalog.filter(cat=>cat.video_id == video.video_id)[0].duration),
                 backgroundColor:graphcontrol=="three"?"grey":[
                     "#FF4545",
                     "#3E7FFF",

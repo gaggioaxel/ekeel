@@ -105,7 +105,7 @@ class VTStitles(db.EmbeddedDocument):
     
 class VideoTextSegmentation(db.Document):
     video_id = db.StringField()
-    video_slidishness = db.DecimalField()
+    slides_percentage = db.DecimalField()
     slide_titles = db.EmbeddedDocumentListField(VTStitles)
     slide_startends = db.ListField(db.ListField(db.DecimalField()))
     slidish_frames_startend = db.ListField(db.ListField(db.IntField()))
@@ -903,12 +903,12 @@ def GetVideoTypeAndPrerequisite():
         VTS=VideoTextSegmentation.objects(video_id = v.video_id)
         for VTSdoc in VTS:
             print(VTSdoc.video_id)
-            print(VTSdoc.video_slidishness)
+            print(VTSdoc.slides_percentage)
             if v.video_id in result:
-                result[v.video_id]['video_slidishness'] = VTSdoc.video_slidishness
+                result[v.video_id]['slides_percentage'] = VTSdoc.slides_percentage
             else:
                 result[v.video_id] = {}
-                result[v.video_id]['video_slidishness'] = VTSdoc.video_slidishness
+                result[v.video_id]['slides_percentage'] = VTSdoc.slides_percentage
     return result
 
 @app.route('/api/ConceptVideoData/<video_id_list>/<concept_searched>')
@@ -1221,8 +1221,8 @@ def ConceptVideoData(video_id_list, concept_searched):
         VTS=VideoTextSegmentation.objects(video_id = video_id)
         for VTSdoc in VTS:
         # print(VTSdoc.video_id)
-        # print(VTSdoc.video_slidishness)
-            result['video_slidishness'] = str(VTSdoc.video_slidishness)
+        # print(VTSdoc.slides_percentage)
+            result['slides_percentage'] = str(VTSdoc.slides_percentage)
         result_list.append(result)
 
     

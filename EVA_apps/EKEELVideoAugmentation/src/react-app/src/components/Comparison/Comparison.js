@@ -401,13 +401,13 @@ export default function Comparison(){
        if(listfilters[2] == "withslide"){
          catalogfiltered = catalogfiltered.filter(video=>{
 
-           return catalogExtra.filter(videoExtra=>videoExtra.video_id == video.video_id)[0]["video_slidishness"] > 0.1? true:false;
+           return catalogExtra.filter(videoExtra=>videoExtra.video_id == video.video_id)[0]["slides_percentage"] > 0.1? true:false;
          })
  
        }else if(listfilters[2] == "withoutslide"){
          catalogfiltered = catalogfiltered.filter(video=>{
 
-           return catalogExtra.filter(videoExtra=>videoExtra.video_id == video.video_id)[0]["video_slidishness"] <= 0.1? true:false;
+           return catalogExtra.filter(videoExtra=>videoExtra.video_id == video.video_id)[0]["slides_percentage"] <= 0.1? true:false;
          })
     
        }
