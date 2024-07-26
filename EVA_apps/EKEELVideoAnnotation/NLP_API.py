@@ -54,11 +54,11 @@ class ItaliaNLAPI():
                 print('Waiting for pos tagging...')
                 time.sleep(5)
                 continue
-            else:
-                from pprint import pprint
-                j = json.dumps(api_res, indent=4)
-                with open("output.json","w") as f:
-                    print(j, file=f)
+            #else:
+                #from pprint import pprint
+                #j = json.dumps(api_res, indent=4)
+                #with open("output.json","w") as f:
+                #    print(j, file=f)
                 #pprint(api_res)
 
             #if api_res['sentences']['next']:
