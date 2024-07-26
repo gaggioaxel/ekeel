@@ -1253,7 +1253,7 @@ def workers_queue_scheduler(queue:'ListProxy[any]'):
 
 
 if __name__ == '__main__':
-    vid = VideoAnalyzer("https://youtu.be/NuhXMDs8Cxw")
-    vid.is_slide_video()
+    vid = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40").download_video()
+    #vid.is_slide_video()
     pass
 
