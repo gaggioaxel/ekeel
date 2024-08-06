@@ -8,6 +8,7 @@ from numpy import round, dot, diag, reshape, zeros, uint8, array, inf, mean, var
 from numpy.linalg import norm
 from typing import List, Tuple
 from bisect import insort_left
+import numpy as np
 
 
 # URL of the model
@@ -38,49 +39,35 @@ COLOR_GRAY = cv2.COLOR_BGR2GRAY
 COLOR_RGB = cv2.COLOR_BGR2RGB
 
 # Distance measurements - Cosine Similairity or Mean Absolute Distance
-DIST_MEAS_METHOD_COSINE_SIM:int=0
-DIST_MEAS_METHOD_MEAN_ABSOLUTE_DIST:int=1
+#DIST_MEAS_METHOD_COSINE_SIM:int=0
+#DIST_MEAS_METHOD_MEAN_ABSOLUTE_DIST:int=1
 
-class ImageClassifier(FaceDetectorSingleton):
+class ImageClassifier:
     """
     Wraps an image to find patterns in it
 
     ----------
     Parameters:
     ----------
-        image_and_scheme : a tuple of the image in RGB - BGR - GRAYSCALE mode and the color_scheme
-
-        image_shape : alternatively can set shape of a total black image
+        image : a cv2 extracted image
     """
-
+    _face_detector = FaceDetectorSingleton()
     _texts_with_contour:'list[tuple[str,tuple[int,int,int,int]]] | None' = None
     _image = None
-    _similarity_threshold: 'tuple[float,float,float] or float or None'
-    _comp_method:int or None
+    _image_grayscaled = None
     
-    def __init__(self,comp_method:int or None=None,similarity_threshold:'tuple[float,float,float] or float or None'=None,image_and_scheme=None, image_shape=None) -> None:
-        assert comp_method is None or comp_method == DIST_MEAS_METHOD_COSINE_SIM or comp_method == DIST_MEAS_METHOD_MEAN_ABSOLUTE_DIST
+    def __init__(self,image) -> None:
         
-        self._init_params_ = (comp_method,similarity_threshold,image_and_scheme,image_shape) # for copy() to work correctly must be in the same positions
-        self._comp_method = comp_method
-        if image_shape is not None:
-            self._image = zeros(image_shape, dtype=uint8)
-            self._color_scheme = None
-        elif image_and_scheme is not None:
-            self._image = image_and_scheme[0]
-            self._color_scheme = image_and_scheme[1]
-        else:
-            self._image = None
-            self._color_scheme = None
-        self._similarity_threshold = similarity_threshold
+        self._init_params_ = (image) 
+        self._image = image
         
     def copy(self):
         '''
         makes a copy of itself and returns it
         '''
-        new_img:ImageClassifier = ImageClassifier(*self._init_params_)
-        if self._image is not None:
-            new_img._image = self._image
+        new_img:ImageClassifier = ImageClassifier(self._image)
+        new_img._image_grayscaled = self._image_grayscaled
+        new_img._texts_with_contour = self._texts_with_contour
         return new_img
 
     def detect_faces(self):
@@ -91,40 +78,19 @@ class ImageClassifier(FaceDetectorSingleton):
         -----------
         list of Detection
         '''
-        #assert isinstance(model,int) and 0 <= model <= 1 and 0 <= min_conf <= 1
         if self._image is None:
             raise Exception("No Image to detect")
-        return self.detect(self._image).detections
-            #with mp_face_detection.FaceDetection(model_selection=model, min_detection_confidence=min_conf) as face_detection:
-            #    self._image.flags.writeable = False
-            #    if self._color_scheme == COLOR_BGR:
-            #        self._image = cv2.cvtColor(self._image, cv2.COLOR_BGR2RGB)
-            #        self._faces = face_detection.process(self._image)
-            #        self._image.flags.writeable = True
-            #        self._image = cv2.cvtColor(self._image, cv2.COLOR_RGB2BGR)
-            #    else:
-            #        self._faces = face_detection.process(self._image)
-            #        self._image.flags.writeable = True
-            #    if return_contours:
-            #        return self._faces.detections
-            #    return bool(self._faces.detections)
+        return self._face_detector.detect(self._image).detections
 
-    def _convert_grayscale(self,third_dimension:bool=False):
+
+    def _convert_grayscale(self, new_axis=False):
         '''
-        Converts from RGB or BGR to GRAYSCALE with shape (img_height, img_width)
+        Converts from BGR to GRAYSCALE 
         '''
-        img = self._image
-        if self._color_scheme==COLOR_BGR:
-            img_bw = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-        elif self._color_scheme==COLOR_RGB:
-            img_bw = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
-        else:
-            if third_dimension:
-                img_bw = img
-            else:
-                img_bw = reshape(img,(img.shape[0],img.shape[1]))
-        
-        return img_bw
+        self._image_grayscaled = cv2.cvtColor(self._image,cv2.COLOR_BGR2GRAY)
+        if new_axis:
+            self._image_grayscaled = self._image_grayscaled[:,:,None]
+        return self._image_grayscaled
 
     def _preprocess_image(self,img_bw):
         '''
@@ -133,10 +99,10 @@ class ImageClassifier(FaceDetectorSingleton):
         img_bw.flags.writeable = True
         img_bw = img_bw.copy()
         cv2.threshold(img_bw, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV,img_bw)
-        cv2.dilate(img_bw, cv2.getStructuringElement(cv2.MORPH_RECT, (12, 12)), img_bw,iterations = 3)
+        cv2.dilate(img_bw, cv2.getStructuringElement(cv2.MORPH_RECT, (6, 6)), img_bw,iterations = 3)
         return cv2.findContours(img_bw, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)[0]
     
-    def _read_text_with_bbs(self, img, xywh_orig, conf=80) -> List[Tuple[str,Tuple[int,int,int,int]]]:
+    def _read_text_with_bbs(self, img, xywh_orig, conf=0) -> List[Tuple[str,Tuple[int,int,int,int]]]:
         '''
         Read of text is made in this way:
             - scan with pytesseract every word of the image (which is passed as cropped) and return as dict of words and other infos
@@ -215,12 +181,14 @@ class ImageClassifier(FaceDetectorSingleton):
 
     def _scan_image_for_text_and_bounding_boxes(self):
         '''
-        Image is preprocessed and cropped in multiple rectangles of texts, then these are singularly analyzed
+        Image is preprocessed and cropped in multiple rectangles of texts, then these are singularly analyzed\n
+        Firstly turns into black and white\,
+        _preprocess_image() finds the contours of text\n
+        for each contour a tuple of (text, bounding_boxes(x,y,w,h)) is read and insorted based on it's min Y value of the contours 
         
         Prerequisite
         ------------
         RGB, BGR but with len(image_shape) == 3 always\n
-        DEPRECATED grayscale as image input of this function is deprecated because face recognition require 3 channels image
         '''
         img_bw = self._convert_grayscale()
         img_height,img_width = img_bw.shape
@@ -235,6 +203,7 @@ class ImageClassifier(FaceDetectorSingleton):
         self._texts_with_contour = [text_with_bb 
                                     for (_,texts_with_bb) in y_and_texts_with_bb
                                     for text_with_bb in texts_with_bb]
+        
 
     def extract_text(self,return_text=False,with_contours=False):
         '''
@@ -262,10 +231,13 @@ class ImageClassifier(FaceDetectorSingleton):
         assert self._image is not None
         return self._image.shape
 
-    def is_similar_to(self,other_image:'ImageClassifier') -> bool:
+    def is_same_image(self,other:'ImageClassifier', threshold=3) -> bool:
         '''
-        Compares two images in terms of comparison methods set at the initialization
+        Compares two images in terms of MSE with respect to the threshold given
         '''
+        
+        return np.mean((self._image - other._image)**2) < threshold
+
         comp_method = self._comp_method
         if comp_method == DIST_MEAS_METHOD_COSINE_SIM:
             return all(self.get_cosine_similarity(other_image) >= self._similarity_threshold)
@@ -273,6 +245,27 @@ class ImageClassifier(FaceDetectorSingleton):
             return all(self.get_mean_distance(other_image) <= self._similarity_threshold)
         else:
             return False
+        
+    def has_changed_slide(self, other:"ImageClassifier") -> bool:
+        if self._image_grayscaled is None:
+            self._convert_grayscale()
+        if other._image_grayscaled is None:
+            other._convert_grayscale()
+
+        # Compute the absolute difference between the current frame and the previous frame
+        frame_diff = cv2.absdiff(self._image_grayscaled, other._image_grayscaled)
+
+        # Threshold the difference to get the regions with significant changes
+        _, thresh = cv2.threshold(frame_diff, 20, 255, cv2.THRESH_BINARY)
+
+        # Find contours in the thresholded image
+        return bool(len([cv2.boundingRect(contour) 
+                         for contour in cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0] 
+                         if cv2.contourArea(contour) > img1_g.shape[0]*img2_g.shape[1]/20]))
+    
+    def has_image(self):
+        return self._image is not None
+
 
 
     def get_cosine_similarity(self,other:'ImageClassifier',on_histograms=True,rounding_decimals:int= 10):
@@ -341,7 +334,7 @@ class ImageClassifier(FaceDetectorSingleton):
         # CV2 calcHist is fast but can't calculate 3 channels at once 
         # so the fastest way is making a list of arrays and merging with cv2 merge
         if grayscaled:
-            img = self._convert_grayscale(third_dimension=True)
+            img = self._convert_grayscale(new_axis=True)
         else:
             img = self._image
         img = cv2.split(img)
@@ -363,6 +356,7 @@ class ImageClassifier(FaceDetectorSingleton):
 
     def set_img(self,img):
         self._image = img
+        self._image_grayscaled = None
         self._texts_with_contour = None
         return self
 
@@ -419,7 +413,40 @@ def show_image(image,color_scheme=COLOR_BGR):
     plt.show()
 
 if __name__ == '__main__':
-    print(ImageClassifier())
+    from PIL import Image
+    from pathlib import Path
+
+    img_tit1 = Image.open(Path(__file__).parent.joinpath("screenT1.png"))
+    img_tit2 = Image.open(Path(__file__).parent.joinpath("screenT2.png"))
+    
+    img1 = Image.open(Path(__file__).parent.joinpath("screen1.png"))
+    img2 = Image.open(Path(__file__).parent.joinpath("screen2.png"))
+
+    #se = (np.array(img1) - np.array(img2)) ** 2
+    #mse = np.mean(se)
+
+    #se = (np.array(img_tit1) - np.array(img_tit2)) ** 2
+    #mse2 = np.mean(se)
+    image2 = np.array(img_tit2)
+
+    # Convert the frame to grayscale
+    img1_g = cv2.cvtColor(np.array(img_tit1), cv2.COLOR_BGR2GRAY)
+    img2_g = cv2.cvtColor(np.array(img_tit2), cv2.COLOR_BGR2GRAY)
+    
+    # Compute the absolute difference between the current frame and the previous frame
+    frame_diff = cv2.absdiff(img1_g, img2_g)
+    
+    # Threshold the difference to get the regions with significant changes
+    _, thresh = cv2.threshold(frame_diff, 20, 255, cv2.THRESH_BINARY)
+    
+    # Find contours in the thresholded image
+    contours = [cv2.boundingRect(contour) for contour in cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0] if cv2.contourArea(contour) > img1_g.shape[0]*img2_g.shape[1]/20]
+    
+    # Draw bounding boxes around the contours
+    for contour in contours:
+        x, y, w, h = contour
+        cv2.rectangle(image2, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    
     #import os
     #img = cv2.cvtColor(cv2.imread(os.path.join(os.path.dirname(os.path.abspath(__file__)),"svm_dataset","screen01.png")), cv2.COLOR_BGR2RGB)
     #classif = ImageClassifier(image_and_scheme=[img,COLOR_RGB])

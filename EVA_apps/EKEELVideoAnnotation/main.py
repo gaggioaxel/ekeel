@@ -227,11 +227,12 @@ def video_selection():
     
     try:
         url = form.url.data
-        vid_analyzer = VideoAnalyzer(url).download_video() \
-                                         .request_transcript() \
-                                         .analyze_transcript() \
-                                         .create_thumbnails() \
-                                         #.analyze_video()
+        vid_analyzer = VideoAnalyzer(url)
+        vid_analyzer.download_video()
+        vid_analyzer.request_transcript()
+        vid_analyzer.analyze_transcript()
+        vid_analyzer.create_thumbnails()
+        vid_analyzer.analyze_video()
         #vid_analyzer.is_slide_video()
         video_id = vid_analyzer.video_id
         
@@ -527,14 +528,15 @@ def burst():
         video = VideoAnalyzer(f"https://youtu.be/{video_id}")
         text = SemanticText(get_text(video_id), video.identify_language())        
         conll_sentences = conll_gen(video_id, text)
-        title, keywords = get_real_keywords(video_id,annotator_id = current_user.mongodb_id,title=True)
+        title, keywords = get_real_keywords(video_id,annotator_id = current_user.mongodb_id)
         
         # semi-automatic extraction
         if form.type.data == "semi":
 
-            vid_analyzer = VideoAnalyzer(video_id).request_transcript()
-            subtitles = vid_analyzer.data["transcript"]["timed_text"]
-            lemmatized_subtitles, all_lemmas = create_text(subtitles, conll_sentences)
+            vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v="+video_id)
+            vid_analyzer.request_transcript()
+            subtitles = vid_analyzer.data["transcript_data"]["timed_text"]
+            lemmatized_subtitles, all_lemmas = create_text(subtitles, conll_sentences, vid_analyzer.data["language"])
 
             return render_template('burst_results.html', result=subtitles, video_id=video_id, concepts=keywords,
                                    title=title, lemmatized_subtitles=lemmatized_subtitles, all_lemmas=all_lemmas,

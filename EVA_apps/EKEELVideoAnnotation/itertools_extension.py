@@ -13,7 +13,7 @@ def _pairwise_linked_reversed(iterable,None_tail):
         yield iterable[0], None
     return
 
-def pairwise_linked_iterator(iterable, None_tail=True,reversed=False) -> 'Generator[Iterable, Iterable or None]':
+def pairwise(iterable, None_tail=True,reversed=False) -> Generator:
     '''
     Generator of a list of tuple of linked elements
     (s0,s1)->(s1,s2)->(s2,s3)-> ... -> (sN-1,sN) and optionally (sN,None)\n
@@ -85,6 +85,12 @@ def double_iterator(iterable,enumerated:bool=False) -> 'Generator[Iterable,Itera
     every (x,y) where index(x) != index(y) belonging to iterable or (i,j),(x,y)
     '''
     if not enumerated:
-        return ((x, y) for i, x in enumerate(iter(iterable)) for j, y in enumerate(iter(iterable)) if i != j)
+        for x in iter(iterable):
+            for y in iter(iterable):
+                if x is not y:
+                    yield (x,y)
     else:
-        return (( i, j, x, y) for i, x in enumerate(iter(iterable)) for j, y in enumerate(iter(iterable)) if i != j)
+        for i, x in iter(iterable):
+            for j, y in iter(iterable):
+                if x is not y:
+                    yield (i, j, x, y)

@@ -1,21 +1,13 @@
-from bisect import insort_left
-from multiprocessing.managers import ListProxy
 from typing_extensions import Literal
 from typing import List,Tuple
-from multiprocessing import Process
 
-
-from numpy import round,empty,sum,array,clip,all,average,var,zeros,where,ones,dtype,quantile
-
-
+from numpy import round,empty,sum,array,clip,all,average,var,where,ones,dtype,quantile
 import os
 from pathlib import Path
-from inspect import getfile
 import cv2
 from youtube_transcript_api import YouTubeTranscriptApi as YTTranscriptApi
 from youtube_transcript_api import Transcript
 from math import floor, ceil
-from pprint import pprint
 from collections import deque
 from matplotlib import pyplot as plt
 import time
@@ -23,15 +15,18 @@ from operator import itemgetter
 from itertools import groupby
 from conllu import parse
 from re import match, search
-from pytube import YouTube
-import pafy
 import yt_dlp
 import requests
+from enum import Enum, auto
+from multiprocessing import Process
+from bisect import insort_left
+from multiprocessing.managers import ListProxy
 
+from audio import *
 from image import *
-from video import VideoSpeedManager, LocalVideo
+from video import VideoSpeedManager, LocalVideo, SimpleVideo
 from xgboost_model import XGBoostModelAdapter
-from itertools_extension import double_iterator, pairwise_linked_iterator
+from itertools_extension import double_iterator, pairwise
 from collections_extension import LiFoStack
 from conll import get_text
 from Cluster import create_cluster_list, aggregate_short_clusters
@@ -76,7 +71,7 @@ class VideoAnalyzer:
     data:dict = None
     timed_subtitles:dict = None
 
-    _text_in_video: List[VideoSlide] or None = None # type: ignore
+    _text_in_video: list[VideoSlide] | None = None
     _cos_sim_img_threshold = None
     _frames_to_analyze = None
     _slide_startends = None
@@ -151,31 +146,18 @@ class VideoAnalyzer:
         Then in the code allow skipping video informations retrival because those raise Exceptions.
         '''
         url = self.url
-        video_link = url.split('&')[0]
+        #video_link = url.split('&')[0]
         video_id = self.video_id
         folder_path = self.folder_path
 
         os.makedirs(folder_path, exist_ok=True)
 
         if os.path.isfile(os.path.join(folder_path,video_id+'.mp4')):
-            return self
+            return
 
         downloaded_successfully = False
-
-        try:
-            youtube_video = YouTube(video_link)
-            # video_streams.get_highest_resolution() not working properly
-            all_video_streams = youtube_video.streams.filter(mime_type='video/mp4')
-            res_video_streams = []
-            for resolution in ['480p','360p','720p']:
-                res_video_streams = all_video_streams.filter(res=resolution)
-                if len(res_video_streams) > 0:
-                    break
-            if len(res_video_streams) == 0: raise Exception("Can't find video stream with enough resolution")
-            res_video_streams[0].download(output_path=folder_path,filename=video_id+'.mp4')
-            downloaded_successfully = True
-        except Exception as e:
-            print(e)
+        
+        # Both pafy and pytube seems to be not mantained anymore, only youtube_dlp is still alive
 
         prev_cwd = os.getcwd()
         os.chdir(folder_path)
@@ -192,15 +174,6 @@ class VideoAnalyzer:
             except Exception as e:
                 print(e)
 
-        if not downloaded_successfully:
-            try:
-                #print("using pafy")
-                pafy.new(url).getbest(preftype="mp4").download()
-                downloaded_successfully = True
-            except Exception as e:
-                print(e)
-                raise Exception("There are no libraries to download the video because each one gives an error")
-
         os.chdir(prev_cwd)
 
         for file in os.listdir(folder_path):
@@ -209,8 +182,7 @@ class VideoAnalyzer:
                 vidcap = cv2.VideoCapture(folder_path.joinpath(video_id+"."+file.split(".")[-1]))
                 if not vidcap.isOpened() or not min((vidcap.get(cv2.CAP_PROP_FRAME_WIDTH),vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))) >= 360:
                     raise Exception("Video does not have enough definition to find text")
-                break    
-        return self
+                break
   
 
     def _create_keyframes(self,start_times,end_times,S,seconds_range, image_scale:float=1,create_thumbnails=True):
@@ -301,18 +273,22 @@ class VideoAnalyzer:
         return list(zip(start_times, end_times))
         
 
-    def request_transcript(self, punctuated=True):
+    def request_transcript(self, extract_from_audio=False):
         '''
         Downloads the transcript associated with the video and returns also whether the transcript is automatically or manually generated \n
         Preferred manually generated
         '''
 
         if "transcript_data" in self.data.keys():
-            return self
+            return
         
-        transcripts = YTTranscriptApi.list_transcripts(self.video_id)
         language = self.identify_language()
 
+        if extract_from_audio:
+            return extract_transcript_from_audio(self.video_id, language)
+            
+        
+        transcripts = YTTranscriptApi.list_transcripts(self.video_id)
         transcript:Transcript
         try:
             transcript = transcripts.find_manually_created_transcript([language])
@@ -327,10 +303,6 @@ class VideoAnalyzer:
         text = " ".join([sub["text"] for sub in subs_dict if sub['text'][0] != "["])
         
         sub_text = SemanticText(text, language)
-        if punctuated:
-            sub_text.punctuate()
-            with open(Path(self.folder_path).joinpath("punctuated_transcript.txt"), "w") as f:
-                f.write(sub_text._text.replace(". ", ".\n"))
         punctuated_transcript = sub_text._text
         timed_subtitles = []
         punctuated_lowered = punctuated_transcript.lower()
@@ -352,8 +324,6 @@ class VideoAnalyzer:
         self.data["transcript_data"] = {"timed_text": timed_subtitles, 
                                         "is_autogenerated": autogenerated
                                         }
-        
-        return self
 
 
     def transcript_segmentation_and_thumbnails(self, c_threshold=0.22, sec_min=35, S=1, frame_range=15, create_thumbnails=True):
@@ -502,7 +472,7 @@ class VideoAnalyzer:
         start_frame_num = None
         frames_to_analyze:List[Tuple[int,int]] = []
         answ_queue = deque([False,False])
-        curr_frame = ImageClassifier(image_and_scheme=[None,vsm._color_scheme])
+        curr_frame = ImageClassifier(None)
         prev_frame = curr_frame.copy()
         frame_w,frame_h,num_colors = vsm.get_video().get_dim_frame()
         
@@ -555,245 +525,113 @@ class VideoAnalyzer:
             print(f"Frames to analyze: {frames_to_analyze} of {num_frames} total frames")
         self.data["video_data"]["slides_percentage"] = sum([frame_window[1] - frame_window[0] for frame_window in frames_to_analyze])/(num_frames-1)
         self._cos_sim_img_threshold = cos_sim_img_threshold 
-        self._frames_to_analyze = frames_to_analyze
+        self._frames_to_analyze = frames_to_analyze    
 
-    def _merge_and_cleanup(self,TFT_list:'list[VideoSlide]',vsm: VideoSpeedManager,frame:ImageClassifier,frames_dist_tol:int):
+
+    def analyze_video(self,_show_info:bool=True):
+        """
+        Analyzes a video to identify and extract slides, transitioning between different states 
+        (WAITING_OPENING, OPENING, CONTENT, ENDED) based on the content of the video frames.
+
+        Parameters:
+        _show_info (bool): Flag to control the display of processing information. Defaults to True.
+
+        Returns:
+        None
+        """
+        if not self.is_slide_video() or "slides" in self.data["video_data"].keys():
+            return
+
+        class State(Enum):
+            WAITING_OPENING = auto()
+            OPENING = auto()
+            CONTENT = auto()
+            ENDED = auto()
+            
+            
+        video = SimpleVideo(self.video_id)
+        video.step = video.get_fps()
+
+        TFT_list:list[VideoSlide] = []
         
-        txt_classif = TextSimilarityClassifier()
-
-        def compact_embedding_partial_words(TFT_list:'list[VideoSlide]',text_classifier:TextSimilarityClassifier,frames_max_dist:int):
-            '''
-            Merge near VideoSlide elements of the list\n
-            Goes in both directions reversing the array and lastly iterates over all the elements with an (optimized) nested loop\n
-
-            ----------
-            Parameters
-            ----------
-            TFT_list : list of texts
-            text_classifier : utility class for text similarity comparison used by VideoSlide for finding partial texts
-
-            Returns
-            -------
-            Same length or shorter list with elements merged
-            '''
-            input_list = TFT_list
-            elem1:VideoSlide
-            elem2:VideoSlide
-            for _reverse in [False, True]:
-                output_list:'list[VideoSlide]' = []
-                for elem1, elem2 in pairwise_linked_iterator(input_list,reversed=_reverse):
-                    if text_classifier.is_partially_in(elem1,elem2): elem2.extend_frames(elem1.start_end_frames)
-                    else: output_list.append(elem1)
-                input_list = output_list
-
-            deleted:'list[int]' = []
-            for i1,i2, elem1,elem2 in double_iterator(input_list,enumerated=True):
-                if not i1 in deleted and not i2 in deleted and text_classifier.is_partially_in(elem1,elem2):
-                    elem2.extend_frames(elem1.start_end_frames)
-                    deleted.append(i1)
-            return sorted([elem.merge_adjacent_startend_frames(max_dist=frames_max_dist) for indx, elem in enumerate(input_list) if not indx in deleted])
-
-        txt_classif.set_comparison_methods([COMPARISON_METHOD_TXT_SIM_RATIO,
-                                            COMPARISON_METHOD_TXT_MISS_RATIO,
-                                            COMPARISON_METHOD_MEANINGFUL_WORDS_COUNT])
-        TFT_list = compact_embedding_partial_words(TFT_list,txt_classif,frames_dist_tol)
-
-        txt_classif.set_comparison_methods([COMPARISON_METHOD_FRAMES_TIME_PROXIMITY])
-        TFT_list = compact_embedding_partial_words(TFT_list,txt_classif,frames_dist_tol)
-
-        txt_classif.set_comparison_methods([COMPARISON_METHOD_TXT_SIM_RATIO,
-                                            COMPARISON_METHOD_TXT_MISS_RATIO])
+        # We start looking for EduOpen
+        # Then transit to content
+        # Ending is optional (sometimes videos are cut)
+        state_machine = {"state": list(State)[0]}
+        next_state = { from_state:to_state for from_state, to_state in list(zip(list(State), list(State)[1:] + [None])) }
+        prev_frame = ImageClassifier(video.get_frame())
+        curr_frame = prev_frame.copy()
+        speed_up_coef = 0.35
+        max_speed = video.get_fps() * 10
         
-        def remove_classification_errors(lst: List[VideoSlide],vsm: VideoSpeedManager,img_classif:ImageClassifier,txt_classif: TextSimilarityClassifier,min_seconds_duration=2):
-            '''
-            for every element of the input list of VideoSlide checks if at every start frame the text recognized is approximatly the same\n
-            checks also that the text has a minimum len and the segment's duration is long enough\n
-            otherwise it pops that startend frames or removes the whole element if it's too distant from the real one found 
-            '''
-            min_frames_duration = vsm.get_video().get_fps()*min_seconds_duration
-            for i, elem in reversed(list(enumerate(lst))):
-                text_in_lst = elem.get_full_text()
-                start_end_frames = elem.start_end_frames
-                for j, startend in reversed(list(enumerate(start_end_frames))):
-                    img_classif.set_img(vsm.get_frame_from_num(startend[0]))
-                    text_in_frame = img_classif.extract_text(return_text=True)
-                    if  len(text_in_frame) < 4 or \
-                        startend[0] + min_frames_duration > startend[1] or \
-                        len(text_in_lst) < 4 or \
-                        (not txt_classif.is_partially_in_txt_version(text_in_frame,text_in_lst) and \
-                        not txt_classif.is_partially_in_txt_version(text_in_lst,text_in_frame)): 
-                            start_end_frames.pop(j)
-                elem.start_end_frames = start_end_frames
-                if len(elem.start_end_frames) == 0: lst.pop(i)
-            return lst
-
-        return remove_classification_errors(TFT_list,vsm,frame,txt_classif)
-    
-    def analyze_video(self,color_scheme_for_analysis:int=COLOR_BGR,_show_info:bool=True,_plot_contours=False):
-        '''
-        Firstly the video is analized in coarse-grained way, by a ML model to recognize frames of slides
-        and the threshold for the difference between two frames is concurrently estimated. \n
-        The method uses an ImageClassifier to detect text in the frames of the video
-        Then saves that text in a collision stack.\n
-        It then looks for changes in the collision stack with respect to the text in the current frame
-        flushes the differences in the output list.\n
-        Finally, it calls two helper methods to clean up the output list by combining partial words and merging adjacent frames.
-
-        Parameters :
-        ------------
-        - color_scheme_for_analysis : is a predefined value that must be either COLOR_BGR or COLOR_RGB from image.py
-        - _show_info : prints in stdout progression and set thresholds
-        - _plot_contours : shows images with bounding boxes once the video has been analyzed
-
-        Returns :
-        ---------
-        None but sets internal text that can be retrieved with ``get_extracted_text()``
-        '''
-        assert color_scheme_for_analysis is not None and (color_scheme_for_analysis == COLOR_BGR or color_scheme_for_analysis == COLOR_RGB)
-        vsm = VideoSpeedManager(self.video_id,color_scheme_for_analysis)
-        if not self.is_slide_video():
-            self._text_in_video = []
-            return self
-        self._cos_sim_img_threshold = ones((1,vsm.get_video().get_dim_frame()[2]))*0.9999
-        #img_diff_threshold, frames_to_analyze = self._cos_sim_img_threshold, self._frames_to_analyze
-        img_diff_threshold = self._cos_sim_img_threshold
-        vsm.reset()
-        #if frames_to_analyze is None:
-        #    self._text_in_video = []
-        #    return self
-        
-        curr_frame = ImageClassifier(   comp_method = DIST_MEAS_METHOD_COSINE_SIM,
-                                        similarity_threshold = img_diff_threshold,
-                                        image_and_scheme = [None,color_scheme_for_analysis]   )
-        prev_frame = curr_frame.copy()
-
-        output_TFT_stack:LiFoStack[VideoSlide] = LiFoStack()
-        iterations_counter:int = 0
-        collisions_TFT_list:'list[VideoSlide]' = []
-       #max_speed = 0
-        txt_classif = TextSimilarityClassifier(comp_methods=[COMPARISON_METHOD_TXT_SIM_RATIO,
-                                                             COMPARISON_METHOD_TXT_MISS_RATIO])
-       #vsm.lock_speed()
-        #if not vsm.is_full_video(frames_to_analyze):
-        #    vsm.set_analysis_frames(frames_to_analyze)
-
-        while not vsm.is_video_ended():
-        
-            curr_frame.set_img(vsm.get_frame())
-
-            #   collide() function sets the speed cap of the video to the minimum and returns the num frame of the first frame with text within this the last iteration
-
-            #   if collision stack is empty search for text in the current frame and then put it in the stack
-            if len(collisions_TFT_list) == 0 and curr_frame.extract_text():
-                num_start_frame = vsm.collide_and_get_fixed_num_frame()
-                curr_frame.set_img(vsm.get_frame_from_num(num_start_frame))
-                collisions_TFT_list.append(VideoSlide( framed_sentences= curr_frame.extract_text(return_text=True,with_contours=True),
-                                                               startend_frames= [(num_start_frame,-1)]))
-
-            #   otherwise put the text not visible any more in the output stack
-            elif len(collisions_TFT_list) > 0 and \
-                    (not curr_frame.is_similar_to(prev_frame) or vsm.is_video_ended()):
+        while True:
+            
+            if not curr_frame.has_image():
+                state_machine["state"] = State.ENDED
                 
-                coll_TFT_stack_mask = zeros(len(collisions_TFT_list,),dtype=bool)
-                #   create a mask for the text that's still on screen
-                if not vsm.is_video_ended():
-                    text_on_screen:str = curr_frame.extract_text(return_text=True)
-                    for indx_in_stack, coll_elem in enumerate(collisions_TFT_list):
-                        if text_on_screen and text_on_screen in coll_elem.get_full_text():
-                            coll_TFT_stack_mask[indx_in_stack] = True
-                            break
+            curr_state = state_machine['state']
+            if curr_state == State.WAITING_OPENING:
+                if not curr_frame.is_same_image(prev_frame):
+                    text = curr_frame.extract_text(return_text=True)
+                    if "edu" in text and "pen" in text:
+                        state_machine["state"] = next_state[curr_state]
+                        video.step = video.get_fps()
+                        
+                else:
+                    video.step = np.clip(int(video.step+2), 1, video.get_fps()*2, dtype=int)
 
-                #   get number of the last same frame to save it in the output structure
-                num_last_same_frame = vsm.get_prev_num_frame()
-                for indx_in_stack in sorted(where(~coll_TFT_stack_mask)[0],reverse=True):
-                    coll_TFT_elem = collisions_TFT_list.pop(indx_in_stack)
-                    merged = False
-                    output_TFT_elem:VideoSlide  # hinting variables for the IDE 
-                    #  match on every element of the list sorted reversed because highly possible that 
-                    for output_TFT_elem in output_TFT_stack: 
-                        #   if already in the list append the starting and ending frames to the field in the struct 
-                        if txt_classif.are_cosine_similar(output_TFT_elem.get_full_text(), coll_TFT_elem.get_full_text()):# \
-                                #and txt_classif.is_partially_in(coll_TFT_elem,output_TFT_elem):
-                            output_TFT_elem.start_end_frames.append((coll_TFT_elem.start_end_frames[0][0],num_last_same_frame))
-                            merged = True
-                            break
-                    if not merged:
-                        #   append the whole structure to the list
-                        coll_TFT_elem.start_end_frames[0] = (coll_TFT_elem.start_end_frames[0][0],num_last_same_frame)
-                        output_TFT_stack.push(coll_TFT_elem)
-                if len(collisions_TFT_list) == 0:
-                    vsm.end_collision()
-
+            elif curr_state == State.OPENING:
+                text = curr_frame.extract_text(return_text=True)
+                if not "edu" in text and "pen" in text:
+                    state_machine['state'] = next_state[curr_state]
+            
+            elif curr_state == State.CONTENT:
+                texts_with_bb = curr_frame.extract_text(return_text=True, with_contours=True)
+                if any(texts_with_bb):
+                    slide = VideoSlide(texts_with_bb, (video.get_time(),None))
+                    if not len(TFT_list):
+                        TFT_list.append(slide)
+                    elif slide != TFT_list[-1]:
+                        TFT_list[-1].start_end_frames[-1] = (TFT_list[-1].start_end_frames[-1][0], video.get_time(1))
+                        TFT_list.append(slide)
+                        video.step = video.get_fps()//2
+                    else:
+                        video.step = int(np.clip(video.step + speed_up_coef * max_speed, 0, max_speed))
+            
+            elif curr_state == State.ENDED:
+                if any(texts_with_bb) and len(TFT_list) and TFT_list[-1].start_end_frames[-1][1] is None:
+                    TFT_list[-1].start_end_frames[-1] = (TFT_list[-1].start_end_frames[-1][0], video.get_time(1))
+                break   
+                
             prev_frame.set_img(curr_frame.get_img())
+            curr_frame.set_img(video.get_frame())
+            
+            if _show_info: print(f"Doing {np.round((video._curr_frame_idx-video.step)/video.get_count_frames()*100, 2)}%  curr step {video.step} num slides {len(TFT_list)}    ",end="\r")
+        
+        # Final refinement
+        txt_classif = TextSimilarityClassifier(comp_methods={ComparisonMethods.FUZZY_PARTIAL_RATIO, ComparisonMethods.CHARS_COMMON_DISTRIB})
+        changed = True
+        n_iter = 0
+        while changed:
+            changed = False
+            for to_reverse in [False, True]:
+                for slide1,slide2 in pairwise(TFT_list, None_tail=False, reversed=to_reverse):
+                    if txt_classif.is_partially_in(slide1,slide2):
+                        slide2:VideoSlide
+                        slide2.merge_frames(slide1)
+                        TFT_list.remove(slide1)
+                        changed = True
+                    n_iter += 1
+                    
+            for slide1, slide2 in double_iterator(TFT_list):
+                if txt_classif.is_partially_in(slide2,slide1):
+                    slide1:VideoSlide
+                    slide1.merge_frames(slide2)
+                    TFT_list.remove(slide2)
+                    changed = True
+                n_iter += 1
 
-            #   print percentage and measure max speed
-           #max_speed = max(max_speed,vsm._debug_get_speed())
-           #print("  video analysis "+str(vsm.get_percentage_progression())+'%'+" progress"+" max_speed = "+str(max_speed)+" "+"."*(iterations_counter%12)+" "*12,end="\r")
-            if _show_info:
-                print("  video analysis "+str(vsm.get_percentage_progression())+'%'+" progress"+"."*(iterations_counter%12)+" "*12,end="\r")
-                iterations_counter += 1
-
-        output_TFT_list = list(output_TFT_stack)
-        frames_dist_tol = vsm.get_video().get_fps()*10
-
-        output_TFT_list = self._merge_and_cleanup(output_TFT_list,vsm,curr_frame,frames_dist_tol)
-
-        if _show_info:        
-            print("video analysis completed!"+" "*30)
-            #print(f"total time = {round(time.time()-start_time,decimals=3)}"+" "*20)
-
-        if _plot_contours:
-            video = vsm.get_video()
-            for output_TFT_elem in output_TFT_list:
-                pprint(output_TFT_elem)
-                for start_end in output_TFT_elem.start_end_frames:
-                    text = ''.join(list(output_TFT_elem.get_full_text())[:80]).replace('\n',' ')
-                    frames = []
-                    if start_end[0] > 0:
-                        frames.append(vsm.get_frame_from_num(start_end[0]-1))
-                    frames.append(vsm.get_frame_from_num(start_end[0]))
-                    frames.append(vsm.get_frame_from_num(start_end[0]+1))
-                    frames.append(vsm.get_frame_from_num(start_end[1]-1))
-                    frames.append(vsm.get_frame_from_num(start_end[1]))
-                    if start_end[1] < video.get_count_frames()-1:
-                        frames.append(vsm.get_frame_from_num(start_end[1]+1))
-                    frames.reverse()
-                    if color_scheme_for_analysis==COLOR_BGR:
-                        frames = [cv2.cvtColor(frame,cv2.COLOR_BGR2RGB) for frame in frames]
-
-                    if start_end[0] > 0:
-                        frame = frames.pop()
-                        plt.imshow(frame,cmap='gray')
-                        plt.title(f"'{text}'\n frame before the start ({start_end[0]-1})")
-                        plt.show()
-                    frame = frames.pop()
-                    bbs = [elem[1] for elem in output_TFT_elem.get_framed_sentences()]
-                    plt.imshow(draw_bounding_boxes_on_image(frame,bbs),cmap='gray')
-                    plt.title(f"'{text}'\n\nstart {start_end[0]}")
-                    plt.show()
-                    frame = frames.pop()
-                    plt.imshow(frame,cmap='gray')
-                    plt.title(f"'{text}'\n\nframe after the start ({start_end[0]+1})")
-                    plt.show()
-                    frame = frames.pop()
-                    plt.imshow(frame,cmap='gray')
-                    plt.title(f"'{text}'\n\nframe before the end ({start_end[1]-1})")
-                    plt.show()
-                    frame = frames.pop()
-                    bbs = [elem[1] for elem in output_TFT_elem.get_framed_sentences()]
-                    plt.imshow(draw_bounding_boxes_on_image(frame,bbs),cmap='gray')
-                    plt.title(f"'{text}'\n\nend {start_end[1]}")
-                    plt.show()
-                    if start_end[1] < video.get_count_frames()-1:
-                        frame = frames.pop()
-                        plt.imshow(frame,cmap='gray')
-                        plt.title(f"'{text}'\n frame after the end ({start_end[1]+1})")
-                        plt.show()
-
-        self._text_in_video = output_TFT_list
-        return self
-
-    #def analyze_videoVSimple(self,_show_info:bool=True):
+        self.data["video_data"]["slides"] = [dict(tft) for tft in TFT_list]
 
 
 #######################
@@ -818,7 +656,7 @@ class VideoAnalyzer:
         '''
         #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
         if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
-            return self
+            return
         
         transcript = automatic_transcript_to_str(self.data["transcript_data"]["timed_text"])
         language = self.identify_language()
@@ -836,8 +674,7 @@ class VideoAnalyzer:
             raise Exception("Error extracting terms with the API")
         
         self.transcript_segmentation_and_thumbnails()
-        
-        return self
+
         
     def lemmatize_terms(self):
         assert "transcript_data" in self.data.keys() and "terms" in self.data["transcript_data"].keys(), "Error in pipeline in segmentation.py -> lemmatize_terms()"
@@ -910,7 +747,7 @@ class VideoAnalyzer:
             return [(id,(video.get_time_from_num_frame(startend[0]),video.get_time_from_num_frame(startend[1])), tft.get_full_text()) 
                             for id, tft in enumerate(self._text_in_video) 
                             for startend in tft.start_end_frames]
-        return None
+            
 
     def is_slide_video(self,slide_frames_percent_threshold:float=0.5,_show_info=True):
         '''
@@ -1015,7 +852,7 @@ class VideoAnalyzer:
                 if file.endswith(".jpg"):
                     images_path.append(f"videos/{self.video_id}/{file}")
             self.images_path = images_path
-            return self
+            return
         
         times = self.data["video_data"]["segments"]
         video = LocalVideo(self.video_id)
@@ -1029,7 +866,6 @@ class VideoAnalyzer:
         
         self.images_path = images_path
 
-        return self
 
     def adjust_or_insert_definitions_and_indepth_times(self,burst_concepts:List[dict],definition_tol_seconds:float = 3,_show_output=False):
         '''
@@ -1253,7 +1089,7 @@ def workers_queue_scheduler(queue:'ListProxy[any]'):
 
 
 if __name__ == '__main__':
-    vid = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40").download_video()
+    vid = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40").analyze_videoVSimple()
     #vid.is_slide_video()
     pass
 

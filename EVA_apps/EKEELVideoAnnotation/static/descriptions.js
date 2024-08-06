@@ -15,6 +15,8 @@ function showDescriptionDiv(){
 
 
     startVideoSlider()
+    // Add event listener for Escape key
+    document.addEventListener('keydown', handleEscape);
 
 
   }
@@ -32,6 +34,16 @@ function closeDescriptionDiv(){
     $("#position_indicator").remove()
     document.getElementById("timeSlider").innerHTML = ""
 
+    // Add event listener for Escape key
+    document.removeEventListener('keydown', handleEscape);
+
+
+}
+
+function handleEscape(event) {
+    if (event.key === 'Escape') {
+        closeDescriptionDiv();
+    }
 }
 
 function changeColor(){

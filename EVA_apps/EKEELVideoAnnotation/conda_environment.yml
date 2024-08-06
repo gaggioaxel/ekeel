@@ -4,29 +4,54 @@ channels:
 dependencies:
   - _libgcc_mutex=0.1
   - _openmp_mutex=5.1
+  - blas=1.0
   - bzip2=1.0.8
   - ca-certificates=2024.7.2
+  - catalogue=2.0.10
+  - certifi=2024.7.4
+  - charset-normalizer=3.3.2
+  - click=8.1.7
+  - colorama=0.4.6
+  - idna=3.7
+  - intel-openmp=2023.1.0
+  - jinja2=3.1.4
   - ld_impl_linux-64=2.38
   - libffi=3.4.4
   - libgcc-ng=11.2.0
   - libgomp=11.2.0
   - libstdcxx-ng=11.2.0
   - libuuid=1.41.5
+  - mkl=2023.1.0
+  - mkl-service=2.4.0
+  - mkl_fft=1.3.8
+  - mkl_random=1.2.4
   - ncurses=6.4
+  - numpy=1.26.4
+  - numpy-base=1.26.4
   - openssl=3.0.14
+  - packaging=24.1
+  - pathy=0.10.3
   - pip=24.0
+  - pysocks=1.7.1
   - python=3.11.9
   - readline=8.2
+  - requests=2.32.3
   - setuptools=69.5.1
-  - spacy-model-en_core_web_sm==3.5.0
-  - spacy-model-it_core_news_sm==3.5.0
+  - spacy-legacy=3.0.12
+  - spacy-model-en_core_web_sm=3.5.0
+  - spacy-model-it_core_news_sm=3.5.0
   - sqlite=3.45.3
+  - srsly=2.4.8
+  - tbb=2021.8.0
   - tk=8.6.14
+  - tqdm=4.66.4
+  - urllib3=2.2.2
   - wheel=0.43.0
   - xz=5.4.6
   - zlib=1.2.13
   - pip:
       - absl-py==2.1.0
+      - accelerate==0.33.0
       - annotated-types==0.7.0
       - attrs==23.2.0
       - bcrypt==4.1.3
@@ -35,12 +60,8 @@ dependencies:
       - blis==0.7.11
       - brotli==1.1.0
       - cachetools==5.3.3
-      - catalogue==2.0.10
-      - certifi==2024.7.4
       - cffi==1.16.0
       - chardet==5.2.0
-      - charset-normalizer==3.3.2
-      - click==8.1.7
       - cloudpathlib==0.18.1
       - confection==0.1.5
       - conllu==5.0.1
@@ -60,21 +81,24 @@ dependencies:
       - fonttools==4.53.1
       - frozendict==2.4.4
       - fsspec==2024.6.1
+      - fuzzywuzzy==0.18.0
       - gdown==5.2.0
       - gunicorn==22.0.0
       - huggingface-hub==0.23.4
-      - idna==3.7
       - igraph==0.11.6
+      - imagehash==4.3.1
+      - imageio==2.34.2
       - iso639-lang==2.2.3
       - isodate==0.6.1
       - itsdangerous==2.2.0
       - jax==0.4.30
       - jaxlib==0.4.30
-      - jinja2==3.1.4
       - joblib==1.4.2
       - kiwisolver==1.4.5
       - langcodes==3.4.0
       - language-data==1.2.0
+      - lazy-loader==0.4
+      - levenshtein==0.25.1
       - lxml==5.2.2
       - marisa-trie==1.2.0
       - markdown-it-py==3.0.0
@@ -88,7 +112,6 @@ dependencies:
       - mutagen==1.47.0
       - networkx==3.3
       - nltk==3.8.1
-      - numpy==1.26.4
       - nvidia-cublas-cu12==12.1.3.1
       - nvidia-cuda-cupti-cu12==12.1.105
       - nvidia-cuda-nvrtc-cu12==12.1.105
@@ -104,33 +127,35 @@ dependencies:
       - opencv-contrib-python==4.10.0.84
       - opencv-python==4.10.0.84
       - opt-einsum==3.3.0
-      - packaging==24.1
       - pafy==0.5.5
       - pandas==2.2.2
       - phrasemachine==1.0.7
       - pillow==10.4.0
       - preshed==3.0.9
       - protobuf==4.25.3
+      - psutil==6.0.0
       - pycparser==2.22
       - pycryptodomex==3.20.0
       - pydantic==2.8.2
       - pydantic-core==2.20.1
+      - pydub==0.25.1
       - pygments==2.18.0
       - pyld==2.0.4
       - pymongo==4.8.0
       - pyparsing==3.1.2
-      - pysocks==1.7.1
       - pysrt==1.1.2
       - pytesseract==0.3.10
       - python-dateutil==2.9.0.post0
       - python-dotenv==1.0.1
+      - python-levenshtein==0.25.1
       - python-rake==1.5.0
       - pytube==15.0.0
       - pytz==2024.1
+      - pywavelets==1.6.0
       - pyyaml==6.0.1
+      - rapidfuzz==3.9.5
       - rdflib==7.0.0
       - regex==2024.5.15
-      - requests==2.32.3
       - rich==13.7.1
       - safetensors==0.4.3
       - scikit-learn==1.5.1
@@ -142,23 +167,20 @@ dependencies:
       - sounddevice==0.4.7
       - soupsieve==2.5
       - spacy==3.7.5
-      - spacy-legacy==3.0.12
       - spacy-loggers==1.0.5
-      - srsly==2.4.8
       - sympy==1.13.0
       - texttable==1.7.0
       - theano==1.0.5
       - thinc==8.2.2
       - threadpoolctl==3.5.0
+      - tifffile==2024.7.24
       - tokenizers==0.19.1
       - torch==2.3.1
-      - tqdm==4.66.4
       - transformers==4.42.4
       - triton==2.3.1
       - typer==0.12.3
       - typing-extensions==4.12.2
       - tzdata==2024.1
-      - urllib3==2.2.2
       - visitor==0.1.3
       - wasabi==1.1.3
       - weasel==0.4.1

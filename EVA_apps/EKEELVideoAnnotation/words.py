@@ -1,4 +1,5 @@
 from RAKE import Rake
+import numpy as np
 #from stopwordsiso import stopwords
 import phrasemachine
 import spacy
@@ -14,8 +15,10 @@ from difflib import ndiff
 import re
 from numpy import empty,prod,sum,all
 from numpy.linalg import norm
-from transformers import pipeline
+#from transformers import pipeline
 from collections import Counter
+from sklearn.metrics.pairwise import cosine_similarity
+from fuzzywuzzy.fuzz import partial_ratio, ratio
 
 #################################################################################
 # Issue with online server (incompatibility with gunicorn)
@@ -267,99 +270,28 @@ def automatic_transcript_to_str(timed_transcript:'list[dict]'):
 
 class TextCleaner:
 
-    def __init__(self) -> None:
-        # selects all chars except to alphanumerics space & -
-        self.pattern = re.compile('[^a-zA-Z\d &-]')
+    _instance=None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls.pattern = re.compile('[^a-zA-Z\d &-]')
+            cls._instance = super(TextCleaner, cls).__new__(cls)
+        return cls._instance
     
     def clean_text(self,text:str):
         return ' '.join(self.pattern.sub(' ',text).split()).lower()
 
 
-class VideoSlide:
-    """
-    Representation of a Slide in a video
-    A slide made of:
-        - _full_text: full string built for comparison purposes (not to be changed)
-        - _framed_sentences: list of portions of a full_text composed field and their absolute location on the screen 
-        - start_end_frames: list of tuples of num start and num end frames of this text
-        
-    """
-    _full_text: str
-    _framed_sentences: List[Tuple[Tuple[int,int],Tuple[int,int,int,int]]]
-    start_end_frames: List[Tuple[(int,int)]]
 
-    def __init__(self,framed_sentences:List[Tuple[str,Tuple[int,int,int,int]]],startend_frames:List[Tuple[(int,int)]]) -> None:
-        self.start_end_frames = startend_frames
-        full_text = ''
-        converted_framed_sentence:List[Tuple[Tuple[int,int],Tuple[int,int,int,int]]] = []
-        curr_start = 0
-        for sentence,bb in framed_sentences:
-            full_text += sentence
-            len_sent = len(sentence)
-            converted_framed_sentence.append(((curr_start,curr_start+len_sent),bb))
-            curr_start += len_sent
-        self._framed_sentences = converted_framed_sentence
-        self._full_text = full_text
- 
-    def copy(self):
-        tft_copy = VideoSlide(framed_sentences=None,start_end_frames=self.start_end_frames)
-        tft_copy._framed_sentences=self._framed_sentences
-        tft_copy._full_text = self._full_text
-        return tft_copy
-    
-    def extend_frames(self, other_start_end_list:List[Tuple[(int,int)]]) -> None:
-        '''
-        extend this element's start_end frames with the other list in a sorted way
-        '''
-        for other_start_end_elem in other_start_end_list:
-            insort_left(self.start_end_frames,other_start_end_elem)
+from enum import Enum, auto
 
-    def get_full_text(self):
-        return self._full_text
-    
-    def get_split_text(self):
-        '''
-        returns the full text splitted by new lines without removing them
-        '''
-        return self._full_text.split("(?<=\n)")
-
-    def get_framed_sentences(self):
-        '''
-        converts the full text string into split segments of text with their respective bounding boxes
-        '''
-        full_text = self._full_text
-        return [((full_text[start_char_pos:end_char_pos]),bb) for (start_char_pos,end_char_pos),bb in self._framed_sentences]
-
-    def merge_adjacent_startend_frames(self,max_dist:int=15) -> 'VideoSlide':
-        '''
-        Merges this object adjacent (within a max_dist) frame times
-        '''
-        start_end_frames = self.start_end_frames
-        merged_start_end_frames = []
-        curr_start,curr_end = start_end_frames[0]
-        for new_start,new_end in start_end_frames:
-            if new_start-curr_end <= max_dist:
-                curr_end = max(curr_end,new_end)
-            else:
-                merged_start_end_frames.append((curr_start,curr_end))
-                curr_start = new_start
-                curr_end = new_end
-        merged_start_end_frames.append((curr_start,curr_end))
-        self.start_end_frames = merged_start_end_frames
-        return self
-
-    def __lt__(self, other:'VideoSlide'):
-        return self.start_end_frames[0][0] < other.start_end_frames[0][0]
-    
-    def __repr__(self) -> str:
-        return 'TFT(txt={0}, on_screen_in_frames={1}, text_portions_with_bb_normzd={2})'.format(
-            repr(self._full_text),repr(self.start_end_frames),repr(self._framed_sentences))
-    
-
-COMPARISON_METHOD_TXT_SIM_RATIO:int=0
-COMPARISON_METHOD_TXT_MISS_RATIO:int=1
-COMPARISON_METHOD_MEANINGFUL_WORDS_COUNT:int=2
-COMPARISON_METHOD_FRAMES_TIME_PROXIMITY:int=3
+class ComparisonMethods(Enum):
+    TXT_SIM_RATIO=auto()
+    TXT_MISS_RATIO=auto()
+    MEANINGFUL_WORDS_COUNT=auto()
+    CHARS_COMMON_DISTRIB=auto()
+    FUZZY_PARTIAL_RATIO=auto() 
+    #FRAMES_TIME_PROXIMITY=auto()
 
 
 class TextSimilarityClassifier:
@@ -369,27 +301,33 @@ class TextSimilarityClassifier:
     or if two texts are similar
     """
 
-    def __init__(self,comp_methods:List[int]=None,
+    def __init__(self,comp_methods:List[int] | str | None = None,
                  max_removed_chars_over_total_diff:float=0.1,
                  min_common_chars_ratio:float=0.8,
                  max_removed_chars_over_txt:float=0.3,
                  max_added_chars_over_total:float= 0.2,
-                 time_frames_tol = 10  ) -> None:
+                 fuzzy_ratio_thresh:float=0.9,
+                 cosine_sim_chars_distrib_thresh:float=0.95,
+                 time_tol = 5 ) -> None:
         self._CV = CountVectorizer()
         self._txt_cleaner:TextCleaner = TextCleaner()
         if comp_methods is None:
-            self._comp_methods = {COMPARISON_METHOD_TXT_MISS_RATIO,COMPARISON_METHOD_TXT_SIM_RATIO}
+            self._comp_methods = {method for method in list(ComparisonMethods)[:2]}
+        elif comp_methods == "all":
+            self._comp_methods = {method for method in list(ComparisonMethods)}
         else:
             self.set_comparison_methods(comp_methods)
         self.removed_chars_diff_ratio_thresh = max_removed_chars_over_total_diff
         self.added_chars_diff_ratio_thresh = max_added_chars_over_total
         self.common_chars_txt_ratio_thresh = min_common_chars_ratio
         self.removed_chars_txt_ratio_thresh = max_removed_chars_over_txt
-        self.time_frames_tol = time_frames_tol
+        self.time_tol = time_tol
+        self.cosine_sim_thresh = cosine_sim_chars_distrib_thresh
+        self.fuzz_ratio_thresh = fuzzy_ratio_thresh
         self._words = set(words.words())
-        self._noise_classifier = pipeline('text-classification', model='textattack/bert-base-uncased-imdb')
+        #self._noise_classifier = pipeline('text-classification', model='textattack/bert-base-uncased-imdb')
 
-    def is_partially_in(self,TFT1:VideoSlide,TFT2:VideoSlide) -> bool:
+    def is_partially_in(self,TFT1:"VideoSlide",TFT2:"VideoSlide") -> bool:
         '''
         Finds if the framed_text1 is part of the framed_text2
 
@@ -409,22 +347,9 @@ class TextSimilarityClassifier:
         True if text1 is part of the text2
 
         '''
-        comp_methods = self._comp_methods
+        #comp_methods = self._comp_methods
         checks:list[bool] = [bool(TFT1) and bool(TFT2)]
 
-        if all(checks) and COMPARISON_METHOD_FRAMES_TIME_PROXIMITY in comp_methods:
-            frames_tol = self.time_frames_tol
-            startends1 = TFT1.start_end_frames; startends2 = TFT2.start_end_frames
-            found_all = True
-            for startend1 in startends1:
-                found = False
-                for startend2 in startends2:
-                    if startend2[0] - frames_tol <= startend1[0] and startend1[1] <= startend2[1] + frames_tol:
-                        found = True
-                        break
-                if not found: found_all = False; break
-            checks.append(found_all)
-                    
         return all(checks) and self.is_partially_in_txt_version(TFT1.get_full_text(),TFT2.get_full_text())
         
     def is_partially_in_txt_version(self,text1:str,text2:str) -> bool:
@@ -455,10 +380,22 @@ class TextSimilarityClassifier:
         checks = [bool(text1) and bool(text2)]
         comp_methods = self._comp_methods
         removed_chars_count = None
+        cleaner = self._txt_cleaner
+        text1_cleaned = cleaner.clean_text(text1)
+        text2_cleaned = cleaner.clean_text(text2)
+        checks.append(len(text1_cleaned) < len(text2_cleaned))
+        
+        if not all(checks):
+            return False
+        
+        if ComparisonMethods.FUZZY_PARTIAL_RATIO in comp_methods:
+            fuzz_ratio = partial_ratio(text1_cleaned, text2_cleaned)/100
+            checks.append(fuzz_ratio > self.fuzz_ratio_thresh)
 
-        if all(checks) and COMPARISON_METHOD_TXT_SIM_RATIO in comp_methods:
-            cleaner = self._txt_cleaner
-            text1_cleaned = cleaner.clean_text(text1); text2_cleaned = cleaner.clean_text(text2)
+        if not all(checks):
+            return False
+    
+        if ComparisonMethods.TXT_SIM_RATIO in comp_methods:
             counter = Counter([change[0] for change in ndiff(text1_cleaned,text2_cleaned)])
             removed_chars_count = 0 if not '-' in counter.keys() else counter['-']
             common_chars_count = 0 if not ' ' in counter.keys() else counter[' ']
@@ -471,7 +408,10 @@ class TextSimilarityClassifier:
                             common_chars_count/text1_len > self.common_chars_txt_ratio_thresh  and
                             added_chars_count/diffs_len < self.added_chars_diff_ratio_thresh)
         
-        if all(checks) and COMPARISON_METHOD_MEANINGFUL_WORDS_COUNT in comp_methods:
+        if not all(checks):
+            return False
+                
+        if ComparisonMethods.MEANINGFUL_WORDS_COUNT in comp_methods:
             all_words = self._words
             txt1_split = text1_cleaned.split(); txt2_split = text2_cleaned.split()
             len_txt1_split = len(txt1_split); len_txt2_split = len(txt2_split) 
@@ -481,15 +421,36 @@ class TextSimilarityClassifier:
                                       len([word for word in txt2_split if word in all_words]) / len(txt2_split)) ) 
                             or len_txt1_split <= len_txt2_split )
         
-        if all(checks) and COMPARISON_METHOD_TXT_MISS_RATIO in comp_methods:
+        if not all(checks):
+            return False
+        
+        if ComparisonMethods.TXT_MISS_RATIO in comp_methods:
             if removed_chars_count is None:
-                cleaner = self._txt_cleaner
                 text1_cleaned = cleaner.clean_text(text1); text2_cleaned = cleaner.clean_text(text2)
                 counter = Counter([change[0] for change in ndiff(text1_cleaned,text2_cleaned)])
                 removed_chars_count = 0 if not '-' in counter.keys() else counter['-']
+                added_chars_count = 0 if not '+' in counter.keys() else counter['+']
                 text1_len = len(text1_cleaned)
             checks.append(  text1_len > 0 and 
                             removed_chars_count/len(text1_cleaned) < self.removed_chars_txt_ratio_thresh)
+        
+        if not all(checks):
+            return False
+        
+        if ComparisonMethods.CHARS_COMMON_DISTRIB in comp_methods:
+            counts1 = Counter(text1_cleaned); counts2 = Counter(text2_cleaned)
+            counts1.pop(" ",0); counts2.pop(" ",0)
+            for key in set(counts1.keys()).union(set(counts2.keys())):
+                if key not in counts1:
+                    counts1[key] = 0
+                if key not in counts2:
+                    counts2[key] = 0
+
+            cosine_sim = cosine_similarity([np.array(list(counts1[key] for key in sorted(counts1)))], 
+                                           [np.array(list(counts2[key] for key in sorted(counts2)))])[0][0]
+            
+            checks.append(cosine_sim > self.cosine_sim_thresh or (ComparisonMethods.FUZZY_PARTIAL_RATIO in comp_methods and fuzz_ratio > 0.95))
+        
         
         return all(checks)
 
@@ -555,6 +516,112 @@ class TextSimilarityClassifier:
         self._comp_methods = set(methods)
 
 
+class VideoSlide:
+    """
+    Representation of a Slide in a video
+    A slide made of:
+        - _full_text: full string built for comparison purposes (not to be changed)
+        - _framed_sentences: list of portions of a full_text composed field and their absolute location on the screen 
+        - start_end_frames: list of tuples of num start and num end frames of this text
+        
+    """
+    _full_text: str
+    _framed_sentences: List[Tuple[Tuple[int,int],Tuple[int,int,int,int]]]
+    _bounding_box: Tuple[int,int,int,int]
+    start_end_frames: List[Tuple[(int,int)]]
+    txt_sim_class = TextSimilarityClassifier()
+
+    def __init__(self,framed_sentences:List[Tuple[str,Tuple[int,int,int,int]]],startend_frames:List[Tuple[(int,int)]]) -> None:
+        self.start_end_frames = [startend_frames]
+        full_text = ''
+        converted_framed_sentence:List[Tuple[Tuple[int,int],Tuple[int,int,int,int]]] = []
+        curr_start = 0
+        min_bb = [0,0,0,0]
+        for sentence,bb in framed_sentences:
+            full_text += sentence
+            len_sent = len(sentence)
+            converted_framed_sentence.append(((curr_start,curr_start+len_sent),bb))
+            curr_start += len_sent
+            min_bb[0] = np.minimum(min_bb[0], bb[0])
+            min_bb[1] = np.minimum(min_bb[1], bb[1])
+            min_bb[2] = np.maximum(min_bb[2], bb[2])
+            min_bb[3] = np.maximum(min_bb[3], bb[3])
+            
+        self._bounding_box = np.array(min_bb)
+        self._framed_sentences = converted_framed_sentence
+        self._full_text = full_text
+ 
+    def copy(self):
+        tft_copy = VideoSlide(framed_sentences=None,start_end_frames=self.start_end_frames)
+        tft_copy._framed_sentences=self._framed_sentences
+        tft_copy._full_text = self._full_text
+        return tft_copy
+    
+    def merge_frames(self, other_slide:"VideoSlide") -> None:
+        '''
+        extend this element's start_end frames with the other list in a sorted way
+        '''
+        this_startend_frames = self.start_end_frames
+        for other_start_end_elem in other_slide.start_end_frames:
+            if not other_start_end_elem in this_startend_frames:
+                insort_left(self.start_end_frames,other_start_end_elem)
+
+    def get_full_text(self):
+        return self._full_text
+    
+    def get_split_text(self):
+        '''
+        returns the full text splitted by new lines without removing them
+        '''
+        return self._full_text.split("(?<=\n)")
+
+    def get_framed_sentences(self):
+        '''
+        converts the full text string into split segments of text with their respective bounding boxes
+        '''
+        full_text = self._full_text
+        return [((full_text[start_char_pos:end_char_pos]),bb) for (start_char_pos,end_char_pos),bb in self._framed_sentences]
+
+    def merge_adjacent_startend_frames(self,max_dist:int=15) -> 'VideoSlide':
+        '''
+        Merges this object adjacent (within a max_dist) frame times
+        '''
+        start_end_frames = self.start_end_frames
+        merged_start_end_frames = []
+        curr_start,curr_end = start_end_frames[0]
+        for new_start,new_end in start_end_frames:
+            if new_start-curr_end <= max_dist:
+                curr_end = max(curr_end,new_end)
+            else:
+                merged_start_end_frames.append((curr_start,curr_end))
+                curr_start = new_start
+                curr_end = new_end
+        merged_start_end_frames.append((curr_start,curr_end))
+        self.start_end_frames = merged_start_end_frames
+        return self
+    
+    def __iter__(self):
+        yield "text", self._full_text
+        yield "full_bounding_box", self._bounding_box.tolist()
+        yield "sent_indxs_and_bb", self._framed_sentences
+    
+    def __eq__(self, other: "VideoSlide") -> bool:
+        
+        if not self.txt_sim_class.are_cosine_similar(self._full_text, other._full_text, confidence=0.8):
+            return False
+
+        this_bbs = self._bounding_box
+        other_bbs = other._bounding_box
+        return (this_bbs - 10 <= other_bbs).all() and (other_bbs <= this_bbs + 10).all()
+
+    def __lt__(self, other:'VideoSlide'):
+        return self.start_end_frames[0][0] < other.start_end_frames[0][0]
+    
+    def __repr__(self) -> str:
+        return 'TFT(txt={0}, window_time={1}, bbs={2})'.format(
+            repr(self._full_text),repr(self.start_end_frames),repr(self._bounding_box))
+  
+
 def lemmatize(lemmas):
     concepts_lemmatized = []
 
@@ -577,8 +644,8 @@ def lemmatize(lemmas):
 def get_real_keywords(video_id, annotator_id=None):
     graphs = db_mongo.get_graphs_info(video_id)
     if graphs is None:
-        video_doc = db_mongo.get_video_metadata(video_id)
-        return video_doc['title'], video_doc['extracted_keywords']
+        video_doc = db_mongo.get_video_data(video_id)
+        return video_doc['title'], [term["term"] for term in video_doc['transcript_data']["terms"]]
 
     indx_annotator = 0
     if annotator_id is not None:

@@ -380,32 +380,29 @@ class SimpleVideo:
         if not self.video.isOpened():
             raise Exception("Error loading video in SimpleVideo")
         self.step = 1
-        self._curr_frame = 0
+        self._curr_frame_idx = 0
+        self._curr_frame = self.video.read()[1]
         
-    def close_video(self):
+    def close(self):
         self.video.release()
 
     def get_count_frames(self) -> int:
         return int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
+    
+    def get_fps(self) -> int:
+        return int(self.video.get(cv2.CAP_PROP_FPS))
 
     def get_frame(self):
-        step = self.step
-        if step > 1:
-            self.video.set(cv2.CAP_PROP_POS_FRAMES,self._curr_frame + self.step-1)
-        has_frame, image = self.video.read()
-        self._curr_frame += step
-        if has_frame: return image
-        return None
+        cached_frame = self._curr_frame
+        if self.step != 1:
+            self.video.set(cv2.CAP_PROP_POS_FRAMES,self._curr_frame_idx + self.step - 1)
+        self._curr_frame = self.video.read()[1]
+        self._curr_frame_idx += self.step
+        return cached_frame
     
-    def get_following_frame(self):
-        prev_step = self.step
-        self.step = 1
-        frame = self.get_frame()
-        self.step = prev_step
-        return frame
+    def get_time(self,n_step_back:int=0):
+        return (self._curr_frame_idx - n_step_back*self.step) / self.video.get(cv2.CAP_PROP_FPS)
     
-
-
 
 if __name__ == '__main__':
     vid_id = "ujutUfgebdo" # slide video
