@@ -152,6 +152,10 @@
     background-color: yellow;
 }
 
+.definitionInTranscript{
+    background-color: rgba(76, 255, 76, 0.2);
+}
+
 .clickableConcept{
     cursor:pointer;
     text-decoration: underline;

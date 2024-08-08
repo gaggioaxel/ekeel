@@ -216,6 +216,7 @@
                   <th scope="col">Start</th>
                   <th scope="col">End</th>
                   <th scope="col">Type</th>
+                  <th scope="col" style="text-align: center">Transcript</th>
                   <th scope="col"></th>
                 </tr>
               </thead>
@@ -375,6 +376,7 @@
       let $annotator = {{ annotator|tojson }};
       let $allLemmas = {{ all_lemmas|tojson }};
       let videoDuration = {{ video_duration|tojson }};
+      let transcriptShownId = null;
       console.log(videoDuration)
 
       let relations = {{ relations|tojson }};

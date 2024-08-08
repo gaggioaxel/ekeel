@@ -90,7 +90,7 @@ def double_iterator(iterable,enumerated:bool=False) -> 'Generator[Iterable,Itera
                 if x is not y:
                     yield (x,y)
     else:
-        for i, x in iter(iterable):
-            for j, y in iter(iterable):
+        for i, x in enumerate(iter(iterable)):
+            for j, y in enumerate(iter(iterable)):
                 if x is not y:
                     yield (i, j, x, y)

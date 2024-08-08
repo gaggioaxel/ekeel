@@ -66,7 +66,7 @@ def conll_gen(video_id:str,text:SemanticText):
         return parse(conll)
     
     # requests the conll from an api
-    # TODO-TORRE aggiungere ita (FATTO)
+    # aggiunto ita
     #files = {
     #    'data': text,
     #    'model': (None, 'english-ewt-ud-2.4-190531'),

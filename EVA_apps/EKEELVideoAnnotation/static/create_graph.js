@@ -32,6 +32,7 @@ function addRelation(){
 
   let prereq = document.getElementById("prerequisite").value.toLowerCase();
   let weight = document.getElementById("weight").value.toLowerCase();
+  weight = weight.charAt(0).toUpperCase() + weight.slice(1)
   let target = document.getElementById("target").value.toLowerCase();
 
   if ((prereq === "") || (target === "")) {
@@ -300,6 +301,60 @@ function printRelations(){
 
 }
 
+function higlightExplanationInTranscript(conceptId, start, end) {
+
+    let [hours, minutes, seconds] = start.split(':').map(Number);
+    start = hours * 3600 + minutes * 60 + seconds;
+    end = [hours, minutes, seconds] = end.split(':').map(Number);
+    end = hours * 3600 + minutes * 60 + seconds;
+
+    // user is de-selecting the concept
+    if (transcriptShownId != null & transcriptShownId == conceptId) {
+        start = -1
+        end = -1
+        transcriptShownId = null
+    } else {
+        transcriptShownId = conceptId
+    }
+
+    // Get all subtitle elements
+    let subtitleElements = document.querySelectorAll('.youtube-marker');
+    let scrollToElement = null
+    
+    // Iterate over each subtitle element to highlight the matching ones
+    subtitleElements.forEach(element => {
+        let elementStart = parseFloat(element.getAttribute('data-start'));
+        let elementEnd = parseFloat(element.getAttribute('data-end'));
+        
+        // Apply inline style to highlight elements within the start and end range
+        if (elementStart >= start && elementEnd <= end) {
+            element.classList.add('definitionInTranscript');
+            // Apply to each child
+            //element.childNodes.forEach(child => {
+            //    if (child.nodeType === Node.ELEMENT_NODE) { // Ensure it's an element node
+            //        child.classList.add('definitionInTranscript');
+            //    }
+            //});
+            if (!scrollToElement) {
+                scrollToElement = element;
+            }
+        } else {
+            // Reset background color if it's outside the range
+            element.classList.remove('definitionInTranscript');
+            // Apply to each child
+            //element.childNodes.forEach(child => {
+            //    if (child.nodeType === Node.ELEMENT_NODE) { // Ensure it's an element node
+            //        child.classList.remove('definitionInTranscript');
+            //    }
+            //});
+        }
+        if (scrollToElement) {
+            scrollToElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+    
+}
+
 function printDefinitions(){
 
     let definitionTable = document.getElementById("definitionsTable")
@@ -314,6 +369,10 @@ function printDefinitions(){
         let t = definitions[i].description_type
 
         let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s + "</td><td>"+ e +"</td><td>"+ t +"</td>"+
+            "<td><button style=\" margin-right: 40% \" class=\"icon-button\" " +
+                "onclick=\"higlightExplanationInTranscript('"+i+"','"+s+"','"+e+"')\">" +
+            "<i class=\"fa fa-quote-left\"></i></button></td>" +
+            
             "<td><button class=\"icon-button\" " +
                 "onclick=\"deleteDescription(this,'"+c+"','"+s+"','"+e+"')\">" +
             "<i class=\"fa fa-trash\"></i></button></td></tr>"

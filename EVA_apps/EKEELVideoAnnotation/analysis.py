@@ -108,7 +108,7 @@ def compute_agreement(concept_map1, concept_map2):
     coppieannotate, conteggio = agreement.creaCoppieAnnot(user1, user2, term_pairs, all_combs, term_pairs_tuple)
 
 
-    results = {"analysis_type": "agreement", "agreement":round(agreement.computeK(conteggio, all_combs), 3)}
+    results = {"analysis_type": "agreement", "agreement":round(agreement.computeK(conteggio, all_combs), 3) if len(all_combs) else 0}
 
     return results
 

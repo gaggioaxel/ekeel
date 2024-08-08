@@ -35,6 +35,7 @@ import json
 import pyld
 
 from itertools_extension import double_iterator
+from db_mongo import get_video_data
 
 oa = Namespace("http://www.w3.org/ns/oa#")
 dc = Namespace("http://purl.org/dc/elements/1.1/")
@@ -141,10 +142,18 @@ class Burst:
         for sent in self.conll:
             sent_index = int(sent.metadata["sent_id"])-1
             conll_words = self.conll[sent_index].filter(upos=lambda x: x != "PUNCT")
+            #from pprint import pprint
+            #pprint(self.conll)
+            counter = 0
+            skip = 0
 
             for i_, word in enumerate(conll_words):
-
-                word_index = int(word["id"])
+                #print(word, word["id"], conll_words[i_+1],conll_words[i_+1]["id"], conll_words[i_+2],conll_words[i_+2]["id"])
+                if isinstance(word["id"], tuple): skip += 2
+                elif skip > 0: skip -= 1; continue
+                counter += 1
+                #word_index = int(word["id"]) # TODO fix
+                word_index = counter
                 words = word["lemma"]
                 words_form = word["form"]
                 nltk_lemmatized = lemmatizer.lemmatize(word["form"])
@@ -314,7 +323,10 @@ class Burst:
         concept_map = []
         definitions = []
 
-        subtitles, _ = VideoAnalyzer(self.video_id).request_transcript()
+        video = VideoAnalyzer("https://www.youtube.com/watch?v="+self.video_id)
+        video.request_transcript()
+        subtitles = video.data["transcript_data"]["timed_text"]
+        
         if not use_conll:
             sentences = tokenize.sent_tokenize(self.text)
         else:
@@ -599,29 +611,32 @@ def create_local_vocabulary(video_id,conceptVocabulary):
       			"@version": 1.1,
       			"edu": "https://teldh.github.io/edurell#"
              } ]
-
+    language = get_video_data(video_id)["language"]
     graph = Graph()
 
     for concept in conceptVocabulary.keys():        
         uri_concept = URIRef("concept_" + concept.replace(" ", "_"))
         graph.add((uri_concept, RDF['type'], SKOS.Concept))
-        graph.add((uri_concept, SKOS.prefLabel, Literal(concept, lang='en')))
+        graph.add((uri_concept, SKOS.prefLabel, Literal(concept, lang=language)))
         for synonym in conceptVocabulary[concept]:
-            graph.add((uri_concept, SKOS.altLabel, Literal(synonym, lang='en')))
+            graph.add((uri_concept, SKOS.altLabel, Literal(synonym, lang=language)))
 
     jsonld = json.loads(graph.serialize(format='json-ld'))
     jsonld = pyld.jsonld.compact(jsonld, context)
+    print(jsonld)
+    local_vocabulary = {"id": "localVocabulary", "type": "skos:Collection"}
+    if "@graph" in jsonld.keys():
+        local_vocabulary["skos:member"] = jsonld["@graph"]
+    return local_vocabulary
 
-    return {"id": "localVocabulary", "type": "skos:Collection", "skos:member": jsonld["@graph"]}
-
-def convert_to_skos_concepts(concepts_name,conceptVocabulary):
+def convert_to_skos_concepts(concepts_name,conceptVocabulary,language):
     graph = Graph()
     for concept in concepts_name:        
         uri_concept = URIRef("concept_" + concept.replace(" ", "_"))
         graph.add((uri_concept, RDF['type'], SKOS.Concept))
-        graph.add((uri_concept, SKOS.prefLabel, Literal(concept, lang='en')))
+        graph.add((uri_concept, SKOS.prefLabel, Literal(concept, lang=language)))
         for synonym in conceptVocabulary[concept]:
-            graph.add((uri_concept, SKOS.altLabel, Literal(synonym, lang='en')))
+            graph.add((uri_concept, SKOS.altLabel, Literal(synonym, lang=language)))
     
     jsonld = json.loads(graph.serialize(format='json-ld'))
     #jsonld = pyld.jsonld.compact(jsonld, context)

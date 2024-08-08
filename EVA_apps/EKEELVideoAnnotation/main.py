@@ -432,7 +432,7 @@ def analysis():
 
             results = compute_data_summary(video_id,concept_map, definitions)
 
-            if annotator_id != "Burst":
+            if annotator_id != "Burst_Analysis":
                 user = db_mongo.get_user(annotator_id)
                 annotator = user["name"] + " " + user["surname"]
 
@@ -451,13 +451,13 @@ def analysis():
 
             results = compute_agreement(concept_map1, concept_map2)
 
-            if annotator1_id != "Burst":
+            if annotator1_id != "Burst_Analysis":
                 u1 = db_mongo.get_user(annotator1_id)
                 results["annotator1"] = u1["name"] + " " + u1["surname"]
             else:
                 results["annotator1"] = "Burst"
 
-            if annotator2_id != "Burst":
+            if annotator2_id != "Burst_Analysis":
                 u2 = db_mongo.get_user(annotator2_id)
                 results["annotator2"] = u2["name"] + " " + u2["surname"]
             else:
@@ -604,7 +604,7 @@ def burst_launch():
     data_summary = compute_data_summary(video_id,concept_map,definitions)
     
     # checks whether video has been segmented and if it is classifies ad slide video or not in order to enable refinement
-    video = VideoAnalyzer(video_id)
+    video = VideoAnalyzer("https://www.youtube.com/watch?v="+video_id)
     can_be_refined = video.is_slide_video() and "slide_titles" in video.data.keys()
         
     json = {
@@ -655,15 +655,20 @@ def video_segmentation_refinement():
     concept_vocabulary = data["conceptVocabulary"]
 
     # for design this should not return None
-    new_concepts,definitions = VideoAnalyzer(video_id) \
-                                .adjust_or_insert_definitions_and_indepth_times(data["definitions"],_show_output=True)
+    video = VideoAnalyzer(video_id)
+    new_concepts,definitions = video.adjust_or_insert_definitions_and_indepth_times(data["definitions"],_show_output=True)
+    
     #from pprint import pprint
     #pprint(definitions)
     _,burst_graph = create_burst_graph(video_id,definitions,data["concept_map"])
-    local_vocabulary = create_local_vocabulary(video_id,concept_vocabulary)
+    try:
+        local_vocabulary = create_local_vocabulary(video_id,concept_vocabulary)
+    except Exception as e:
+        print(e)
+        flash(e,'message')
     skos_concepts = local_vocabulary["skos:member"]
     if len(new_concepts) > 0:
-        skos_concepts.extend(convert_to_skos_concepts(new_concepts,concept_vocabulary))
+        skos_concepts.extend(convert_to_skos_concepts(new_concepts,concept_vocabulary,video.data["language"]))
     downloadable_jsonld_graph = {"@context":burst_graph["@context"],"@graph":burst_graph["@graph"].copy()+[local_vocabulary]}
     burst_graph["@graph"].extend([{"id":concept["id"],"type":concept["type"]} for concept in skos_concepts])
 

@@ -612,13 +612,13 @@ function printDefinitions(definitions, update){
 //  downloadAnchorNode.remove();
 //}
 
-function DownloadBurstResultAsJson(exportObj) {
+function DownloadBurstResultAsJson() {
   if($hasBeenRefined){
       namefile = "refined_graph"
   } else {
       namefile = "graph"
   }
-  downloadObjectAsJson(exportObj,namefile)
+  downloadObjectAsJson($downloadableGraph,namefile)
 }
 
 function saveBurstGraph(){

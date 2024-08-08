@@ -109,8 +109,10 @@ def edge_overlap(concept_map1, concept_map2):
         for r in concept_map2:
             if r["target"] == rel["target"] and r["prerequisite"] == rel["prerequisite"]:
                 count_edge_comuni += 1
-
-    VEO = 2 * ((count_vertex_comuni + count_edge_comuni)/(len(vertexes1)+len(vertexes2)+len(concept_map1)+len(concept_map2)))
+    if len(vertexes1)+len(vertexes2)+len(concept_map1)+len(concept_map2) != 0:
+        VEO = 2 * ((count_vertex_comuni + count_edge_comuni)/(len(vertexes1)+len(vertexes2)+len(concept_map1)+len(concept_map2)))
+    else:
+        return 0
 
     return round(VEO, 3)
 

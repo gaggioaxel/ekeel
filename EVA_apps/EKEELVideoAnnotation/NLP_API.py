@@ -1,8 +1,6 @@
 import requests
 import time
-import json
 from pandas import DataFrame
-from words import SemanticText
 
 
 class ItaliaNLAPI():
@@ -20,6 +18,16 @@ class ItaliaNLAPI():
                                                     'pos_internal_term':['c:E','c:A','f:S','c:B'],  # continue with a preposition (del, da, su, verso) and other names
                                                     'pos_end_term':     ['c:S','c:A'],              # end with a fine common name 
                                                     'max_length_term':  3 
+                                                },
+                                              "alzetta-conf":
+                                                {
+                                                    'pos_start_term': ['c:S'], #sostantivi
+                                                    'pos_internal_term': ['c:A','c:E','c:S','c:EA','c:SP'], #aggettivi (A), preposizioni (semplici (E) e articolate (EA)), sostantivi (S), nomi propri (SP)
+                                                    'pos_end_term': ['c:A','c:S','c:SP'], #sostantivi, aggettivi, nomi propri
+                                                    'statistical_threshold_single': 35, #quanti termini composti da una sola parola estrae (max)
+                                                    'statistical_threshold_multi': 1000, #quanti termini composti da più parole estrae (max)
+                                                    'statistical_frequency_threshold': 1, #frequenza di occorrenza minima affinche il termine sia estratto (metto soglia a 1 perche testo breve) 
+                                                    'max_length_term': 7 #lunghezza massima dei termini multi-word
                                                 }
                                            }
 
@@ -67,7 +75,7 @@ class ItaliaNLAPI():
     
     def execute_term_extraction(self, doc_id, configuration=None,n_try=10) -> DataFrame:
         if configuration is None:
-            configuration = self._term_extraction_configs['name-misc-name']
+            configuration = self._term_extraction_configs['alzetta-conf']
         
         url = self._server_address + '/documents/term_extraction'
         term_extraction_id = requests.post(url=url,
