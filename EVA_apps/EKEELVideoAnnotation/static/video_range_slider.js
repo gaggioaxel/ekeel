@@ -10,7 +10,7 @@ function startVideoSlider(){
     if (start < 0) start = 0
     if (end > videoDuration) end = videoDuration
     higlightExplanationInTranscript(null, start, end, ".youtube-in-description-marker")
-    console.log(start,end)
+    //console.log(start,end)
 
     // disable clicks on track
     let sliderMouseDown = function (e) {

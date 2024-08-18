@@ -3,8 +3,10 @@ let in_description_markers = []
 
 addSubtitles("transcript");
 addSubtitles("transcript-in-description")
-MarkersInit(main_markers,".youtube-marker");
-MarkersInit(in_description_markers,".youtube-in-description-marker");
+MarkersInit(".youtube-marker");
+MarkersInit(".youtube-in-description-marker");
+console.log(main_markers)
+console.log(in_description_markers)
 
 
 // $(document).ready(function(){
@@ -139,8 +141,13 @@ function changeTime(time){
 
 
 
-function MarkersInit(markers,field) {
-  var elements = document.querySelectorAll(field);
+function MarkersInit(html_field) {
+  const elements = document.querySelectorAll(html_field);
+  if (html_field == ".youtube-marker") {
+    markers = main_markers
+  } else {
+    markers = in_description_markers
+  }
   Array.prototype.forEach.call(elements, function(el, i) {
     var time_start = el.dataset.start;
     var time_end = el.dataset.end;
@@ -162,14 +169,18 @@ function MarkersInit(markers,field) {
 }
 
 
-let lastHighlightedSpans = [];
-
 function UpdateMarkers(current_time) {
   scrolled = false
-  if (inDescription) markers = main_markers
-  else markers = in_description_markers
+  
+  if (inDescription) { 
+    markers = in_description_markers 
+  } else { 
+    markers = main_markers
+  }
+
+  
   markers[0].forEach(function(marker) {
-    marker.dom.classList.remove("youtube-marker-current");
+
     if (marker.time_start-1 < current_time && current_time < marker.time_end) {
       marker.dom.classList.add("youtube-marker-current");
       if (!scrolled){
@@ -181,11 +192,15 @@ function UpdateMarkers(current_time) {
       marker.dom.querySelectorAll('span').forEach(function(span) {
         let spanStart = parseFloat(span.getAttribute('start_time'));
         let spanEnd = parseFloat(span.getAttribute('end_time'));
-        span.classList.remove("word-marker-current");
         if (spanStart-0.4 < current_time && current_time < spanEnd) {
           span.classList.add("word-marker-current");
         }
       });
+    } else {
+      marker.dom.classList.remove("youtube-marker-current");
+      marker.dom.querySelectorAll('span').forEach(function(span) {
+        span.classList.remove("word-marker-current");
+      })
     }
   });
 
@@ -217,7 +232,7 @@ function higlightExplanationInTranscript(conceptId, start, end, class_field) {
   }
 
   let subtitleElements = document.querySelectorAll(class_field);
-  console.log(subtitleElements)
+  //console.log(subtitleElements)
   let scrollToElem = null;
   
   // Iterate over each subtitle element to highlight the matching ones

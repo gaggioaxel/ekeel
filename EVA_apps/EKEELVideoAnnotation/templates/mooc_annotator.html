@@ -136,38 +136,38 @@
 
       </div>
       <div id="right-body-description" style="display:none">
-      <div id="add-concept-description" class="add-relation-box">
+        <div id="add-concept-description" class="add-relation-box">
 
-        <div class="relation-box-close-btn">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true" onclick="closeDescriptionDiv();">&times;</span>
-          </button>
-        </div>
-
-        <h2>Add description</h2>
-
-          <div class="autocomplete">
-              <label for="conceptDefined">Concept:</label>
-              <input type="text" class="form-control" autocomplete="off" id="conceptDefined" placeholder="Concept">
+          <div class="relation-box-close-btn">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true" onclick="closeDescriptionDiv();">&times;</span>
+            </button>
           </div>
+
+          <h2>Add description</h2>
+
+            <div class="autocomplete">
+                <label for="conceptDefined">Concept:</label>
+                <input type="text" class="form-control" autocomplete="off" id="conceptDefined" placeholder="Concept">
+            </div>
+
+            <div>
+              <label for="amount">Description range:</label>
+              <input type="text" id="amount" readonly style="border:0; color:dodgerblue; font-weight:bold;">
+            </div>
 
           <div>
-            <label for="amount">Description range:</label>
-            <input type="text" id="amount" readonly style="border:0; color:dodgerblue; font-weight:bold;">
+              <label for="descriptionType">Type</label>
+              <select class="form-control" id="descriptionType" onchange="changeColor()">
+                <option value="Definition">Definition</option>
+                <option value="Expansion">In depth</option>
+              </select>
           </div>
 
-        <div>
-            <label for="descriptionType">Type</label>
-            <select class="form-control" id="descriptionType" onchange="changeColor()">
-              <option value="Definition">Definition</option>
-              <option value="Expansion">In depth</option>
-            </select>
+          <button  onclick="addDescription()" class="btn btn-primary">Add Description</button>
+
         </div>
-
-        <button  onclick="addDescription()" class="btn btn-primary">Add Description</button>
-
-      </div>
-      <div id="transcript-in-description" class="transcript"></div>
+        <div id="transcript-in-description" class="transcript"></div>
       </div>
 
 
@@ -218,7 +218,7 @@
                   <th scope="col">Start</th>
                   <th scope="col">End</th>
                   <th scope="col">Type</th>
-                  <th scope="col" style="text-align: center">Transcript</th>
+                  <th scope="col" style="text-align: center">Highlight</th>
                   <th scope="col"></th>
                 </tr>
               </thead>

@@ -177,7 +177,7 @@ function addDefinition(concept, start, end, startSentID, endSentID, description_
     definedConcepts.push(concept)
     definitions.push(definitionToInsert)
     definitionID += 1
-    console.log(definitions)
+    //console.log(definitions)
 }
 
 function deleteDescription(button, concept, start, end){
@@ -214,7 +214,7 @@ function deleteDescription(button, concept, start, end){
 
 function downloadManuGraphAsJson(){
 
-    console.log("***** EKEEL - Video Annotation: create_graph.js::downloadManuGraphAsJson(): Inizio *****")
+    //console.log("***** EKEEL - Video Annotation: create_graph.js::downloadManuGraphAsJson(): Inizio *****")
 
     let annotations = {
         "id": $video_id,
@@ -233,7 +233,7 @@ function downloadManuGraphAsJson(){
         dataType : 'json',
         data : js_data
     }).done(function(result) {
-        console.log(result)
+        //console.log(result)
         downloadObjectAsJson(result, "graph");
     })    
 }
@@ -249,7 +249,7 @@ function uploadManuGraphOnDB(){
     }
     savedText = document.getElementById("saveGraphText")
     savedText.style.display = "block"
-    console.log("uploadGraphOnDB")
+    //console.log("uploadGraphOnDB")
 
     var js_data = JSON.stringify(annotations);
 
@@ -260,7 +260,7 @@ function uploadManuGraphOnDB(){
         dataType : 'json',
         data : js_data
     }).done(function(result) {
-        console.log(result)
+        //console.log(result)
         if(result.done == true) {
             savedText.textContent = "Saved graph successfully!"
             savedText.style.color = "green";
@@ -318,7 +318,7 @@ function printDefinitions(){
         let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s + "</td><td>"+ e +"</td><td>"+ t +"</td>"+
             "<td><button style=\" margin-right: 40% \" class=\"icon-button\" " +
                 "onclick=\"higlightExplanationInTranscript('"+i+"','"+s+"','"+e+"','.youtube-marker')\">" +
-            "<i class=\"fa fa-quote-left\"></i></button></td>" +
+            "<i class=\"fa fa-magic\"></i></button></td>" +
             
             "<td><button class=\"icon-button\" " +
                 "onclick=\"deleteDescription(this,'"+c+"','"+s+"','"+e+"')\">" +
@@ -327,7 +327,7 @@ function printDefinitions(){
         definitionTable.innerHTML += relToVisualize
 
     }
-    console.log(definitions)
+    //console.log(definitions)
 
 }
 

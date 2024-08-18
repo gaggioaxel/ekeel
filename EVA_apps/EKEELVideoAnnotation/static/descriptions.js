@@ -74,7 +74,7 @@ function addDescription(){
         let start = $('#videoSlider').slider("values")[0];
         let end = $('#videoSlider').slider("values")[1];
         let descriptionType = document.getElementById("descriptionType").value;
-        console.log(concept, start, end, descriptionType)
+        //console.log(concept, start, end, descriptionType)
 
         let start_sub = getCurrentSubtitle(start)
         let startSentID = getSentenceIDfromSub(start_sub)
@@ -84,7 +84,7 @@ function addDescription(){
             end_sub = $(".youtube-marker").last()
 
         let endSentID = getSentenceIDfromSub(end_sub)
-        console.log(concept, start, end, startSentID,endSentID)
+        //console.log(concept, start, end, startSentID,endSentID)
 
         addDefinition(concept, start, end, startSentID,endSentID, descriptionType)
         printDefinitions()
