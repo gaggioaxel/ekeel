@@ -135,8 +135,8 @@
         <button  onclick="addRelation();" class="btn btn-primary">Add Relation</button>
 
       </div>
-
-      <div id="add-concept-description" class="add-relation-box" style="display:none">
+      <div id="right-body-description" style="display:none">
+      <div id="add-concept-description" class="add-relation-box">
 
         <div class="relation-box-close-btn">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -149,11 +149,11 @@
           <div class="autocomplete">
               <label for="conceptDefined">Concept:</label>
               <input type="text" class="form-control" autocomplete="off" id="conceptDefined" placeholder="Concept">
-            </div>
+          </div>
 
           <div>
-          <label for="amount">Description range:</label>
-          <input type="text" id="amount" readonly style="border:0; color:dodgerblue; font-weight:bold;">
+            <label for="amount">Description range:</label>
+            <input type="text" id="amount" readonly style="border:0; color:dodgerblue; font-weight:bold;">
           </div>
 
         <div>
@@ -162,10 +162,12 @@
               <option value="Definition">Definition</option>
               <option value="Expansion">In depth</option>
             </select>
-          </div>
+        </div>
 
         <button  onclick="addDescription()" class="btn btn-primary">Add Description</button>
 
+      </div>
+      <div id="transcript-in-description" class="transcript"></div>
       </div>
 
 
@@ -376,13 +378,12 @@
       let $annotator = {{ annotator|tojson }};
       let $allLemmas = {{ all_lemmas|tojson }};
       let videoDuration = {{ video_duration|tojson }};
-      let transcriptShownId = null;
-      console.log(videoDuration)
 
       let relations = {{ relations|tojson }};
       let definitions = {{ definitions|tojson }};
       let definedConcepts = []
       let definitionID = definitions.length
+      let inDescription = false;
 
       for(let i=0; i<definitions.length; i++){
           definitions[i].id = i

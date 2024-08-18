@@ -96,24 +96,17 @@ def get_video_data(video_id:str):
         metadata.pop('_id')
     return metadata
 
-def insert_video_data(data,update=False):
+def insert_video_data(data:dict, update=False):
     collection = db.videos
-    if collection.find_one({"video_id": data["video_id"]}) is None:
+    mongo_doc:dict | None = collection.find_one({'video_id':data['video_id'] })
+    if mongo_doc is None:
         collection.insert_one(data)
     elif update:
+        mongo_doc.pop("_id")
+        for key,value in data.items():
+            mongo_doc[key] = value
         collection.delete_one({'video_id':data['video_id']})
-        collection.insert_one(data)
-    # else:
-    #     new_graph = {"$set": {"extracted_keywords": data["extracted_keywords"]}}
-    #     collection.update_one({"video_id": data["video_id"]}, new_graph)
-
-def insert_video_text_segmentation(data,update=False):
-    collection = db.video_text_segmentation
-    if collection.find_one({'video_id':data['video_id'] }) is None:
-        collection.insert_one(data)
-    elif update:
-        collection.delete_one({'video_id':data['video_id']})
-        collection.insert_one(data)
+        collection.insert_one(mongo_doc)
 
 
 def get_conll(video_id:str):
@@ -144,11 +137,13 @@ def get_graph(user, video):
     return None
 
 
-def get_videos():
+def get_videos(fields:list=None):
     print("***** EKEEL - Video Annotation: db_mongo.py::get_videos() ******")
     collection = db.videos
-    videos = list(collection.find({}).sort([("creator", pymongo.ASCENDING)]))
-    return videos
+    if fields is None:
+        fields = []  # Default to all fields if none specified
+    projection = {field: 1 for field in fields}
+    return list(collection.find({}, projection).sort([("creator", pymongo.ASCENDING)]))
 
 
 

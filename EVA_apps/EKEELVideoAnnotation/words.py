@@ -77,7 +77,6 @@ class NLPSingleton(object):
 
             models_name = { 'en':'en_core_web_sm',
                             'it':'it_core_news_sm'}
-            cls._spacy_models = {}
 
             # Dictionary comprehension to download and load models
             cls._spacy_models = {
@@ -182,6 +181,7 @@ class SemanticText(NLPSingleton):
         if language is not None:
             self._language = language
         self._tokenized_text = None
+        return self
     
     def get_text(self):
         return self._text
@@ -252,7 +252,9 @@ class SemanticText(NLPSingleton):
 
     def lemmatize(self):
         assert self._text is not None
-        return [token.lemma_ for token in self._spacy_models[self._language](self._text)]
+        tokens = self._spacy_models[self._language](self._text)
+        #print("'",tokens,"'")
+        return [token.lemma_ for token in tokens]
 
     def tokenize(self):
         if self._tokenized_text is None:

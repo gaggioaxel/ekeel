@@ -84,8 +84,8 @@ function highlightConcept(concept, div_id){
 
       if(isConcept){
 
-        for(let s=0; s<allSpan.length -1 ; s++)
-          allSpan[s].style.marginRight = "4px"//.innerHTML += " "
+        //for(let s=0; s<allSpan.length -1 ; s++)
+          //allSpan[s].style.marginRight = "4px"//.innerHTML += " "
 
 
         $(allSpan).wrapAll("<span class='concept' lemma='"+ concept.replaceAll(" ", "_") +"'>")
@@ -276,7 +276,7 @@ function addConcept(){
     }
     else if(!$concepts.includes(concept)) {
 
-        fetch('/annotator/lemmatize_word/' + concept).then(function (response) {
+        fetch('/annotator/lemmatize_word/' + concept + '?lang=' + $language).then(function (response) {
 
             response.json().then(function (data) {
 

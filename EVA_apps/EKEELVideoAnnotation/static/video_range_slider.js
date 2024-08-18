@@ -9,6 +9,8 @@ function startVideoSlider(){
     let end = video.currentTime+30
     if (start < 0) start = 0
     if (end > videoDuration) end = videoDuration
+    higlightExplanationInTranscript(null, start, end, ".youtube-in-description-marker")
+    console.log(start,end)
 
     // disable clicks on track
     let sliderMouseDown = function (e) {
@@ -40,7 +42,7 @@ function startVideoSlider(){
     };
 
 
-  $( "#amount" ).val( "Start: " + secondsToHms(start) + " - End: " + secondsToHms(end) );
+  $( "#amount" ).val( "Start: " + secondsToH_m_s_ms(start) + " - End: " + secondsToH_m_s_ms(end) );
 
     $( "#videoSlider" )
         .on('mousedown', sliderMouseDown)
@@ -49,15 +51,18 @@ function startVideoSlider(){
           range: true,
           min: 0,
           max: videoDuration,
+          step: 0.1,
           values: [ start, end],
           slide: function( event, ui ) {
-            $( "#amount" ).val( "Start: " + secondsToHms(ui.values[ 0 ]) + " - End: " + secondsToHms(ui.values[ 1 ]) );
-            document.getElementById("handleSinistro").innerHTML = secondsToHms(ui.values[ 0 ])
-            document.getElementById("handleDestro").innerHTML = secondsToHms(ui.values[ 1 ])
+            start = ui.values[0]
+            end = ui.values[1]
+            $( "#amount" ).val( "Start: " + secondsToH_m_s_ms(start) + " - End: " + secondsToH_m_s_ms(end) );
+            document.getElementById("handleSinistro").innerHTML = secondsToH_m_s_ms(start)
+            document.getElementById("handleDestro").innerHTML = secondsToH_m_s_ms(end)
             video.pause()
             $("#playButton").removeClass("paused")
             clearInterval(interval_indicator)
-
+            higlightExplanationInTranscript(null, start, end, ".youtube-in-description-marker")
 
           }
     });
@@ -71,8 +76,8 @@ function startVideoSlider(){
     rightHandle.addClass("rightHandle")
     rightHandle.append('<span class="sidecar" id="handleDestro" ></span>')
 
-    document.getElementById("handleSinistro").innerHTML = secondsToHms(start)
-    document.getElementById("handleDestro").innerHTML = secondsToHms(end)
+    document.getElementById("handleSinistro").innerHTML = secondsToH_m_s_ms(start)
+    document.getElementById("handleDestro").innerHTML = secondsToH_m_s_ms(end)
 }
 
 function updateIndicator(end){

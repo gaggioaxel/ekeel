@@ -19,15 +19,15 @@ from ontology import annotations_to_jsonLD
 from burst_class import create_local_vocabulary, create_burst_graph
 from forms import addVideoForm, RegisterForm, LoginForm, GoldStandardForm, ForgotForm, PasswordResetForm, ConfirmCodeForm, BurstForm
 from words import get_real_keywords, automatic_transcript_to_str
-from conll import conll_gen, create_text
+from conll import conll_gen, create_text, create_frontend_interactable_transcript
 from analysis import compute_data_summary, compute_agreement, linguistic_analysis, fleiss
 from user import User
 from sendmail import send_mail, generate_confirmation_token, confirm_token, send_confirmation_mail
 from create_gold_standard import create_gold
 from synonyms import create_skos_dictionary, get_synonyms_from_list
 
-video_segmentations_queue = Manager().list()
-workers_queue_scheduler(video_segmentations_queue)
+#video_segmentations_queue = Manager().list()
+#workers_queue_scheduler(video_segmentations_queue)
 
 @app.route('/')
 def index():
@@ -220,7 +220,7 @@ def password_reset(token):
 def video_selection():
     print("***** EKEEL - Video Annotation: main.py::video_selection(): Inizio ******")
     form = addVideoForm()
-    videos = db_mongo.get_videos()
+    videos = db_mongo.get_videos(["video_id","title", "creator"])
 
     if not form.validate_on_submit():
         return render_template('video_selection.html', form=form, videos=videos)
@@ -229,11 +229,12 @@ def video_selection():
         url = form.url.data
         vid_analyzer = VideoAnalyzer(url)
         vid_analyzer.download_video()
+        
+        # NOTE extracting transcript from audio with whisper on high-end i9 8 core process at ~1.3 sec/s
         vid_analyzer.request_transcript()
         vid_analyzer.analyze_transcript()
         vid_analyzer.create_thumbnails()
         vid_analyzer.analyze_video()
-        #vid_analyzer.is_slide_video()
         video_id = vid_analyzer.video_id
         
         #vid_analyzer.transcript_segmentation_and_thumbnails()
@@ -261,7 +262,8 @@ def video_selection():
         language = vid_analyzer.identify_language()
         text = SemanticText(automatic_transcript_to_str(data["transcript_data"]["timed_text"]), language)
         conll_sentences = conll_gen(video_id,text)
-        lemmatized_subtitles, all_lemmas = create_text(data["transcript_data"]["timed_text"], conll_sentences, language)
+        #lemmatized_subtitles, all_lemmas = create_text(data["transcript_data"]["timed_text"], conll_sentences, language)
+        lemmatized_subtitles, all_lemmas = create_frontend_interactable_transcript(data["transcript_data"]["timed_text"], language)
         annotator = current_user.complete_name
         relations = db_mongo.get_concept_map(current_user.mongodb_id, video_id)
         definitions = db_mongo.get_definitions(current_user.mongodb_id, video_id)
@@ -324,7 +326,7 @@ Get concept vocabulary (dict: word -> synonyms)
 '''
 @app.route('/get_concept_vocabulary', methods=["GET", "POST"])
 def get_concept_vocabulary():
-    print("***** EKEEL - Video Annotation: db_mongo.py::get_concept_vocabulary() ******")
+    print("***** EKEEL - Video Annotation: main.py::get_concept_vocabulary() ******")
 
     data = request.json
 
@@ -343,19 +345,14 @@ def get_concept_vocabulary():
 
 @app.route('/lemmatize_word/<path:word>')
 def lemmatize_word(word):
-    print("***** EKEEL - Video Annotation: db_mongo.py::lemmatize_word() ******")
+    print("***** EKEEL - Video Annotation: main.py::lemmatize_word() ******")
+    language = request.args.get('lang', None)
+    assert language is not None, "Lang should not be None"
+    
+    lemmatizer = SemanticText("",language)
 
-    lemmatizer = WordNetLemmatizer()
+    lemma = " ".join([lemmatizer.set_text(w).lemmatize()[0] for w in word.split(" ")])
 
-    splitted_word = word.split(" ")
-    lemma = ""
-
-    for i, w in enumerate(splitted_word):
-        lemma += lemmatizer.lemmatize(w)
-        if i < len(splitted_word)-1:
-            lemma += " "
-
-    #print(lemma)
     return jsonify({'lemma': lemma.lower()})
 
 
@@ -520,29 +517,28 @@ def burst():
 
     #form = addVideoForm()
     form = BurstForm()
-    videos = db_mongo.get_videos()
+    videos = db_mongo.get_videos(["video_id","title", "creator"])
 
     if form.validate_on_submit():
 
         video_id = form.url.data
         video = VideoAnalyzer(f"https://youtu.be/{video_id}")
-        text = SemanticText(get_text(video_id), video.identify_language())        
-        conll_sentences = conll_gen(video_id, text)
+        #text = SemanticText(get_text(video_id), video.identify_language())      
+        #conll_sentences = conll_gen(video_id, text)
         title, keywords = get_real_keywords(video_id,annotator_id = current_user.mongodb_id)
-        
+            
         # semi-automatic extraction
         if form.type.data == "semi":
 
-            vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v="+video_id)
-            vid_analyzer.request_transcript()
-            subtitles = vid_analyzer.data["transcript_data"]["timed_text"]
-            lemmatized_subtitles, all_lemmas = create_text(subtitles, conll_sentences, vid_analyzer.data["language"])
+            video.request_transcript()
+            subtitles = video.data["transcript_data"]["timed_text"]
+            lemmatized_subtitles, all_lemmas = create_frontend_interactable_transcript(subtitles,video.data["language"], concepts=keywords)#create_text(subtitles, conll_sentences, vid_analyzer.data["language"])
 
-            return render_template('burst_results.html', result=subtitles, video_id=video_id, concepts=keywords,
+            return render_template('burst_results.html', result=subtitles, video_id=video_id, language=video.data["language"], concepts=keywords,
                                    title=title, lemmatized_subtitles=lemmatized_subtitles, all_lemmas=all_lemmas,
                                    type="semi")
 
-        return render_template('burst_results.html', result=[], video_id=video_id, concepts=keywords, title=title,
+        return render_template('burst_results.html', result=[], video_id=video_id,language=video.data["language"], concepts=keywords, title=title,
                                 lemmatized_subtitles=[], all_lemmas=[], type=form.type.data)
 
     return render_template('burst.html', form=form, videos=videos)
@@ -682,7 +678,7 @@ def video_segmentation_refinement():
     return {"definitions":definitions,
             "downloadable_jsonld_graph":downloadable_jsonld_graph}
 
-DEBUG = True
+DEBUG = False
 
 def _open_application_in_browser(address):
     from webbrowser import open as open_page
@@ -695,4 +691,4 @@ if __name__ == '__main__':
     
     address = '127.0.0.1'
     #_open_application_in_browser(address)    
-    app.run(host=address, threaded=True, debug=False) #, port=5050\
+    app.run(host=address, threaded=True, debug=DEBUG) #, port=5050\

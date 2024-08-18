@@ -5,13 +5,16 @@ function showDescriptionDiv(){
     $('#canvas-wrap').dimBackground();
     $('#videoSlider').show();
     $('#videoSlider').dimBackground();
-    $('#add-concept-description').show();
+    //$('#add-concept-description').show();
     $('#right-body').hide();
-    $('#add-concept-description').dimBackground();
+    $('#right-body-description').show();
+    $('#right-body-description').dimBackground();
+    //$('#add-concept-description').dimBackground();
     document.getElementById("conceptDefined").value = ""
     player.controls(false)
     video.pause()
     $("#playButton").removeClass("paused")
+    inDescription = true
 
 
     startVideoSlider()
@@ -25,9 +28,11 @@ function closeDescriptionDiv(){
 
     $('#videoSlider').hide();
     $('#videoSlider').undim();
-    $('#add-concept-description').hide();
+    //$('#add-concept-description').hide();
     $('#right-body').show();
-    $('#add-concept-description').undim();
+    $('#right-body-description').hide();
+    $('#right-body-description').undim();
+    //$('#add-concept-description').undim();
     $('#canvas-wrap').undim();
     player.controls(true)
     clearInterval(interval_indicator)
@@ -36,6 +41,7 @@ function closeDescriptionDiv(){
 
     // Add event listener for Escape key
     document.removeEventListener('keydown', handleEscape);
+    inDescription = false
 
 
 }

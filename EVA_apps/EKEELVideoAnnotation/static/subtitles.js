@@ -1,7 +1,10 @@
-let markers = []
+let main_markers = []
+let in_description_markers = []
 
-addSubtitles();
-MarkersInit(markers);
+addSubtitles("transcript");
+addSubtitles("transcript-in-description")
+MarkersInit(main_markers,".youtube-marker");
+MarkersInit(in_description_markers,".youtube-in-description-marker");
 
 
 // $(document).ready(function(){
@@ -64,17 +67,25 @@ function closeRelationDiv(){
 
 }
 
-function addSubtitles(){
+function addSubtitles(id){
 
-  let transcriptDiv = document.getElementById("transcript");
+  let transcriptDiv = document.getElementById(id);
+  
+  if (id == "transcript") {
+    for (let x in $captions){
 
-  for (let x in $captions){
+      transcriptDiv.innerHTML +=
+          '<p class="youtube-marker" data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '" onclick="changeTime(' +$captions[x].start + ')">' +
+            '<b> ' + secondsToHms($captions[x].start) +":</b> " +
+          $lemmatizedSubs[x].text + '</p>';
 
-    transcriptDiv.innerHTML +=
-        '<p class="youtube-marker" data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '" onclick="changeTime(' +$captions[x].start + ')">' +
-          '<b> ' + secondsToHms($captions[x].start) +":</b> " +
-        $lemmatizedSubs[x].text + '</p>';
-
+    }
+  } else if (id == "transcript-in-description") {
+    for (let x in $captions){
+      transcriptDiv.innerHTML +=
+          '<p class="youtube-in-description-marker" data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
+            '<b> ' + secondsToHms($captions[x].start) +":</b> " + $lemmatizedSubs[x].text + '</p>';
+    }
   }
 
   $(document).on("click", ".concept", function (e) {
@@ -115,10 +126,10 @@ function addSubtitles(){
 
     //console.log(target.getAttribute('lemma'));
   });
-
-  for(let i in $concepts)
-    highlightConcept($concepts[i], "transcript")
-
+  if (id == "transcript") {
+    for(let i in $concepts)
+      highlightConcept($concepts[i], "transcript")
+  }
 }
 
 
@@ -128,8 +139,8 @@ function changeTime(time){
 
 
 
-function MarkersInit(markers) {
-  var elements = document.querySelectorAll('.youtube-marker');
+function MarkersInit(markers,field) {
+  var elements = document.querySelectorAll(field);
   Array.prototype.forEach.call(elements, function(el, i) {
     var time_start = el.dataset.start;
     var time_end = el.dataset.end;
@@ -151,20 +162,81 @@ function MarkersInit(markers) {
 }
 
 
+let lastHighlightedSpans = [];
+
 function UpdateMarkers(current_time) {
-
-  var j = 0;
-
-  markers[j].forEach(function(marker, i) {
-
-    if (current_time >= marker.time_start && current_time <= marker.time_end) {
+  scrolled = false
+  if (inDescription) markers = main_markers
+  else markers = in_description_markers
+  markers[0].forEach(function(marker) {
+    marker.dom.classList.remove("youtube-marker-current");
+    if (marker.time_start-1 < current_time && current_time < marker.time_end) {
       marker.dom.classList.add("youtube-marker-current");
-      //marker.dom.scrollIntoView();
-      marker.dom.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
-    } else {
-      marker.dom.classList.remove("youtube-marker-current");
+      if (!scrolled){
+        marker.dom.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        scrolled = true
+      }
+      
+      // Cycle through child spans
+      marker.dom.querySelectorAll('span').forEach(function(span) {
+        let spanStart = parseFloat(span.getAttribute('start_time'));
+        let spanEnd = parseFloat(span.getAttribute('end_time'));
+        span.classList.remove("word-marker-current");
+        if (spanStart-0.4 < current_time && current_time < spanEnd) {
+          span.classList.add("word-marker-current");
+        }
+      });
     }
   });
+
+}
+
+let transcriptShownId = null;
+
+function higlightExplanationInTranscript(conceptId, start, end, class_field) {
+
+  // We are in the transcript in the annotator page 
+  if (class_field == ".youtube-marker") {
+    definition_start = [hours, minutes, seconds] = start.split(':').map(Number);
+    definition_start = hours * 3600 + minutes * 60 + seconds;
+    definition_end = [hours, minutes, seconds] = end.split(':').map(Number);
+    definition_end = hours * 3600 + minutes * 60 + seconds;
+
+    // user is de-selecting the concept
+    if (transcriptShownId != null & transcriptShownId == conceptId) {
+        definition_start = -1
+        definition_end = -1
+        transcriptShownId = null
+    } else {
+        transcriptShownId = conceptId
+    }
+  // otherwise we are in the transcript in description window and values are passed already as float seconds
+  } else {
+    definition_start = start
+    definition_end = end
+  }
+
+  let subtitleElements = document.querySelectorAll(class_field);
+  console.log(subtitleElements)
+  let scrollToElem = null;
+  
+  // Iterate over each subtitle element to highlight the matching ones
+  subtitleElements.forEach(element => {
+    //element.classList.add('definitionInTranscript');
+    element.querySelectorAll('span').forEach(function(word) {
+      word.classList.remove('definitionInTranscript');
+      wordStart = parseFloat(word.getAttribute('start_time'));
+      wordEnd = parseFloat(word.getAttribute('end_time')) 
+      if (wordStart >= definition_start & wordEnd <= definition_end) {
+        word.classList.add('definitionInTranscript');
+        if (!scrollToElem) scrollToElem = element;
+      }
+    });
+  });
+  if (scrollToElem) {
+    scrollToElem.scrollIntoView({ behavior: 'smooth', block: 'start'});
+  }
+
 }
 
 
@@ -181,10 +253,16 @@ function secondsToHms(d) {
     s = "0"+s;
 
   if (h > 0)
-    return h +"." + m + "." + s;
+    return h +":" + m + ":" + s;
   else
-    return m + "." + s;
-  }
+    return m + ":" + s;
+}
+
+function secondsToH_m_s_ms(d){
+
+  str = secondsToHms(d)
+  return str + "." + (Number(d).toFixed(1) + "").split(".")[1]
+}
 
 function secondsToTime(d) {
   d = Number(d);

@@ -187,6 +187,7 @@ class BurstExtractor:
         """
 
         if not self._offsets:
+            return None
             choice = input("""You must first detect the offsets (by calling the method 'find_offset').
                             Do you want to find offsets now (without an index file) 
                             and then automatically detect the bursts? Press y/n\n""")
