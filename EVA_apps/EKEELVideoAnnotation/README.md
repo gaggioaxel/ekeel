@@ -56,16 +56,21 @@ open a terminal
 cd {inside folder EKEELVideoAnnotation}
 ```
 
-replace the conda_environment.yml inside using
+overwrite the conda_environment.yml inside using
 ```
 conda env export --no-builds | grep -v "^prefix: " > conda_environment.yml
 ```
+and push the modifications to the repo.
 
-to synchronize the changes in the server push updates to the repo and on the server terminal
+Then to synchronize the packages change in the server pull updates from the repo and on the server terminal
 
 ```
 cd {inside folder EKEELVideoAnnotation}
 conda env update --file conda_environment.yml --prune
+```
+then restart the service
+```
+sudo systemctl restart ekeel
 ```
 
 # Notes:

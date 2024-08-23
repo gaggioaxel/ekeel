@@ -137,3 +137,33 @@ function playDefinition(btn) {
 
 
 }
+
+// Playback rate button
+videojs('video-active').ready(function() {
+    const player = this;
+
+    // Create the button component
+    const Button = videojs.getComponent('Button');
+    const SpeedUpButton = videojs.extend(Button, {
+        constructor: function() {
+            Button.apply(this, arguments);
+            this.controlText('Speed');
+            this.addClass('vjs-speed-up-button');
+            this.on('click', this.handleClick);
+            this.el().querySelector('.vjs-icon-placeholder').textContent = `${player.playbackRate()}x`;
+        },
+        handleClick: function() {
+            let playbackRate = player.playbackRate();
+            const speeds = [1.0, 1.1, 1.25, 1.5, 1.75, 2];
+            playbackRate = speeds[(speeds.indexOf(playbackRate)+1) % speeds.length];
+            this.el().querySelector('.vjs-icon-placeholder').textContent = `${playbackRate}x`;
+            player.playbackRate(playbackRate);
+        }
+    });
+
+    // Register the new button component
+    videojs.registerComponent('SpeedUpButton', SpeedUpButton);
+
+    // Add the new button to the control bar
+    player.getChild('controlBar').addChild('SpeedUpButton', {}, 9);
+});

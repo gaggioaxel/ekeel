@@ -1,3 +1,14 @@
+.creator-group {
+  clear: both; /* Ensures the group is on a new line */
+  margin-bottom: 20px; /* Adds spacing between creator groups */
+}
+
+.creator-group h3 {
+  margin-top: 20px;
+}
+
+
+
 .video_radio {
     display: inline-grid;
     margin-bottom: .5rem;

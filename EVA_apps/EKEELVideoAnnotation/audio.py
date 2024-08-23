@@ -1,13 +1,20 @@
 import subprocess
 import os
 from pathlib import Path
-import torch
-from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
-import stable_whisper
 import json
-            
+from multiprocessing import Process
+import threading 
+import stable_whisper
+import gc
 
-from locales import Locale
+# TODO dq True -> va piu veloce ma skippa discorsi molto veloci, inficiando sulla qualita' finale del transcript, ma skippa anche imprecisioni e ripensamenti
+# Tempi quasi raddoppiano
+# TODO stable-ts version 2.17.3: passing the language is not working, will be inferenced at cost of small increase in time
+# self._model.transcribe(wav_path.__str__(), decode_options={"language":language}) \
+#             .save_as_json(json_path.__str__())
+# TODO deallocating the model does not work
+WHISPER_MODEL = stable_whisper.load_model(name='large-v3', cpu_preload=False)
+WHISPER_LOCK = threading.Lock()
 
 # Function to convert MP4 video to MP3 audio
 def _convert_mp4_to_wav(video_path:str, video_id:str) -> Path:
@@ -30,83 +37,74 @@ def _convert_mp4_to_wav(video_path:str, video_id:str) -> Path:
     return output_file_path
 
 
-class WhisperSingleton:
+class WhisperTranscriber:    
     
-    _instance = None
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(WhisperSingleton, cls).__new__(cls)
-            cls._model = stable_whisper.load_model(name='large-v3', 
-                                                   dq=True)
-            
-        return cls._instance
-    
-    def transcribe(self,video_id:str, language:str):
+    @staticmethod
+    def transcribe(video_id:str, language:str):
+        """
+        Transcribe the audio from a video using Whisper and return the transcribed segments with timestamps.
+        """
         folder_path = Path(__file__).parent.joinpath("static").joinpath('videos').joinpath(video_id)
         json_path = folder_path.joinpath(video_id+".json")
+        wav_path = _convert_mp4_to_wav(folder_path, video_id)
         
-        if not os.path.isfile(json_path):
-            wav_path = _convert_mp4_to_wav(folder_path, video_id)
+        print("Starting transcription...")
         
-            self._model.transcribe(wav_path.__str__()) \
-                         .save_as_json(json_path.__str__())
-            
-            os.remove(wav_path)             
-            # TODO stable-ts version 2.17.3: passing the language is not working, will be inferenced at cost of small increase in time
-            #self._model.transcribe(wav_path.__str__(), decode_options={"language":language}) \
-            #            .save_as_json(json_path.__str__())
+        with WHISPER_LOCK:
+            WHISPER_MODEL.transcribe(wav_path.__str__()).save_as_json(json_path.__str__())
+        #WhisperTranscriber._whisper_transcribe(json_path, wav_path, language)
+        # When used as a separated process it won't release the memory and goes into lock
+        #thread = Thread(target=WhisperTranscriber._whisper_transcribe, args=(json_path, wav_path, language))
+        #thread.start()
+        #thread.join()
+        #process = Process(target=_whisper_transcribe, args=(json_path, wav_path, language))
+        #process.start()
+        #process.join()
+        #process.terminate()
+        #del process
+        #gc.collect()
         
         with open(json_path) as f:
             data = json.load(f)
+        os.remove(wav_path)             
+        os.remove(json_path)
         
         timed_sentences = []
         for segment in data["segments"]:
-            segment.pop("seek",None);segment.pop("tokens", None);segment.pop("temperature", None)
-            segment.pop("avg_logprob", None);segment.pop("compression_ratio", None);segment.pop("no_speech_prob", None)
+            segment.pop("seek",None)
+            segment.pop("tokens", None)
+            segment.pop("temperature", None)
+            segment.pop("avg_logprob", None)
+            segment.pop("compression_ratio", None)
+            segment.pop("no_speech_prob", None)
             timed_sentences.append(segment)
             
         return timed_sentences
         
 
-#def extract_transcript_from_audio(video_id:str, language:str) -> str:
-#    wav_path = _convert_mp4_to_wav(Path(__file__).parent.joinpath("static").joinpath('videos').joinpath(video_id), video_id)
-#
-#    device = "cuda:0" if torch.cuda.is_available() else "cpu"
-#    #print(device)
-#
-#    model = AutoModelForSpeechSeq2Seq.from_pretrained(
-#        "openai/whisper-large-v3", torch_dtype=torch.float32, low_cpu_mem_usage=True, use_safetensors=True
-#    )
-#    model.to(device)
-#
-#    processor = AutoProcessor.from_pretrained(model_id)
-#
-#    pipe = pipeline(
-#        "automatic-speech-recognition",
-#        model=model,
-#        tokenizer=processor.tokenizer,
-#        feature_extractor=processor.feature_extractor,
-#        max_new_tokens=128,
-#        torch_dtype=torch.float32,
-#        device=device,
-#    )
-#    
-#    transcription = pipe(wav_path.__str__(), generate_kwargs={"language": Locale().get_full_from_pt1(language)})
-#    return transcription["text"]
-
-
 
 if __name__ == '__main__':
+    from segmentation import VideoAnalyzer
+    video1 = VideoAnalyzer("https://www.youtube.com/watch?v=TsONshNsHHw")
+    video1.download_video()
+    print("transcript 1")
+    video1.request_transcript()
     
-
+    import time
+    time.sleep(15)
+    
+    video1 = VideoAnalyzer("https://www.youtube.com/watch?v=Gac9rynIENg")
+    video1.download_video()
+    print("transcript 2")
+    video1.request_transcript()
+    
     # Opening JSON file
-    f = open('audio.json')
+    #f = open('audio.json')
 
     # returns JSON object as 
     # a dictionary
-    data = json.load(f)
-    print(data)
+    #data = json.load(f)
+    #print(data)
     
 elif False:
     #import whisper_timestamped

@@ -214,7 +214,8 @@ class ImageClassifier:
         True if at least one text has been found and return_contours is False
         otherwise returns the full array of contours for every text
         '''
-        assert self._image is not None and len(self._image.shape) == 3
+        if self._image is None:
+            self._texts_with_contour = [[]]
         self._scan_image_for_text_and_bounding_boxes()
         if return_text and with_contours:
             return self._texts_with_contour

@@ -131,6 +131,7 @@ function addRelation(){
 
   targetSentID = null
   targetWordID = null
+  uploadManuGraphOnDB()
 }
 
 function deleteRelation(button, target, prereq, weight, time) {
@@ -158,7 +159,8 @@ function deleteRelation(button, target, prereq, weight, time) {
         }
     }
 
-    console.log(relations)
+    uploadManuGraphOnDB()
+    //console.log(relations)
 
 }
 
@@ -177,6 +179,7 @@ function addDefinition(concept, start, end, startSentID, endSentID, description_
     definedConcepts.push(concept)
     definitions.push(definitionToInsert)
     definitionID += 1
+    uploadManuGraphOnDB()
     //console.log(definitions)
 }
 
@@ -207,7 +210,7 @@ function deleteDescription(button, concept, start, end){
 
     definitions.splice(toDelete, 1)
     definedConcepts.splice(toDelete, 1)
-
+    uploadManuGraphOnDB()
   }
 
 
@@ -247,8 +250,8 @@ function uploadManuGraphOnDB(){
         "annotator": $annotator,
         "conceptVocabulary": $conceptVocabulary,
     }
-    savedText = document.getElementById("saveGraphText")
-    savedText.style.display = "block"
+    //savedText = document.getElementById("saveGraphText")
+    //savedText.style.display = "block"
     //console.log("uploadGraphOnDB")
 
     var js_data = JSON.stringify(annotations);
@@ -261,17 +264,17 @@ function uploadManuGraphOnDB(){
         data : js_data
     }).done(function(result) {
         //console.log(result)
-        if(result.done == true) {
-            savedText.textContent = "Saved graph successfully!"
-            savedText.style.color = "green";
-            savedText.style.display = "block";
-            setTimeout(function() { 
-                savedText.textContent = "Saving graph...";
-                savedText.style.color = "black";
-                savedText.style.display = "none";
-
-            } ,2000)
-        }
+        //if(result.done == true) {
+        //    savedText.textContent = "Saved graph successfully!"
+        //    savedText.style.color = "green";
+        //    savedText.style.display = "block";
+        //    setTimeout(function() { 
+        //        savedText.textContent = "Saving graph...";
+        //        savedText.style.color = "black";
+        //        savedText.style.display = "none";
+        //
+        //    } ,2000)
+        //}
     })
 }
   

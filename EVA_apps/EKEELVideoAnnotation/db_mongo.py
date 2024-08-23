@@ -96,7 +96,7 @@ def get_video_data(video_id:str):
         metadata.pop('_id')
     return metadata
 
-def insert_video_data(data:dict, update=False):
+def insert_video_data(data:dict, update=True):
     collection = db.videos
     mongo_doc:dict | None = collection.find_one({'video_id':data['video_id'] })
     if mongo_doc is None:
@@ -453,4 +453,4 @@ if __name__ == '__main__':
     #graph = get_graph("Burst Analysis","PPLop4L2eGk")
     print("***** EKEEL - Video Annotation: db_mongo.py::__main__ ******")
     #db.drop_collection("videos_statistics")
-    #remove_video("FZ1qPqVeMSQ")
+    remove_video("0BX8zOzYIZk")

@@ -10,11 +10,10 @@ import json
 from conll import get_text
 from burst_class import burst_extraction, burst_extraction_with_synonyms, convert_to_skos_concepts
 from metrics import calculate_metrics
-from multiprocessing import Manager
 from config import app
 import db_mongo
 from db_mongo import users, unverified_users
-from segmentation import VideoAnalyzer, workers_queue_scheduler, SemanticText
+from segmentation import VideoAnalyzer, SemanticText
 from ontology import annotations_to_jsonLD
 from burst_class import create_local_vocabulary, create_burst_graph
 from forms import addVideoForm, RegisterForm, LoginForm, GoldStandardForm, ForgotForm, PasswordResetForm, ConfirmCodeForm, BurstForm
@@ -25,6 +24,7 @@ from user import User
 from sendmail import send_mail, generate_confirmation_token, confirm_token, send_confirmation_mail
 from create_gold_standard import create_gold
 from synonyms import create_skos_dictionary, get_synonyms_from_list
+from words import NLPSingleton
 
 #video_segmentations_queue = Manager().list()
 #workers_queue_scheduler(video_segmentations_queue)
@@ -227,7 +227,9 @@ def video_selection():
     
     try:
         url = form.url.data
+        print("Initializing video structure...")
         vid_analyzer = VideoAnalyzer(url)
+        print("Downloading video...")
         vid_analyzer.download_video()
         
         # NOTE extracting transcript from audio with whisper on high-end i9 8 core process at ~1.3 sec/s
@@ -236,28 +238,8 @@ def video_selection():
         vid_analyzer.create_thumbnails()
         vid_analyzer.analyze_video()
         video_id = vid_analyzer.video_id
-        
-        #vid_analyzer.transcript_segmentation_and_thumbnails()
-
-        #if vid_analyzer.is_slide_video():
-        #    # create thumbnails based on slide segmentation
-        #    print('Creating thumbnails...')
-        #    vid_analyzer.create_thumbnails()
-        #    vid_analyzer.analyze_video()
-        # TODO support italian by making a version of the model created by Garrello
-        #if vid_analyzer.is_not_too_long() #and vid_analyzer.metadata["language"] == "en":
-        #    #print("Video not already segmented: starting segmentation...")
-        #    global video_segmentations_queue
-        #    video_segmentations_queue.append(url)
-        # Try this to simplify the job https://chatgpt.com/share/85ab1473-6a96-4dfa-a385-a8317abe6958
-                
-        #vid_analyzer.transcript_segmentation_and_thumbnails(create_thumbnails=must_create_thumbnails)
-        #print('transcript segmentated!!')
-        #vid_analyzer.extract_keywords()
-        
         data = vid_analyzer.data
-        # Comment to prevent uploading to database
-        db_mongo.insert_video_data(data,update=True)
+        
         lemmatized_concepts = vid_analyzer.lemmatize_terms()
         language = vid_analyzer.identify_language()
         text = SemanticText(automatic_transcript_to_str(data["transcript_data"]["timed_text"]), language)
@@ -292,7 +274,9 @@ def video_selection():
                 lemmatized_concepts.append(rel["prerequisite"])
             if rel["target"] not in lemmatized_concepts:
                 lemmatized_concepts.append(rel["target"])
-                
+        
+        NLPSingleton().destroy()  
+        
         return render_template('mooc_annotator.html', 
                                result=data["transcript_data"]["timed_text"], video_id=video_id, start_times=list(map(lambda x: x[0],data["video_data"]["segments"])),
                                images_path=vid_analyzer.images_path, concepts=lemmatized_concepts,video_duration=data['duration'], 

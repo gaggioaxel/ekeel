@@ -181,7 +181,8 @@ function UpdateMarkers(current_time) {
   
   markers[0].forEach(function(marker) {
 
-    if (marker.time_start-1 < current_time && current_time < marker.time_end) {
+    if (parseFloat(marker.time_start)-1 < current_time & current_time < parseFloat(marker.time_end)+1) {
+      marker.dom.classList.remove("youtube-marker-faded")
       marker.dom.classList.add("youtube-marker-current");
       if (!scrolled){
         marker.dom.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
@@ -190,16 +191,22 @@ function UpdateMarkers(current_time) {
       
       // Cycle through child spans
       marker.dom.querySelectorAll('span').forEach(function(span) {
+        span.classList.remove("word-marker-current");
         let spanStart = parseFloat(span.getAttribute('start_time'));
         let spanEnd = parseFloat(span.getAttribute('end_time'));
-        if (spanStart-0.4 < current_time && current_time < spanEnd) {
+        if (spanStart-0.4 < current_time & current_time < spanEnd+0.4) {
           span.classList.add("word-marker-current");
         }
       });
     } else {
-      marker.dom.classList.remove("youtube-marker-current");
+      if (marker.dom.classList.contains("youtube-marker-current")) {
+        marker.dom.classList.remove("youtube-marker-current");
+        marker.dom.classList.add("youtube-marker-faded");
+      }
       marker.dom.querySelectorAll('span').forEach(function(span) {
-        span.classList.remove("word-marker-current");
+        var classList = span.classList;
+        if (classList.contains("word-marker-current"))
+          classList.remove("word-marker-current");
       })
     }
   });

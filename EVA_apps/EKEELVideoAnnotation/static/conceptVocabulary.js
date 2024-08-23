@@ -154,6 +154,7 @@ function addConcept(){
                   document.getElementById("newConcept").value = ""
                   document.getElementById("errorConcept").innerHTML = "word successfully added to the concepts"
                   showMsg("errorConcept", "green")
+                  uploadManuGraphOnDB()
               }
 
           })
@@ -291,6 +292,7 @@ function addSynonym(){
             //console.log("synonyms")
             //console.log($synonyms);
             $synonymList = [];
+            uploadManuGraphOnDB()
             document.getElementById("synonymSet").innerHTML = "";
             document.getElementById("synonymSet").style.display = "none"
             document.getElementById("selectSynonymSet").value = "";
@@ -353,6 +355,7 @@ function removeSynonym(){
             //console.log("synonyms")
             //console.log($synonyms);
             $synonymList = [];
+            uploadManuGraphOnDB()
             document.getElementById("synonymSet").innerHTML = "";
             document.getElementById("synonymSet").style.display = "none"
             document.getElementById("selectSynonymSet").value = "";
@@ -444,6 +447,7 @@ function deleteConcept(button,concept) {
   if(document.getElementById(concept+"Defined") != null)
       document.getElementById(concept+"Defined").remove()
 
+  uploadManuGraphOnDB()
 }
 
 /* highlight a concept in a div with id div_id */

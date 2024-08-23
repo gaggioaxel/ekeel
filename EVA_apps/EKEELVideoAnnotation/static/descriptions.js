@@ -89,6 +89,7 @@ function addDescription(){
         addDefinition(concept, start, end, startSentID,endSentID, descriptionType)
         printDefinitions()
         closeDescriptionDiv()
+        uploadManuGraphOnDB()
     }else
         alert("Concept not defined")
 }

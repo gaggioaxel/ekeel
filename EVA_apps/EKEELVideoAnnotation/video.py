@@ -379,9 +379,8 @@ class SimpleVideo:
         self.video = cv2.VideoCapture(Path(__file__).parent.joinpath("static","videos",video_id,video_id+".mp4").__str__())
         if not self.video.isOpened():
             raise Exception("Error loading video in SimpleVideo")
-        self.step = 1
+        self._curr_step = 1
         self._curr_frame_idx = 0
-        self._curr_frame = self.video.read()[1]
         
     def close(self):
         self.video.release()
@@ -393,15 +392,22 @@ class SimpleVideo:
         return int(self.video.get(cv2.CAP_PROP_FPS))
 
     def get_frame(self):
-        cached_frame = self._curr_frame
-        if self.step != 1:
-            self.video.set(cv2.CAP_PROP_POS_FRAMES,self._curr_frame_idx + self.step - 1)
-        self._curr_frame = self.video.read()[1]
-        self._curr_frame_idx += self.step
-        return cached_frame
+        self._curr_frame_idx += self._curr_step
+        self.video.set(cv2.CAP_PROP_POS_FRAMES,self._curr_frame_idx)
+        return self.video.read()[1]
     
-    def get_time(self,n_step_back:int=0):
-        return (self._curr_frame_idx - n_step_back*self.step) / self.video.get(cv2.CAP_PROP_FPS)
+    def roll(self, offset:int):
+        self._curr_frame_idx += offset
+        self.video.set(cv2.CAP_PROP_POS_FRAMES,self._curr_frame_idx)
+    
+    def rewind(self):
+        self.roll( - self._curr_frame_idx )
+        
+    def set_step(self, step):
+        self._curr_step = step
+        
+    def get_frame_index(self, one_step_back:bool=False):
+        return self._curr_frame_idx - one_step_back * self._curr_step
     
 
 if __name__ == '__main__':
