@@ -102,7 +102,7 @@ def get_text(video_id:str, return_conll=False):
         return text, conll
     return text
 
-def create_text(subtitles, conll_sentences, language):
+def html_interactable_transcript_legacy(subtitles, conll_sentences, language):
     """
     Creation of the transcript, every word is a span element with attributes sent_id and word_id, corresponding to the
     sentence id and word id of the conll.
@@ -179,10 +179,10 @@ def create_text(subtitles, conll_sentences, language):
                 sem_text.set_text(toLemmatize)
                 lemma = sem_text.lemmatize()[0]
                 #lemma = lemmatizer.lemmatize(toLemmatize)
-                print(toLemmatize, lemma)
-                word_startend = sub["words"][in_phrase_word_indx]
+                #print(toLemmatize, lemma)
+                #print(sub)
                 
-                sent["text"] += f'<span lemma="{lemma}" sent_id="{str(s)}" word_id="{str(word_id)}" start_time="{word_startend["start"]}" end_time="{word_startend["end"]}" >' + w + '</span> '
+                sent["text"] += f'<span lemma="{lemma}" sent_id="{str(s)}" word_id="{str(word_id)}" start_time="{sub["start"]}" end_time="{sub["end"]}" >' + w + '</span> '
 
 
                 if lemma not in all_lemmas:
@@ -198,7 +198,7 @@ def create_text(subtitles, conll_sentences, language):
 
     return lemmatized_subtitles, all_lemmas
 
-def create_frontend_interactable_transcript(subtitles:list, language:str, concepts:list=None):
+def html_interactable_transcript_word_level(subtitles:list, language:str, concepts:list=None):
     """
     creates the html code (hard coded) from subtitles and concept by lemmatizing and incapsulating one or multiple words concepts
     

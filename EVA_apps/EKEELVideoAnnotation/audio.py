@@ -2,19 +2,7 @@ import subprocess
 import os
 from pathlib import Path
 import json
-from multiprocessing import Process
-import threading 
-import stable_whisper
-import gc
 
-# TODO dq True -> va piu veloce ma skippa discorsi molto veloci, inficiando sulla qualita' finale del transcript, ma skippa anche imprecisioni e ripensamenti
-# Tempi quasi raddoppiano
-# TODO stable-ts version 2.17.3: passing the language is not working, will be inferenced at cost of small increase in time
-# self._model.transcribe(wav_path.__str__(), decode_options={"language":language}) \
-#             .save_as_json(json_path.__str__())
-# TODO deallocating the model does not work
-WHISPER_MODEL = stable_whisper.load_model(name='large-v3', cpu_preload=False)
-WHISPER_LOCK = threading.Lock()
 
 # Function to convert MP4 video to MP3 audio
 def _convert_mp4_to_wav(video_path:str, video_id:str) -> Path:
@@ -37,7 +25,20 @@ def _convert_mp4_to_wav(video_path:str, video_id:str) -> Path:
     return output_file_path
 
 
-class WhisperTranscriber:    
+class WhisperTranscriber:
+    
+    @staticmethod
+    def _whisper_transcribe(wav_path:Path, json_path:Path):
+        import stable_whisper
+        # TODO dq True -> va piu veloce ma skippa discorsi molto veloci, inficiando sulla qualita' finale del transcript, ma skippa anche imprecisioni e ripensamenti
+        # Tempi quasi raddoppiano
+        # TODO stable-ts version 2.17.3: passing the language is not working, will be inferenced at cost of small increase in time
+        # self._model.transcribe(wav_path.__str__(), decode_options={"language":language}) \
+        #             .save_as_json(json_path.__str__())
+        # TODO deallocating the model does not work
+        # TODO must move model outside ekeel otherwise will allocate multiple instances when gunicorn spawns workers
+        stable_whisper.load_model(name='large-v3', cpu_preload=False).transcribe(wav_path.__str__()).save_as_json(json_path.__str__())
+        
     
     @staticmethod
     def transcribe(video_id:str, language:str):
@@ -49,9 +50,7 @@ class WhisperTranscriber:
         wav_path = _convert_mp4_to_wav(folder_path, video_id)
         
         print("Starting transcription...")
-        
-        with WHISPER_LOCK:
-            WHISPER_MODEL.transcribe(wav_path.__str__()).save_as_json(json_path.__str__())
+        WhisperTranscriber._whisper_transcribe(wav_path, json_path)
         #WhisperTranscriber._whisper_transcribe(json_path, wav_path, language)
         # When used as a separated process it won't release the memory and goes into lock
         #thread = Thread(target=WhisperTranscriber._whisper_transcribe, args=(json_path, wav_path, language))

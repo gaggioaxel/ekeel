@@ -71,11 +71,12 @@
               Download graph
             </button>
         </div>
-        <div id="saveGraphText" style="display:none; text-align:center;">Saving graph...</div>
+        
 
      </div>
      
       <div id="right-body" class="right-body-class">
+        <div id="temp-transcript-warning" style="display:none; text-align:center; background-color: #edb95e; color: black;">Warning! This transcript is temporary and will change!<br></div>
         <div id="transcript" class="transcript"></div>
         <br>
         <div id="selectedConceptBox" class="selected-concept-box">
@@ -375,6 +376,7 @@
       let $conceptVocabulary = {{ conceptVocabulary|tojson }};
       let $synonymList = [];
       let $lemmatizedSubs = {{ lemmatized_subtitles|tojson }};
+      let $isTempTranscript = {{ is_temp_transcript|tojson }}
       let $video_id = {{ video_id|tojson }};
       let $annotator = {{ annotator|tojson }};
       let $allLemmas = {{ all_lemmas|tojson }};

@@ -72,6 +72,10 @@ function closeRelationDiv(){
 function addSubtitles(id){
 
   let transcriptDiv = document.getElementById(id);
+
+  if($isTempTranscript) {
+    document.getElementById("temp-transcript-warning").style.display = "block";
+  }
   
   if (id == "transcript") {
     for (let x in $captions){

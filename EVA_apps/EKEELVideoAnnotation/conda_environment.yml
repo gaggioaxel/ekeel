@@ -69,7 +69,6 @@ dependencies:
       - cycler==0.12.1
       - cymem==2.0.8
       - cython==3.0.11
-      - deepmultilingualpunctuation==1.0.1
       - dnspython==2.6.1
       - dominate==2.9.1
       - dtw-python==1.5.1
