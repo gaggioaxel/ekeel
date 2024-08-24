@@ -1,5 +1,6 @@
 import cv2
 import pytesseract
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 import os
 from pathlib import Path
 import mediapipe as mp
