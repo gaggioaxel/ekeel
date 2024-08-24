@@ -154,25 +154,26 @@ class VideoAnalyzer:
 
         if os.path.isfile(os.path.join(folder_path,video_id+'.mp4')):
             return
-
-        downloaded_successfully = False
         
         # Both pafy and pytube seems to be not mantained anymore, only youtube_dlp is still alive
 
         prev_cwd = os.getcwd()
         os.chdir(folder_path)
 
-        if not downloaded_successfully:
-            try:
-                #print("using ytdl")
-                yt_dlp.YoutubeDL({  'quiet': True,
-                                    'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]',
-                                    'outtmpl': video_id+'.mp4',
-                                    'merge_output_format': 'mp4'
-                                      }).download([url])
-                downloaded_successfully = True
-            except Exception as e:
-                print(e)
+        try:
+            #print("using ytdl")
+            yt_dlp.YoutubeDL({  'quiet': False,
+                                'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]',
+                                'outtmpl': video_id+'.mp4',
+                                'merge_output_format': 'mp4',
+                                'ffmpeg_location': '/usr/bin/ffmpeg',
+                                'postprocessors': [{
+                                    'key': 'FFmpegVideoConvertor',
+                                    'preferedformat': 'mp4',  # Ensure the output is in mp4 format
+                                    }],
+                                  }).download([url])
+        except Exception as e:
+            print(e)
 
         os.chdir(prev_cwd)
 
@@ -279,7 +280,7 @@ class VideoAnalyzer:
         Preferred manually generated
         '''
 
-        if "transcript_data" in self.data.keys():
+        if "transcript_data" in self.data.keys() and (not extract_from_audio or (extract_from_audio and self.data["transcript_data"]["is_whisper_transcribed"])):
             return
         
         language = self.identify_language()
