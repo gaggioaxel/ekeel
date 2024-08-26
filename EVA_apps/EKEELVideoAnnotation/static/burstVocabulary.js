@@ -189,6 +189,7 @@ function showVocabularyBurst(inputVocabulary){
 
     for(let c in vocabulary) {
 
+      c = c.replaceAll("'","&apos;")
       let conceptX = c.replaceAll("_"," ")
       let synonymsX = ""
 
@@ -206,7 +207,7 @@ function showVocabularyBurst(inputVocabulary){
           "<a href=\"#"+href+"\" data-toggle=\"collapse\" aria-expanded=\"false\" id='menu_"+c+"' >"
 
       row += "<p id='concept_"+c+"' class=\" m-concept-text\">"+ conceptX +": </p>"
-      row += '<button class="icon-button trash-concept" onclick="deleteConcept(this,'+"'"+c+"'"+')"><i class="fa fa-trash"></i></button>'
+      row += '<button class="icon-button trash-concept" onclick="deleteConcept(this,'+'"'+c+'"'+')"><i class="fa fa-trash"></i></button>'
       if(synonymsX.length > 0)
         row += "<ul id='synonyms_"+c+"' class=\" m-synonym-text\"><li>"+ synonymsX +"</li></ul>"
     

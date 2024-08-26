@@ -5,8 +5,6 @@ addSubtitles("transcript");
 addSubtitles("transcript-in-description")
 MarkersInit(".youtube-marker");
 MarkersInit(".youtube-in-description-marker");
-console.log(main_markers)
-console.log(in_description_markers)
 
 
 // $(document).ready(function(){
@@ -219,7 +217,7 @@ function UpdateMarkers(current_time) {
 
 let transcriptShownId = null;
 
-function higlightExplanationInTranscript(conceptId, start, end, class_field) {
+function highlightExplanationInTranscript(descriptionIndx, start, end, class_field) {
 
   // We are in the transcript in the annotator page 
   if (class_field == ".youtube-marker") {
@@ -229,12 +227,12 @@ function higlightExplanationInTranscript(conceptId, start, end, class_field) {
     definition_end = hours * 3600 + minutes * 60 + seconds;
 
     // user is de-selecting the concept
-    if (transcriptShownId != null & transcriptShownId == conceptId) {
+    if (transcriptShownId != null & transcriptShownId == descriptionIndx) {
         definition_start = -1
         definition_end = -1
         transcriptShownId = null
     } else {
-        transcriptShownId = conceptId
+        transcriptShownId = descriptionIndx
     }
   // otherwise we are in the transcript in description window and values are passed already as float seconds
   } else {

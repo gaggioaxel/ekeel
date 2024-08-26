@@ -740,7 +740,7 @@ class VideoAnalyzer:
             raise Exception(f"Language is not between supported ones: {locale.get_supported_languages()}")
         return self.data['language'] if format =='pt1' else locale.get_full_from_pt1(self.data['language'])
 
-    def analyze_transcript(self, async_call=False, lemmatize_terms=False):
+    def analyze_transcript(self, async_call=False):
         '''
         TODO can concat the slides content to further refine the analysis
         '''
@@ -754,8 +754,6 @@ class VideoAnalyzer:
         doc_id = api_obj.upload_document(transcript, language = language, async_call=async_call)
         api_obj.wait_for_pos_tagging(doc_id)
         terms = api_obj.execute_term_extraction(doc_id)
-        if lemmatize_terms:
-            terms["term"] = terms["term"].apply(lambda t: " ".join(SemanticText(t.lower(),language=language).lemmatize()))
 
         try:
             self.data["transcript_data"].update({ "ItaliaNLP_doc_id":   doc_id, 
@@ -768,10 +766,10 @@ class VideoAnalyzer:
 
         
     def lemmatize_terms(self):
-        assert "transcript_data" in self.data.keys() and "terms" in self.data["transcript_data"].keys(), "Error in pipeline in segmentation.py -> lemmatize_terms()"
         terms = self.data["transcript_data"]["terms"]
         lang = self.identify_language()
-        return [" ".join(SemanticText(term["term"], language=lang).lemmatize()) for term in terms]
+        sem_text = SemanticText("", language=lang)
+        return [" ".join(sem_text.set_text(term["term"]).lemmatize()).replace(" ’","’") for term in terms]
 ####################################
 
 

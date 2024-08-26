@@ -24,9 +24,6 @@
      <div class="flex-vertical">
 
         <div id="canvas-wrap" class="canvas-wrap">
-{#          <video class="video-player" id="video-active" controls="controls">#}
-{#            <source src="{{url_for('static', filename='videos/'+video_id+'/'+video_id+'.mp4')}}" type="video/mp4">#}
-{#          </video>#}
             <video
                     id="video-active"
                     class="video-js video-player"
@@ -243,13 +240,6 @@
 <div style="top:40px;" class="modal fade" id="conceptsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" style="right:100px" role="document">
     <div class="modal-content custom-modal">
-      <!--<div class="modal-header">
-        <h5 class="modal-title" id="conceptsModalLabel">Concepts</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>-->
-
 
       <!-- Modal Concepts & Synonyms -->
       <div class="modal-body">
@@ -376,10 +366,11 @@
       let $conceptVocabulary = {{ conceptVocabulary|tojson }};
       let $synonymList = [];
       let $lemmatizedSubs = {{ lemmatized_subtitles|tojson }};
-      let $isTempTranscript = {{ is_temp_transcript|tojson }}
+      let $isTempTranscript = {{ is_temp_transcript|tojson }};
       let $video_id = {{ video_id|tojson }};
       let $annotator = {{ annotator|tojson }};
       let $allLemmas = {{ all_lemmas|tojson }};
+      let $language = {{ language|tojson }}
       let videoDuration = {{ video_duration|tojson }};
 
       let relations = {{ relations|tojson }};

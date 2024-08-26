@@ -225,6 +225,7 @@ function downloadManuGraphAsJson(){
         "definitions": definitions,
         "annotator": $annotator,
         "conceptVocabulary": $conceptVocabulary,
+        "language": $language,
     }
 
     var js_data = JSON.stringify(annotations);
@@ -249,6 +250,7 @@ function uploadManuGraphOnDB(){
         "definitions": definitions,
         "annotator": $annotator,
         "conceptVocabulary": $conceptVocabulary,
+        "language": $language,
     }
     //savedText = document.getElementById("saveGraphText")
     //savedText.style.display = "block"
@@ -320,7 +322,7 @@ function printDefinitions(){
 
         let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s + "</td><td>"+ e +"</td><td>"+ t +"</td>"+
             "<td><button style=\" margin-right: 40% \" class=\"icon-button\" " +
-                "onclick=\"higlightExplanationInTranscript('"+i+"','"+s+"','"+e+"','.youtube-marker')\">" +
+                "onclick=\"highlightExplanationInTranscript('"+i+"','"+s+"','"+e+"','.youtube-marker')\">" +
             "<i class=\"fa fa-magic\"></i></button></td>" +
             
             "<td><button class=\"icon-button\" " +

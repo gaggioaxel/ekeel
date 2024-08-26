@@ -137,13 +137,16 @@ def get_graph(user, video):
     return None
 
 
-def get_videos(fields:list=None):
+def get_videos(fields:list | None=None):
     print("***** EKEEL - Video Annotation: db_mongo.py::get_videos() ******")
     collection = db.videos
     if fields is None:
         fields = []  # Default to all fields if none specified
     projection = {field: 1 for field in fields}
-    return list(collection.find({}, projection).sort([("creator", pymongo.ASCENDING)]))
+    videos = list(collection.find({}, projection).sort([("creator", pymongo.ASCENDING)]))
+    if not "_id" in fields:
+        [video.pop("_id") for video in videos]
+    return videos
 
 
 

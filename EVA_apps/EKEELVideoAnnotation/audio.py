@@ -41,7 +41,7 @@ class WhisperTranscriber:
         
     
     @staticmethod
-    def transcribe(video_id:str, language:str):
+    def transcribe(video_id:str, language:str, min_segment_len:int = 4):
         """
         Transcribe the audio from a video using Whisper and return the transcribed segments with timestamps.
         """
@@ -69,20 +69,48 @@ class WhisperTranscriber:
         os.remove(json_path)
         
         timed_sentences = []
-        for segment in data["segments"]:
+        for i, segment in enumerate(data["segments"]):
             segment.pop("seek",None)
             segment.pop("tokens", None)
             segment.pop("temperature", None)
             segment.pop("avg_logprob", None)
             segment.pop("compression_ratio", None)
             segment.pop("no_speech_prob", None)
-            timed_sentences.append(segment)
+            
+            # Moving apostrophes to their line and change it to another character to avoid conflicts in javascript
+            if segment["text"].startswith("'"):
+                timed_sentences[-1]["text"] = timed_sentences[-1]["text"]+"’"
+                segment["text"] = segment["text"][1:]
+            
+            # Grouping short sentences
+            if len(segment["text"].split()) < min_segment_len:
+                if segment["text"].endswith(".") and len(timed_sentences) > 0:
+                    prev_segment = timed_sentences[-1]
+                    for word in segment["words"]:
+                        prev_segment["words"].append(word)
+                    prev_segment["end"] = segment["end"]
+                    prev_segment["text"] += segment["text"]
+                elif len(timed_sentences) == 0:
+                    timed_sentences.append(segment)
+                elif i+1 < len(data["segments"]):  
+                    next_segment = data["segments"][i+1]
+                    for word in reversed(segment["words"]):
+                        next_segment["words"].insert(0, word)
+                    next_segment["start"] = segment["start"]
+                    next_segment["text"] = segment["text"] + next_segment["text"]
+                else:
+                    timed_sentences.append(segment)
+            else:
+                timed_sentences.append(segment)
             
         return timed_sentences
         
 
 
 if __name__ == '__main__':
+    
+    WhisperTranscriber.transcribe("","")
+    
     from segmentation import VideoAnalyzer
     video1 = VideoAnalyzer("https://www.youtube.com/watch?v=TsONshNsHHw")
     video1.download_video()

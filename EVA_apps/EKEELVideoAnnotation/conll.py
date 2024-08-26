@@ -231,28 +231,33 @@ def html_interactable_transcript_word_level(subtitles:list, language:str, concep
         
         # Reassigns the apostrophe to the correct letter
         if word_id + 1 < len(words) and words[word_id + 1]["word"].startswith("'"):
-            word_text += "'"
+            word_text += "' "
         lemma = sem_text.set_text(to_lemmatize, language).lemmatize()[0]
         
         return word_text, lemma
         
         
-    
+    # For every sentence
     for sent_id, sub in enumerate(subtitles):
         html_sent = []
         word_id = 0
         words = sub["words"]
+        
+        # For every word
         for word_index,word_sub in enumerate(words):
             word_text, lemma = get_lemma_and_align_punctuation(word_sub, word_index)
             #print(word_text,"->", lemma)
             if lemma not in all_lemmas:
                 all_lemmas.append(lemma)
+                
             added_concept_class = ""
             
             for concept in concepts:
                 if concept[0] == lemma:
                     if len(concept) == 1:
                         added_concept_class += ' class= "concept"'
+                        
+                    # TODO need to manage multiple lines concepts
                     elif len(concept) > 1:
                         next_word_indx = word_index + 1
                         concept_indx = 1

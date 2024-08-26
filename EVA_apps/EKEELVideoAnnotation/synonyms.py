@@ -48,7 +48,7 @@ def get_synonyms_from_list(concepts):
 Create skos dictionary from a dict with synonyms (word: [list of synonyms]).
 Returns the graph with the skos dictionary structure.
 '''
-def create_skos_dictionary(synonyms, video_id, mode):
+def create_skos_dictionary(synonyms, video_id, mode, language):
 
     print("***** EKEEL - Video Annotation: synonyms.py::create_skos_dictionary(): Inizio ******")
     
@@ -61,9 +61,9 @@ def create_skos_dictionary(synonyms, video_id, mode):
         
         uri_concept = URIRef("concept_" + concept.replace(" ", "_"))
         graph.add((uri_concept, RDF['type'], skos['Concept']))
-        graph.add((uri_concept, skos['prefLabel'], Literal(concept, lang='en')))
+        graph.add((uri_concept, skos['prefLabel'], Literal(concept, lang=language)))
         for synonym in synonyms[concept]:
-            graph.add((uri_concept, skos['altLabel'], Literal(synonym, lang='en')))
+            graph.add((uri_concept, skos['altLabel'], Literal(synonym, lang=language)))
 
     # Save graph in file
     #graph.serialize(destination='output.txt', format='json-ld')

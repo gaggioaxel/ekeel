@@ -256,6 +256,7 @@ def video_selection():
         
         # If the concept vocabulary is in the DB then initialize concept to the ones of the vocabulary
         if conceptVocabulary is not None:
+            conceptVocabulary = {key.lower():value for key,value in conceptVocabulary.items()}
             lemmatized_concepts = []
             for key in conceptVocabulary:
                 lemmatized_concepts.append(key)
@@ -268,8 +269,8 @@ def video_selection():
             # 2) Start with empty synonyms in concept vocabulary
             #
             conceptVocabulary = {}
-            for i in lemmatized_concepts :
-                conceptVocabulary[i] = []
+            for concept in lemmatized_concepts :
+                conceptVocabulary[concept.lower()] = []
             #-----------------------------------------------------------------
         for rel in relations:
             if rel["prerequisite"] not in lemmatized_concepts:
@@ -282,7 +283,7 @@ def video_selection():
         return render_template('mooc_annotator.html', 
                                result=data["transcript_data"]["timed_text"], video_id=video_id, start_times=list(map(lambda x: x[0],data["video_data"]["segments"])),
                                images_path=vid_analyzer.images_path, concepts=lemmatized_concepts,is_temp_transcript=not data["transcript_data"]["is_whisper_transcribed"],
-                               video_duration=data['duration'], lemmatized_subtitles=lemmatized_subtitles, annotator=annotator, 
+                               video_duration=data['duration'], lemmatized_subtitles=lemmatized_subtitles, annotator=annotator, language=language,
                                conceptVocabulary=conceptVocabulary, title=data['title'], all_lemmas=all_lemmas, relations=relations, definitions=definitions)
     except Exception as e:
         import sys
@@ -348,14 +349,13 @@ def upload_annotated_graph():
     print("***** EKEEL - Video Annotation: main.py::upload_annotations(): Inizio ******")
     annotations = request.json
 
-    _, json = annotations_to_jsonLD(annotations,isAutomatic=False)
+    _, data = annotations_to_jsonLD(annotations,isAutomatic=False)
 
-    data = json.copy()
     data["video_id"] = annotations["id"]
     data["annotator_id"] = current_user.mongodb_id
     data["annotator_name"] = current_user.complete_name
     data["email"] = current_user.email
-    data["conceptVocabulary"] = create_skos_dictionary(annotations["conceptVocabulary"], annotations["id"],"manu")
+    data["conceptVocabulary"] = create_skos_dictionary(annotations["conceptVocabulary"], annotations["id"], "manu", annotations["language"])
 
     data["graph"]["@graph"].extend([{"id": x["id"], "type" : "skos:Concept"} for x in data["conceptVocabulary"]["@graph"]])
 
@@ -382,7 +382,7 @@ def prepare_annotated_graph():
 
     _, json = annotations_to_jsonLD(annotations,isAutomatic=False)
 
-    conceptVocabulary = create_skos_dictionary(annotations["conceptVocabulary"], annotations["id"],"manu")
+    conceptVocabulary = create_skos_dictionary(annotations["conceptVocabulary"], annotations["id"], "manu", annotations["language"])
     
     json["graph"]["@graph"].append({ "id":"localVocabulary","type": "skos:Collection","skos:member": [elem for elem in conceptVocabulary["@graph"]]})
 

@@ -61,6 +61,7 @@ function showVocabulary(inputVocabulary) {
 
   for(let c in vocabulary) {
 
+    c_in_text = c.replaceAll("'","’")
     let conceptX = c.replaceAll("_"," ")
     let synonymsX = ""
 
@@ -74,14 +75,14 @@ function showVocabulary(inputVocabulary) {
       }
     }
 
-    let href = "sub" + c
-    let row ="<div class=\" list-group-item list-group-item-action concept-row toRemove\"> " +
-        "<a href=\"#"+href+"\" data-toggle=\"collapse\" aria-expanded=\"false\" id='menu_"+c+"' >"
+    let href = "sub" + c_in_text
+    let row ='<div class=\" list-group-item list-group-item-action concept-row toRemove\"> ' +
+        '<a href=\"#'+href+'\" data-toggle=\"collapse\" aria-expanded=\"false\" id="menu_'+c_in_text+'" >'
 
-    row += "<p id='concept_"+c+"' class=\" m-concept-text\">"+ conceptX +": </p>"
-    row += '<button class="icon-button trash-concept" onclick="deleteConcept(this,'+"'"+c+"'"+')"><i class="fa fa-trash"></i></button>'
+    row += '<p id="concept_'+c_in_text+'" class=\" m-concept-text\">'+ conceptX +': </p>'
+    row += '<button class="icon-button trash-concept" onclick="deleteConcept(this,'+"'"+c_in_text+"'"+')"><i class="fa fa-trash"></i></button>'
     if(synonymsX.length > 0)
-      row += "<ul id='synonyms_"+c+"' class=\" m-synonym-text\"><li>"+ synonymsX +"</li></ul>"
+      row += '<ul id="synonyms_'+c_in_text+'" class=\" m-synonym-text\"><li>'+ synonymsX +'</li></ul>'
 
     /*
       row += '</a>'+
@@ -108,6 +109,43 @@ function showVocabulary(inputVocabulary) {
 
     document.getElementById("conceptVocabularyContent").innerHTML += row
   }
+
+  $(document).on("click", ".concept-row", function (e) {
+    let conceptElements = document.getElementsByClassName("concept");
+
+    var target = e.currentTarget;
+    let conceptText = target.children[0].id.split("menu_")[1]
+    let selectedConcept = conceptText.replaceAll(" ","_")
+
+    document.getElementById("transcript-selected-concept").innerHTML = conceptText;
+
+    let synsText = "";
+    let syns = [];
+
+    if (selectedConcept in $conceptVocabulary) {
+      syns = $conceptVocabulary[selectedConcept];
+      
+      for (let i = 0; i < syns.length; i++) {
+          if (i === 0) {
+              synsText = syns[i];
+          } else {
+              synsText += ", " + syns[i];
+          }
+      }
+    }
+
+    document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText;
+
+    for (let el of conceptElements) {
+        el.className = "concept";
+        if (el.getAttribute('lemma').replaceAll("_", " ") === selectedConcept) {
+            el.className += " selected-concept-text";
+        } else if (syns.includes(el.getAttribute('lemma').replaceAll("_", " "))) {
+            el.className += " selected-synonyms-text";
+        }
+    }
+  });
+
 }
 
 
@@ -122,7 +160,7 @@ function addConcept(){
     showMsg("errorConcept", "red")
   }
   else if(!$concepts.includes(concept)) {
-      fetch('/annotator/lemmatize_word/' + concept).then(function (response) {
+    fetch('/annotator/lemmatize_word/' + concept + '?lang=' + $language).then(function (response) {
 
           response.json().then(function (data) {
 
@@ -148,8 +186,8 @@ function addConcept(){
                   highlightConcept(lemma, "transcript")
                   $concepts.sort()
                   showVocabulary($conceptVocabulary)
-                  console.log($concepts)
-                  console.log("--------------------")
+                  //console.log($concepts)
+                  //console.log("--------------------")
                   // $('#conceptsModal').modal('hide')
                   document.getElementById("newConcept").value = ""
                   document.getElementById("errorConcept").innerHTML = "word successfully added to the concepts"
@@ -371,6 +409,9 @@ function removeSynonym(){
 
 function deleteConcept(button,concept) {
 
+  console.log(concept)
+  concept = concept.replaceAll(" ’ ","'")
+
   //rimuovo riga della tabella
   $(button).closest('div').slideUp(function() {
     $(this).remove();
@@ -387,13 +428,10 @@ function deleteConcept(button,concept) {
     }
   }
   
-  for(let i in $concepts){
-      if ( $concepts[i] === concept) {
-          $concepts.splice(i, 1);
-          break
-      }
-  }
-  
+  const conceptIndx = $concepts.indexOf(concept)
+  if (conceptIndx > -1){
+    $concepts.splice(conceptIndx,1)
+  }  
 
   //rimuovo relazioni e definizioni del concetto
   let relToRemove = []

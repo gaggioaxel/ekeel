@@ -72,7 +72,7 @@ let definingConcepts = []
     let concept = document.getElementById("newConcept").value
 
     if(!$concepts.includes(concept)) {
-        fetch('/annotator/lemmatize_word/' + concept).then(function (response) {
+      fetch('/annotator/lemmatize_word/' + concept + '?lang=' + $language).then(function (response) {
 
             response.json().then(function (data) {
 

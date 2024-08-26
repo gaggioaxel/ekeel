@@ -9,7 +9,7 @@ function startVideoSlider(){
     let end = video.currentTime+30
     if (start < 0) start = 0
     if (end > videoDuration) end = videoDuration
-    higlightExplanationInTranscript(null, start, end, ".youtube-in-description-marker")
+    highlightExplanationInTranscript(null, start, end, ".youtube-in-description-marker")
     //console.log(start,end)
 
     // disable clicks on track
@@ -62,7 +62,7 @@ function startVideoSlider(){
             video.pause()
             $("#playButton").removeClass("paused")
             clearInterval(interval_indicator)
-            higlightExplanationInTranscript(null, start, end, ".youtube-in-description-marker")
+            highlightExplanationInTranscript(null, start, end, ".youtube-in-description-marker")
 
           }
     });
