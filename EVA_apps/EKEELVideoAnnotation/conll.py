@@ -201,6 +201,7 @@ def html_interactable_transcript_legacy(subtitles, conll_sentences, language):
 def html_interactable_transcript_word_level(subtitles:list, language:str, concepts:list=None):
     """
     creates the html code (hard coded) from subtitles and concept by lemmatizing and incapsulating one or multiple words concepts
+    # TODO some lemmas of the NLP-API are not being recognized
     
     Args:
         subtitles (list): list of dict of subtitles
@@ -302,7 +303,20 @@ def html_interactable_transcript_word_level(subtitles:list, language:str, concep
     
     
     return html_lemmatized_sents, all_lemmas
-        
+    
+def html_interactable_transcript_new(sentences, lemmas, language):
+    html_lemmatized_sents = []
+    for sent_id, sentence in enumerate(sentences):
+        html_sent = []
+        added_concept_class = ""
+        for word_id, word in enumerate(sentence["words"]):
+            lemma = lemmas[word["lemma_indx"]]
+            html_sent += [f'<span{added_concept_class} lemma="{lemma}" sent_id="{str(sent_id)}" word_id="{str(word_id)}" start_time="{word["start"]}" end_time="{word["end"]}" >{word["word"]} </span>']
+        html_lemmatized_sents.append({"text": "".join(html_sent)})
+    return html_lemmatized_sents
 
 if __name__ == '__main__':
-    print(conll_gen("L94FfnqrJUk",SemanticText("Hello my name is Ekeel","en")))
+    from segmentation import VideoAnalyzer
+    vid = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
+    html_interactable_transcript_new(vid.data["transcript_data"]["text"], vid.data["transcript_data"]["lemmas"], "ita")
+    #print(conll_gen("L94FfnqrJUk",SemanticText("Hello my name is Ekeel","en")))

@@ -89,11 +89,18 @@ def insert_conll_MongoDB(data):
     if collection.find_one({"video_id": data["video_id"]}) is None:
         collection.insert_one(data)
 
-def get_video_data(video_id:str):
+def get_video_data(video_id:str, fields:list | None= None):
     collection = db.videos
-    metadata = collection.find_one({"video_id": video_id})
-    if metadata is not None:
-        metadata.pop('_id')
+    if fields is None:
+        metadata = collection.find_one({"video_id": video_id})
+        if metadata is not None:
+            metadata.pop('_id')
+    else:
+        projection = {field: True for field in fields}
+        metadata = list(collection.find({"video_id":video_id}, projection))
+        if len(metadata):
+            metadata = metadata[0]
+            metadata.pop("_id")
     return metadata
 
 def insert_video_data(data:dict, update=True):
@@ -456,4 +463,4 @@ if __name__ == '__main__':
     #graph = get_graph("Burst Analysis","PPLop4L2eGk")
     print("***** EKEEL - Video Annotation: db_mongo.py::__main__ ******")
     #db.drop_collection("videos_statistics")
-    remove_video("0BX8zOzYIZk")
+    get_video_data("0BX8zOzYIZk", {"transcript_data"})

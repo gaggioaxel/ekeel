@@ -134,7 +134,7 @@ class SemanticText():
         return NLPSingleton().encode_text(self._tokenized_text)
 
 def automatic_transcript_to_str(timed_transcript:'list[dict]'):
-    return " ".join(timed_sentence["text"] for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
+    return " ".join(timed_sentence["text"].strip().replace("."," .").replace(","," ,") for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
 
 
 class TextCleaner:

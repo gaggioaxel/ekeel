@@ -323,9 +323,8 @@ class Burst:
         concept_map = []
         definitions = []
 
-        video = VideoAnalyzer("https://www.youtube.com/watch?v="+self.video_id)
-        video.request_transcript()
-        subtitles = video.data["transcript_data"]["timed_text"]
+        video = VideoAnalyzer("https://www.youtube.com/watch?v="+self.video_id,{"transcript_data"})
+        subtitles = video.data["transcript_data"]["text"]
         
         if not use_conll:
             sentences = tokenize.sent_tokenize(self.text)

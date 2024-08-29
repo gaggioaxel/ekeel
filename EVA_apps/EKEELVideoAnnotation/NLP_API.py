@@ -53,24 +53,20 @@ class ItaliaNLAPI():
     def wait_for_pos_tagging(self,doc_id):
         page = 1
         # inizializzazione dummy della risposta del server per poter scrivere la condizione del while
-        api_res = {'postagging_executed': False, 'sentences': {'next': False, 'data': []}}
-        while not api_res['postagging_executed'] or api_res['sentences']['next']:
+        api_res = {'postagging_executed': False} #, 'sentences': {'next': False, 'data': []}}
+        while not api_res['postagging_executed']: #or api_res['sentences']['next']:
             r = requests.get(self._server_address + '/documents/details/%s?page=%s' % (doc_id, page))
             api_res = r.json()
 
-            if not api_res['postagging_executed']:
-                print('Waiting for pos tagging...')
-                time.sleep(5)
-                continue
-            #else:
-                #from pprint import pprint
-                #j = json.dumps(api_res, indent=4)
-                #with open("output.json","w") as f:
-                #    print(j, file=f)
-                #pprint(api_res)
+            if api_res['postagging_executed']:
+                sentences = api_res["sentences"]["data"]
+                return [{"sentence": sentence["raw_text"], "words":sentence["tokens"]} for sentence in sentences]
+                
+            
+            print('Waiting for pos tagging...')
+            time.sleep(5)
+            continue
 
-            #if api_res['sentences']['next']:
-            #    page += 1
 
     
     def execute_term_extraction(self, doc_id, configuration=None,n_try=10) -> DataFrame:
@@ -92,6 +88,9 @@ class ItaliaNLAPI():
         else:
             raise Exception(f"ItalianNLP API hasn't sent the requested data in {n_try*5} seconds")
         
+        import json
+        with open("terms.json","w") as f:
+            json.dump(res,f,indent=4)
         terms = DataFrame(res['terms'])
         terms['word_count'] = terms['term'].apply(lambda x: len(x.split()))
         return terms.sort_values(by='word_count').drop(columns=['word_count'])

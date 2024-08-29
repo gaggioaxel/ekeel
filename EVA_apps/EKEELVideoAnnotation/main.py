@@ -18,7 +18,7 @@ from ontology import annotations_to_jsonLD
 from burst_class import create_local_vocabulary, create_burst_graph
 from forms import addVideoForm, RegisterForm, LoginForm, GoldStandardForm, ForgotForm, PasswordResetForm, ConfirmCodeForm, BurstForm
 from words import get_real_keywords, automatic_transcript_to_str
-from conll import conll_gen, html_interactable_transcript_legacy, html_interactable_transcript_word_level
+from conll import conll_gen, html_interactable_transcript_legacy, html_interactable_transcript_word_level, html_interactable_transcript_new
 from analysis import compute_data_summary, compute_agreement, linguistic_analysis, fleiss
 from user import User
 from sendmail import send_mail, generate_confirmation_token, confirm_token, send_confirmation_mail
@@ -227,9 +227,7 @@ def video_selection():
     
     try:
         url = form.url.data
-        print("Initializing video structure...")
         vid_analyzer = VideoAnalyzer(url)
-        print("Downloading video...")
         vid_analyzer.download_video()
         
         # NOTE extracting transcript from audio with whisper on high-end i9 8 core process at ~1.3 sec/s
@@ -242,12 +240,16 @@ def video_selection():
         
         lemmatized_concepts = vid_analyzer.lemmatize_terms()
         language = vid_analyzer.identify_language()
-        text = SemanticText(automatic_transcript_to_str(data["transcript_data"]["timed_text"]), language)
+        text = SemanticText(automatic_transcript_to_str(data["transcript_data"]["text"]), language)
         conll_sentences = conll_gen(video_id,text)
         if vid_analyzer.data["transcript_data"]["is_whisper_transcribed"]:
-            lemmatized_subtitles, all_lemmas = html_interactable_transcript_word_level(data["transcript_data"]["timed_text"], language)
+            #lemmatized_subtitles, all_lemmas = html_interactable_transcript_word_level(data["transcript_data"]["text"], language)
+            all_lemmas = vid_analyzer.data["transcript_data"]["lemmas"]
+            lemmatized_subtitles = html_interactable_transcript_new(vid_analyzer.data["transcript_data"]["text"], 
+                                                                    all_lemmas,
+                                                                    language)
         else:
-            lemmatized_subtitles, all_lemmas = html_interactable_transcript_legacy(data["transcript_data"]["timed_text"], conll_sentences, language)
+            lemmatized_subtitles, all_lemmas = html_interactable_transcript_legacy(data["transcript_data"]["text"], conll_sentences, language)
         annotator = current_user.complete_name
         relations = db_mongo.get_concept_map(current_user.mongodb_id, video_id)
         definitions = db_mongo.get_definitions(current_user.mongodb_id, video_id)
@@ -281,7 +283,7 @@ def video_selection():
         NLPSingleton().destroy()  
         
         return render_template('mooc_annotator.html', 
-                               result=data["transcript_data"]["timed_text"], video_id=video_id, start_times=list(map(lambda x: x[0],data["video_data"]["segments"])),
+                               result=data["transcript_data"]["text"], video_id=video_id, start_times=list(map(lambda x: x[0],data["video_data"]["segments"])),
                                images_path=vid_analyzer.images_path, concepts=lemmatized_concepts,is_temp_transcript=not data["transcript_data"]["is_whisper_transcribed"],
                                video_duration=data['duration'], lemmatized_subtitles=lemmatized_subtitles, annotator=annotator, language=language,
                                conceptVocabulary=conceptVocabulary, title=data['title'], all_lemmas=all_lemmas, relations=relations, definitions=definitions)
@@ -508,7 +510,7 @@ def burst():
     if form.validate_on_submit():
 
         video_id = form.url.data
-        video = VideoAnalyzer(f"https://youtu.be/{video_id}")
+        video = VideoAnalyzer(f"https://youtu.be/{video_id}",{"language"})
         #text = SemanticText(get_text(video_id), video.identify_language())      
         #conll_sentences = conll_gen(video_id, text)
         title, keywords = get_real_keywords(video_id,annotator_id = current_user.mongodb_id)
@@ -517,7 +519,7 @@ def burst():
         if form.type.data == "semi":
 
             video.request_transcript()
-            subtitles = video.data["transcript_data"]["timed_text"]
+            subtitles = video.data["transcript_data"]["text"]
             if video.data["transcript_data"]["is_whisper_transcribed"]:
                 lemmatized_subtitles, all_lemmas = html_interactable_transcript_word_level(subtitles, video.data["language"], keywords)
             else:
@@ -589,8 +591,8 @@ def burst_launch():
     data_summary = compute_data_summary(video_id,concept_map,definitions)
     
     # checks whether video has been segmented and if it is classifies ad slide video or not in order to enable refinement
-    video = VideoAnalyzer("https://www.youtube.com/watch?v="+video_id)
-    can_be_refined = video.is_slide_video() and "slide_titles" in video.data.keys()
+    video = VideoAnalyzer("https://www.youtube.com/watch?v="+video_id,{"video_data"})
+    can_be_refined = video.is_slide_video() and "slide_titles" in video.data["video_data"].keys()
         
     json = {
         "concepts": concepts,
@@ -640,7 +642,7 @@ def video_segmentation_refinement():
     concept_vocabulary = data["conceptVocabulary"]
 
     # for design this should not return None
-    video = VideoAnalyzer(video_id)
+    video = VideoAnalyzer(video_id, {"language"})
     new_concepts,definitions = video.adjust_or_insert_definitions_and_indepth_times(data["definitions"],_show_output=True)
     
     #from pprint import pprint

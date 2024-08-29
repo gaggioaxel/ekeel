@@ -144,6 +144,9 @@ function showVocabulary(inputVocabulary) {
             el.className += " selected-synonyms-text";
         }
     }
+    //console.log(conceptText)
+    //highlightConcept(conceptText,"transcript")
+
   });
 
 }
