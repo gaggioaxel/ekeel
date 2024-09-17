@@ -43,13 +43,13 @@
 }
 
 .youtube-marker-current {
-    background-color: rgba(126, 126, 126, 0.2);
-    transition: background-color 0.5s ease;
+    background-color: rgba(0, 0, 0, 0.075);
+    transition: background-color 0.6s ease;
 }
 
 .youtube-marker-faded {
-    background-color: rgba(126, 126, 126, 0);
-    transition: background-color 0.5s ease;
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 0.6s ease;
 }
 
 .word-marker-current {

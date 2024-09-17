@@ -6,8 +6,7 @@
         {{ super() }}
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/video_annotator.css') }}"/>
         <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-{% endblock %}
-
+    {% endblock %}
   </head>
 
   <body>
@@ -24,15 +23,20 @@
      <div class="flex-vertical">
 
         <div id="canvas-wrap" class="canvas-wrap">
-            <video
-                    id="video-active"
-                    class="video-js video-player"
-                    controls preload="none"
-                    poster="https://img.youtube.com/vi/{{ video_id }}/maxresdefault.jpg" >
+          <video
+                id="video-active"
+                class="video-js video-player"
+                controls preload="auto"
+                poster="https://img.youtube.com/vi/{{ video_id }}/maxresdefault.jpg" >
             <source src="{{url_for('static', filename='videos/'+video_id+'/'+video_id+'.mp4')}}" type="video/mp4">
-
-            <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
-        </video>
+            <p class="vjs-no-js">
+              To view this video please enable JavaScript, and consider upgrading to a
+              web browser that
+              <a href="https://videojs.com/html5-video-support/" target="_blank">
+                supports HTML5 video
+              </a>
+            </p>
+          </video>
         </div>
 
          <div id="relationText" class="bottomVideo">
@@ -349,8 +353,10 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet">
-  <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+  <link href="//vjs.zencdn.net/8.17.3/video-js.min.css" rel="stylesheet">
+  <script src="//vjs.zencdn.net/8.17.3/video.min.js" defer></script>
+  <!-- <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet">
+  <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script> -->
 
 
   <script type="text/javascript" src="https://andywer.github.io/jquery-dim-background/jquery.dim-background.min.js"></script>
@@ -408,19 +414,49 @@
           definitions[i].id = i
           definedConcepts.push(definitions[i].concept)
       }
-
+      var player;
 
       console.log(definitions)
-      var options = {
-            fluid: true
-      };
 
-      let player = videojs('video-active', options, function onPlayerReady() {
-
-          this.on('timeupdate', function() {
-            UpdateMarkers(video.currentTime);
+      document.addEventListener("DOMContentLoaded", function() {
+        player = videojs('video-active', {
+                                          controls: true,
+                                          autoplay: false,
+                                          fluid: true,
+                                          playbackRates: [1.0, 1.1, 1.25, 1.5, 2], // Add playback rate options
+                                          preload: 'auto'
+                                         }, 
+                          function onPlayerReady() {
+                              this.on('timeupdate', function() {
+                                UpdateMarkers(this.currentTime());
+                              });
           });
 
+          // Modify the existing playback rate button when the player is ready
+          //player.ready(function() {
+          //  const player = this;
+          //
+          //  // Access the playback rate button
+          //  const playbackRateButton = document.querySelector('.vjs-playback-rate');
+          //
+          //  if (playbackRateButton) {
+          //    // Listen for clicks on the button to cycle through playback rates
+          //    playbackRateButton.addEventListener('click', function() {
+          //      let playbackRate = player.playbackRate();
+          //      const speeds = [1.0, 1.1, 1.25, 1.5, 1.75, 2];
+          //      playbackRate = speeds[(speeds.indexOf(playbackRate) + 1) % speeds.length];
+          //    
+          //      // Update the playback rate in the player
+          //      player.playbackRate(playbackRate);
+          //    
+          //      // Update the text label inside the button
+          //      const playbackRateLabel = document.querySelector('.vjs-playback-rate-value');
+          //      if (playbackRateLabel) {
+          //        playbackRateLabel.textContent = `${playbackRate}x`;
+          //      }
+          //    });
+          //  }
+          //});
       });
 
   </script>
