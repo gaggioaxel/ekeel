@@ -2,11 +2,11 @@ import subprocess
 import os
 from pathlib import Path
 import json
-import re
+from words import apply_italian_fixes
 
 
 # Function to convert MP4 video to MP3 audio
-def _convert_mp4_to_wav(video_path:str, video_id:str) -> Path:
+def convert_mp4_to_wav(video_path:str, video_id:str) -> Path:
     '''
     Converts the mp4 video into wav file
     '''
@@ -36,10 +36,8 @@ class WhisperTranscriber:
         # TODO stable-ts version 2.17.3: passing the language is not working, will be inferenced at cost of small increase in time
         # self._model.transcribe(wav_path.__str__(), decode_options={"language":language}) \
         #             .save_as_json(json_path.__str__())
-        # TODO deallocating the model does not work
-        # TODO must move model outside ekeel otherwise will allocate multiple instances when gunicorn spawns workers
+        # must move model outside ekeel otherwise will allocate multiple instances when gunicorn spawns workers
         stable_whisper.load_model(name='large-v3', cpu_preload=False).transcribe(wav_path.__str__()).save_as_json(json_path.__str__())
-        
     
     @staticmethod
     def transcribe(video_id:str, language:str, min_segment_len:int = 4):
@@ -48,9 +46,10 @@ class WhisperTranscriber:
         """
         folder_path = Path(__file__).parent.joinpath("static").joinpath('videos').joinpath(video_id)
         json_path = folder_path.joinpath(video_id+".json")
-        wav_path = _convert_mp4_to_wav(folder_path, video_id)
+        wav_path = convert_mp4_to_wav(folder_path, video_id)
         
         print("Starting transcription...")
+        
         #WhisperTranscriber._whisper_transcribe(wav_path, json_path)
         #WhisperTranscriber._whisper_transcribe(json_path, wav_path, language)
         # When used as a separated process it won't release the memory and goes into lock
@@ -65,135 +64,32 @@ class WhisperTranscriber:
         #gc.collect()
         
         with open(json_path) as f:
-            data = json.load(f)
+            data = json.load(f)["segments"]
         os.remove(wav_path)             
         #os.remove(json_path)
         
-        def apply_italian_fixes(data:dict):
-            timed_sentences = []
-            accent_replacements = {
-                                      "e'": "è", "E'": "È",
-                                      "o'": "ò", "O'": "Ò",
-                                      "a'": "à", "A'": "À",
-                                      "i'": "ì", "I'": "Ì",
-                                      "u'": "ù", "U'": "Ù"
-                                  }
-
-            for i, segment in enumerate(data["segments"]):
-                segment = {"start": segment["start"], 
-                           "end": segment["end"], 
-                           "text": segment["text"].lstrip(), 
-                           "words": segment["words"] }
-
-                for j, word in enumerate(segment["words"]):
-                    word["word"] = word["word"].lstrip()
-
-                        
-                    word.pop("tokens",None)
-                    
-                    # Match "fatto," that must be split into tokens "fatto" and "," 
-                    if len(word["word"]) > 1 and word["word"][-1] in [",",".","?","!"]:
-                        new_word = word.copy()
-                        new_word["word"] = word["word"][-1]
-                        segment["words"].insert(j+1, new_word)
-                        word["word"] = word["word"][:-1]
-
-                    # Realign apostrophe and replace accented words
-                    if word["word"].startswith("'"):
-                        segment["words"][j-1]["word"] += "'"
-                        if len(segment["words"][j-1]["word"]) == 2:
-                            for pattern, replacement in accent_replacements.items():
-                                segment["words"][j-1]["word"] = re.sub(pattern, replacement, segment["words"][j-1]["word"])
-                                segment["text"] = re.sub(pattern, replacement, segment["text"])
-                        word["word"] = word["word"][1:]
-                    
-                    # Match math symbol terminology "x'" that should be "x primo" and "E'" that should be "È"
-                    # TODO it's a workaround for now, must be fixed (secondo, terzo are not managed) and sybols longer one character may not be detected
-                    elif any(re.findall(r"[a-zA-Z]'", word["word"])) and len(word["word"]) == 2 and word["word"].endswith("'"):
-                        match_ = re.findall(r"[a-zA-Z]'", word["word"])[0]
-                        if match_ not in accent_replacements.keys():
-                            word["word"] = word["word"].split("'")[0]
-                            new_word = word.copy()
-                            new_word["word"] = "primo"
-                            segment["words"].insert(j+1,new_word)
-                            segment["text"] = segment["text"].replace(match_,match_[:-1]+" primo")
-                        else:
-                            replacement = accent_replacements[word["word"]]
-                            word["word"] = replacement
-                            segment["text"] = segment["text"].replace(word["word"],replacement)
-                    
-                    # TODO fix 
-                    elif word["word"] == "po'":
-                        word["word"] = "p\u00f2"
-                            
-                    # Match "3R" in formulas -> split into "3" and "R"
-                    if any(re.findall(r'\d+[a-zA-Z]', word["word"])):
-                        letters = re.split(r'\d+',word["word"])[1]
-                        digits = re.split(r'[a-zA-Z]+',word["word"])[0]
-                        word["word"] = digits
-                        new_word = word.copy()
-                        new_word["word"] = letters
-                        segment["words"].insert(j+1,new_word)
-                        segment["text"] = segment["text"].replace(digits,digits+" ")
-
-                    # Match with "dell'SiO2" -> split into tokens "dell'" and "SiO2"
-                    if len(word["word"].split("'")) > 1 and len(word["word"].split("'")[1]) > 0:
-                        before_apos, after_apos = word["word"].split("'")
-                        new_word = word.copy()
-                        new_word["word"] = after_apos
-                        segment["words"].insert(j+1, new_word)
-                        word["word"] = before_apos+"'"
-
-
-                # Grouping short sentences
-                if len(segment["text"].split()) < min_segment_len:
-
-                    if segment["text"][-1] in [".",","] and len(timed_sentences) > 0:
-                        prev_segment = timed_sentences[-1]
-                        for word in segment["words"]:
-                            prev_segment["words"].append(word)
-                        prev_segment["end"] = segment["end"]
-                        prev_segment["text"] += (" "+segment["text"])
-
-                    elif len(timed_sentences) == 0:
-                        timed_sentences.append(segment)
-
-                    elif i+1 < len(data["segments"]):  
-                        next_segment = data["segments"][i+1]
-                        for word in reversed(segment["words"]):
-                            next_segment["words"].insert(0, word)
-                        next_segment["start"] = segment["start"]
-                        next_segment["text"] = segment["text"] + next_segment["text"]
-
-                    else:
-                        timed_sentences.append(segment)
-                else:
-                    timed_sentences.append(segment)
-
-            return timed_sentences
-        
         if language == "it":
-            return apply_italian_fixes(data)
+            return apply_italian_fixes(data,min_segment_len=4)
         
         raise Exception("must be implemented")
 
 if __name__ == '__main__':
     
-    WhisperTranscriber.transcribe("iiovZBNkC40","")
+    WhisperTranscriber.transcribe("iiovZBNkC40","it")
     
-    from segmentation import VideoAnalyzer
-    video1 = VideoAnalyzer("https://www.youtube.com/watch?v=TsONshNsHHw")
-    video1.download_video()
-    print("transcript 1")
-    video1.request_transcript()
-    
-    import time
-    time.sleep(15)
-    
-    video1 = VideoAnalyzer("https://www.youtube.com/watch?v=Gac9rynIENg")
-    video1.download_video()
-    print("transcript 2")
-    video1.request_transcript()
+    #from segmentation import VideoAnalyzer
+    #video1 = VideoAnalyzer("https://www.youtube.com/watch?v=TsONshNsHHw")
+    #video1.download_video()
+    #print("transcript 1")
+    #video1.request_transcript()
+    #
+    #import time
+    #time.sleep(15)
+    #
+    #video1 = VideoAnalyzer("https://www.youtube.com/watch?v=Gac9rynIENg")
+    #video1.download_video()
+    #print("transcript 2")
+    #video1.request_transcript()
     
     # Opening JSON file
     #f = open('audio.json')

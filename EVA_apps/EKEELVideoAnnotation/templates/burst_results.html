@@ -10,10 +10,7 @@
           <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
           <style>
 
-          .concept{
-                background-color: yellow;
-            }
-
+          
           #transcript p {
                 margin-bottom:0;
           }
@@ -274,7 +271,7 @@
 <script src="{{ url_for('static', filename='download.js') }}"></script>
 <script src="{{ url_for('static', filename='burstVocabulary.js') }}"></script>
 <script src="{{ url_for('static', filename='graph_visualization.js') }}"></script>
-<script>
+<script type="text/javascript">
 
     /*let relations = { { relations|tojson }};
     let definitions = { { definitions|tojson }};
@@ -284,7 +281,7 @@
     console.log(definitions)
 
    showNetwork(concepts, relations, "relations")*/
-
+    let $allWordsLemmas = {};
     let $captions = {{ result|tojson }};
     let $concepts = {{ concepts|tojson }};
     $concepts.sort()
@@ -293,6 +290,27 @@
     let $downloadableGraph = null;
     let $synonymList = [];
     let $lemmatizedSubs = {{ lemmatized_subtitles|tojson }};
+    
+    // Regular expression to match <span> tags and extract lemma and word
+    let regex = /<span lemma="([^"]+)"[^>]*>([^<]+)<\/span>/g;
+
+    // Iterate over each HTML string in $lemmatizedSubs
+    $lemmatizedSubs.forEach((sub) => {
+        // Initialize regex lastIndex to 0 for each new string
+        regex.lastIndex = 0;
+        // Extract word-lemma pairs from the current HTML string
+        let match;
+        while ((match = regex.exec(sub["text"])) !== null) {
+            // Split by space and take the first word (if needed)
+            let word = match[2].split(" ")[0].toLowerCase();
+            let lemma = match[1];
+
+            // Add the word -> lemma pair to the map
+            $allWordsLemmas[word] = lemma;
+        }
+    });
+    delete regex;
+    
     let $video_id = {{ video_id|tojson }};
     let $language = {{ language|tojson }}
     let $allLemmas = {{ all_lemmas|tojson }};
@@ -352,8 +370,7 @@
         document.getElementById("checkConcepts").style.display = "none"
         document.getElementById("loadingAutomatic").style.display = "block"
     }
-
-
-
 </script>
+
+
 {% endblock %}

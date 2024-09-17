@@ -271,9 +271,9 @@ tr {
 .selected-concept-box {
   border: 1px solid #c8c8c8;
   padding: 10px;
-  height: 75px;
+  height: 90px;
   border-radius: 10px;
-  width: 360px;
+  width: 500px;
   overflow: auto;
 }
 
@@ -409,7 +409,7 @@ tr {
 }
 
 .selected-synonyms-text{
-  background-color: #26c30d45 !important;
+  background-color: #1cde7a63 !important;
 }
 
 .trash-concept:hover {

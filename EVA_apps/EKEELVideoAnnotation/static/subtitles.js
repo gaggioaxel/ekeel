@@ -2,20 +2,43 @@ let main_markers = []
 let in_description_markers = []
 
 addSubtitles("transcript");
-addSubtitles("transcript-in-description")
+addSubtitles("transcript-in-description");
 MarkersInit(".youtube-marker");
 MarkersInit(".youtube-in-description-marker");
 
+$(document).on("click", ".concept", function (e) {
+    
+  let conceptElements =  document.getElementsByClassName("concept");
 
-// $(document).ready(function(){
-//   $("#video-active").on(
-//     "timeupdate",
-//     function(event){
-//       console.log("hello")
-//       UpdateMarkers(this.currentTime);
-//     });
-// });
+  // reset classes for the elements
+  for(let el of conceptElements) {
+    el.className = "concept";
+  }
 
+  var target = e.currentTarget;
+  var selectedConcept = target.getAttribute("concept")
+    .split(" ")
+    .filter(str => str.length > 0)
+    .sort((a, b) => a.split("_").length - b.split("_").length)
+    .reverse()[0];
+  var selectedConceptText = selectedConcept.replaceAll("_", " ");
+
+  if (document.getElementById("transcript-selected-concept").innerHTML == selectedConceptText) {
+    document.getElementById("transcript-selected-concept").innerHTML = "";
+    document.getElementById("transcript-selected-concept-synonym").innerHTML = "--";
+    return
+  }
+  
+  document.getElementById("transcript-selected-concept").innerHTML = selectedConceptText;
+
+  let syns = $conceptVocabulary[selectedConceptText] || [];
+  let synsText = syns.join(", ");
+
+  document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText || "--";
+
+  $("[concept~='" +  selectedConcept + "']").get().forEach(function(element) { element.classList.add("selected-concept-text") });
+  syns.forEach(function(syn) { $("[concept~='" + syn.replaceAll(" ","_") + "']").get().forEach(function(element) { element.classList.add("selected-synonyms-text")}) })
+});
 
 function showRelationDiv(){
 
@@ -91,49 +114,8 @@ function addSubtitles(id){
             '<b> ' + secondsToHms($captions[x].start) +":</b> " + $lemmatizedSubs[x].text + '</p>';
     }
   }
-
-  $(document).on("click", ".concept", function (e) {
-    
-    let conceptElements =  document.getElementsByClassName("concept");
-
-    // reset classes for the elements
-    for(let el of conceptElements) {
-      el.className = "concept";
-    }
-
-    var target = e.currentTarget;
-    var selectedWord = target.getAttribute('lemma').replaceAll("_"," ");
-    document.getElementById("transcript-selected-concept").innerHTML = selectedWord;
-
-    let syns = $conceptVocabulary[selectedWord];
-    let synsText = "";
-
-    for(let i=0; i<syns.length; i++) {
-      if (i===0) {
-        synsText = syns[i];
-      }
-      else {
-        synsText += ", " + syns[i];
-      }
-    }
-
-    document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText;
-
-    for(let el of conceptElements) {
-      if(el.getAttribute('lemma').replaceAll("_"," ") === selectedWord) {
-          el.className += " " + "selected-concept-text";
-      }
-      else if(syns.includes(el.getAttribute('lemma').replaceAll("_"," "))) {
-          el.className += " " + "selected-synonyms-text";
-      }
-    }
-
-    //console.log(target.getAttribute('lemma'));
-  });
-  if (id == "transcript") {
-    for(let i in $concepts)
-      highlightConcept($concepts[i], "transcript")
-  }
+  for(let i in $concepts)
+    highlightConcept($concepts[i], id)
 }
 
 
@@ -258,7 +240,7 @@ function highlightExplanationInTranscript(descriptionIndx, start, end, class_fie
     });
   });
   if (scrollToElem) {
-    scrollToElem.scrollIntoView({ behavior: 'smooth', block: 'start'});
+    scrollToElem.scrollIntoView({ behavior: 'smooth', block: 'start', inline:"nearest"});
   }
 
 }

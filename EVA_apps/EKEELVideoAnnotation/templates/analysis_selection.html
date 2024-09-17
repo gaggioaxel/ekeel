@@ -66,16 +66,23 @@
                       </span>
                     </div>
                 </div>
-                <div id="videos" class="center_selection">
-
-                    {% for id in video_choices%}
-                        <label class="video_radio" video="{{ id }}"  >
-                          <input type="radio" name="video" value={{ id }} id={{ id }}>
-                          <img src="https://img.youtube.com/vi/{{ id }}/hqdefault.jpg">
-                          <p class="video_title">{{ video_choices[id].title }}</p>
-                        </label>
+                <div id="videos" class="center_selection" style="margin-top: 2%;">
+                  <div class="creators-container">
+                    {% for creator, vids in videos|groupby('creator') %}
+                        <div class="creator-group">
+                            <h3 style="color: #343a40;">{{ creator }}</h3>
+                            <hr>
+                            {% for vid in vids|sort(attribute='title') %}
+                                <label class="video_radio" video="{{ vid.video_id }}">
+                                    <input type="radio" name="video" value="{{ vid.video_id }}" id="{{ vid.video_id }}">
+                                    <img src="https://img.youtube.com/vi/{{ vid.video_id }}/hqdefault.jpg">
+                                    <p class="video_title">{{ vid.title }}</p>
+                                </label>
+                            {% endfor %}
+                        </div>
                     {% endfor %}
-
+                  </div>
+              
                 </div>
             </div>
 

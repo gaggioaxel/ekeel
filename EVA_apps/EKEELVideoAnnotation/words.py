@@ -133,8 +133,152 @@ class SemanticText():
         self.tokenize()
         return NLPSingleton().encode_text(self._tokenized_text)
 
+
 def automatic_transcript_to_str(timed_transcript:'list[dict]'):
     return " ".join(timed_sentence["text"].strip().replace("."," .").replace(","," ,") for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
+
+
+def apply_italian_fixes(data:dict, min_segment_len:int=4):
+    timed_sentences = []
+    accent_replacements = {
+                              "e'": "è", "E'": "È",
+                              "o'": "ò", "O'": "Ò",
+                              "a'": "à", "A'": "À",
+                              "i'": "ì", "I'": "Ì",
+                              "u'": "ù", "U'": "Ù", "po'": "p\u00f2"
+                          }
+    number_regex = r'(-?\d+(?:\.\d*)?)'
+    degrees_regex = number_regex[:-1] + r'°)'
+    temperature_regex = degrees_regex[:-1] + r'[C|c|F|f|K|k])'
+    
+    for i, segment in enumerate(data):
+        segment = {"text": segment["text"].lstrip(),
+                   "words": segment["words"],
+                   "start": segment["start"], 
+                   "end": segment["end"]}
+        
+        to_remove_words = []
+        
+        for j, word in enumerate(segment["words"]):
+            word["word"] = word["word"].lstrip()
+                
+            word.pop("tokens",None)
+            
+            # Match "fatto," that must be split into tokens "fatto" and "," 
+            if len(word["word"]) > 1 and word["word"][-1] in [",",".","?","!"]:
+                new_word = word.copy()
+                new_word["word"] = word["word"][-1]
+                segment["words"].insert(j+1, new_word)
+                word["word"] = word["word"][:-1]
+            
+            if word["word"][0] == "," and any(re.findall(r',\d+',word["word"])):
+                new_word = word.copy()
+                new_word["word"] = word["word"][1:]
+                word["word"] = word["word"][0]
+                segment["words"].insert(j+1, new_word)
+                segment["text"] = segment["text"].replace(",",", ")
+                
+            # Realign apostrophe and replace accented words
+            if word["word"].startswith("'"):
+                segment["words"][j-1]["word"] += "'"
+                if len(segment["words"][j-1]["word"]) == 2:
+                    for pattern, replacement in accent_replacements.items():
+                        segment["words"][j-1]["word"] = re.sub(pattern, replacement, segment["words"][j-1]["word"])
+                        segment["text"] = re.sub(pattern, replacement, segment["text"])
+                word["word"] = word["word"][1:]
+            
+            # Match math symbol terminology "x'" that should be "x primo" and "E'" that should be "È"
+            elif any(re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])):
+                match_ = re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])[0]
+                if match_ in accent_replacements.keys():
+                    replacement = accent_replacements[word["word"]]
+                    word["word"] = replacement
+                    segment["text"] = segment["text"].replace(word["word"],replacement)
+                # TODO there can be a case like "l'altezza di l'(primo) nel..." in text that can break it
+                # but make it work would require to rework the structures and map words as indices of the text string
+                elif any(re.findall(f"{match_}[ .,:?!]",segment["text"])):
+                    word["word"] = word["word"].split("'")[0]
+                    new_word = word.copy()
+                    new_word["word"] = "primo"
+                    segment["words"].insert(j+1,new_word)
+                    segment["text"] = segment["text"].replace(match_,match_[:-1]+" primo")
+                    
+            # Match "po'" but ignores "anch'" or "dell'" 
+            elif any(re.findall(r"[a-zA-Z]+'", word["word"])) and word["word"].endswith("'") and len(word["word"]) >= 3:
+                match_ = re.findall(r"[a-zA-Z]+'", word["word"])[0]
+                if match_ in accent_replacements.keys():
+                    replacement = accent_replacements[word["word"]]
+                    word["word"] = replacement
+                        
+            
+            # Case "termo" "-idrometrico" -> merged into "termo-idrometrico" for T2K compatibility
+            elif word["word"].startswith("-"):
+                prev_word = segment["words"][j-1]
+                prev_word["word"] = prev_word["word"] + word["word"]
+                prev_word["end"] = word["end"]
+                to_remove_words.append(j)
+            
+            # Case "25°C" -> "25°" "celsius"
+            if any(re.findall(temperature_regex,word["word"])):
+                new_word = word.copy()
+                new_word["word"] = word["word"][-1]
+                #segment["text"] = segment["text"].replace(word["word"][-1]," "+scale)
+                segment["words"].insert(j+1, new_word)
+                word["word"] = word["word"][:-1]
+            
+            # Case "22°" -> "22" "°"
+            if any(re.findall(degrees_regex, word["word"])):
+                new_word = word.copy()
+                new_word["word"] = "°" 
+                segment["text"] = segment["text"].replace("°"," ° ")
+                segment["words"].insert(j+1, new_word)
+                word["word"] = word["word"][:-1]
+            
+            if word["word"] == "%":
+                segment["text"] = segment["text"].replace("%"," % ")
+            
+            # Case "22%" -> "22" "%"
+            elif any(re.findall(number_regex+'%', word["word"])):
+                new_word = word.copy()
+                word["word"] = word["word"][:-1]
+                new_word["word"] = "%"
+                segment["words"].insert(j+1, new_word)
+                    
+            # Match with "dell'SiO2" -> split into tokens "dell'" and "SiO2"
+            if len(word["word"].split("'")) > 1 and len(word["word"].split("'")[1]) > 0:
+                before_apos, after_apos = word["word"].split("'")
+                new_word = word.copy()
+                new_word["word"] = after_apos
+                segment["words"].insert(j+1, new_word)
+                word["word"] = before_apos+"'"
+        
+        for indx in reversed(to_remove_words):
+            del segment["words"][indx]
+        
+        segment["text"] = segment["text"].replace("  ", " ")
+        
+        # Grouping short sentences
+        if len(segment["text"].split()) < min_segment_len:
+            if segment["text"][-1] in [".",","] and len(timed_sentences) > 0:
+                prev_segment = timed_sentences[-1]
+                for word in segment["words"]:
+                    prev_segment["words"].append(word)
+                prev_segment["end"] = segment["end"]
+                prev_segment["text"] += (" "+segment["text"])
+            elif len(timed_sentences) == 0:
+                timed_sentences.append(segment)
+            elif i+1 < len(data):  
+                next_segment = data[i+1]
+                for word in reversed(segment["words"]):
+                    next_segment["words"].insert(0, word)
+                next_segment["start"] = segment["start"]
+                next_segment["text"] = (segment["text"] + " "+ next_segment["text"]).replace("  "," ")
+            else:
+                timed_sentences.append(segment)
+        else:
+            timed_sentences.append(segment)
+        
+    return timed_sentences
 
 
 class TextCleaner:
@@ -603,19 +747,4 @@ def get_timed_sentences(subtitles, sentences: List['str']):
 
 
 if __name__ == '__main__':
-    text = '=. =\n“Estimation of Stature ws\n[Avitinacint from Intact Long Limb Bones\nUniversity PGi ain «¢\n130, (Fem+Tib) +6329 +259\n238 Fem stat\nCes to.\n\na sme $337\n\n  \n  \n\n  \n    \n    \n  \n\n \n\n(Fem. Tin) +5320 +35!\n\nFi. s5o61 £357\nrib $6153 2366\n0 am\nitimemiiilimmici\nUna 45776 2430\nHum 457897\n‘rotor (970):\n{Eximation of nature from intact long ib Bonet\nInstant O(adPesonal a\nMase Blsnars 1,'
-    text1 = 'Forensic Archaeology and Anthropology\nPart.4\nEstimating Stature'
-    text2 = 'an\nA Ablinerrin\ni oy\n\nThis example: (2.47 x [bone measurement 45.4cm]) + 54.10cm'
-    text3 = 'YY\nS [ 2blteeretiny\n\nLeaves'
-    text4 = 'Machine Learning definition'
-    text5 = 'La divina commedia di Dante Alighieri è divisa su tre libri'
-
-    print(SemanticText("esperti","it").lemmatize())
-    raise Exception()
-
-
-    print(SemanticText(text2,'en').extract_keywords_from_title())
-    print(SemanticText(text4,'en').extract_keywords_from_title())
-    print(SemanticText(text5,'it').extract_keywords_from_title())
-    #print(extract_title(text))
-    #print(TextSimilarityClassifier().is_partially_in(text1,text2))
+    pass

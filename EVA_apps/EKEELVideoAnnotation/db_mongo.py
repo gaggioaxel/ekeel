@@ -25,6 +25,14 @@ def reset_password(email, password):
     if users.find_one(query) is not None:
         new = {"$set": {"password_hash": password}}
         users.update_one(query, new)
+        
+def remove_annotations_data(video_id:str):
+    for collection in [db.graphs, db.conlls]:
+        while True:
+            doc = collection.find_one_and_delete({"video_id":video_id})
+            if doc is None:
+                break
+            
 
 def insert_graph(data):
     
@@ -104,16 +112,22 @@ def get_video_data(video_id:str, fields:list | None= None):
     return metadata
 
 def insert_video_data(data:dict, update=True):
+    '''
+    If update is False replaces the document
+    '''
     collection = db.videos
     mongo_doc:dict | None = collection.find_one({'video_id':data['video_id'] })
     if mongo_doc is None:
         collection.insert_one(data)
+        return
     elif update:
         mongo_doc.pop("_id")
         for key,value in data.items():
             mongo_doc[key] = value
-        collection.delete_one({'video_id':data['video_id']})
-        collection.insert_one(mongo_doc)
+    else:
+        mongo_doc = data
+    collection.delete_one({'video_id':data['video_id']})
+    collection.insert_one(mongo_doc)
 
 
 def get_conll(video_id:str):
@@ -154,6 +168,12 @@ def get_videos(fields:list | None=None):
     if not "_id" in fields:
         [video.pop("_id") for video in videos]
     return videos
+
+def get_untranscribed_videos():
+    docs = list(db.videos.find({"transcript_data.is_whisper_transcribed":False},{"video_id":1, "language":1}))
+    if len(docs):
+        docs = [(doc["video_id"], doc["language"]) for doc in docs]
+    return docs
 
 
 
@@ -462,5 +482,5 @@ if __name__ == '__main__':
     #remove_video('PPLop4L2eGk')
     #graph = get_graph("Burst Analysis","PPLop4L2eGk")
     print("***** EKEEL - Video Annotation: db_mongo.py::__main__ ******")
-    #db.drop_collection("videos_statistics")
-    get_video_data("0BX8zOzYIZk", {"transcript_data"})
+    #remove_video("yLtpcMPADMo")
+    #get_video_data("0BX8zOzYIZk", {"transcript_data"})

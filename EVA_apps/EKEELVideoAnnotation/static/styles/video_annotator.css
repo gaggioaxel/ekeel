@@ -129,6 +129,7 @@
     box-sizing: content-box;
     background-color: #f8f9fa;
     padding: 1em;
+    padding-bottom: 4em;
     gap:1em;
     position: relative;
     z-index: 1000;
@@ -172,9 +173,16 @@
 
 }
 
-
 .concept{
     background-color: rgba(255, 255, 0, 0.76);
+}
+
+.concept:not(:has(> *)) {
+    margin-right: 4px;
+}
+
+.concept > * {
+    margin-right: 4px;
 }
 
 .definitionInTranscript{
