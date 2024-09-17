@@ -37,4 +37,18 @@ if __name__ == "__main__":
                 remove_annotations_data(video_id)
             sleep(30)
     except Exception as e:
-        pass
+        import sys
+        import os
+        import traceback
+    
+        tb_details = traceback.extract_tb(sys.exc_info()[2])
+
+        print(f"Exception: {e}")
+        for frame in tb_details:
+            filename = os.path.basename(frame.filename)
+            # Read the specific line of code
+            line_number = frame.lineno
+            with open(frame.filename, 'r') as f:
+                lines = f.readlines()
+                error_line = lines[line_number - 1].strip()
+            print(f"File: {filename}, Function: {frame.name}, Line: {line_number} | {error_line}")
