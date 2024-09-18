@@ -162,17 +162,17 @@ class VideoAnalyzer:
 
         try:
             #print("using ytdl")
-            yt_dlp.YoutubeDL({'format': 'bestvideo[height<=480]', 'quiet': True}).download([url])
-            #yt_dlp.YoutubeDL({  'quiet': False,
-            #                    'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]',
-            #                    'outtmpl': video_id+'.mp4',
-            #                    'merge_output_format': 'mp4',
-            #                    'ffmpeg_location': '/usr/bin/ffmpeg',
-            #                    'postprocessors': [{
-            #                        'key': 'FFmpegVideoConvertor',
-            #                        'preferedformat': 'mp4',  # Ensure the output is in mp4 format
-            #                        }],
-            #                      }).download([url])
+            #yt_dlp.YoutubeDL({'format': 'bestvideo[height<=480]', 'quiet': True}).download([url])
+            yt_dlp.YoutubeDL({  'quiet': False,
+                                'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]',
+                                'outtmpl': video_id+'.mp4',
+                                'merge_output_format': 'mp4',
+                                'ffmpeg_location': '/usr/bin/ffmpeg',
+                                'postprocessors': [{
+                                    'key': 'FFmpegVideoConvertor',
+                                    'preferedformat': 'mp4',  # Ensure the output is in mp4 format
+                                    }],
+                                  }).download([url])
         except Exception as e:
             print(e)
 
