@@ -274,12 +274,11 @@ class VideoAnalyzer:
         return list(zip(start_times, end_times))
         
 
-    def request_transcript(self, extract_from_audio=False):
+    def request_transcript(self):
         '''
         Downloads the transcript associated with the video and returns also whether the transcript is automatically or manually generated \n
         Preferred manually generated \n
-        Extract from audio should be set to true only locally for testing purposes and should be changed before deployment on a server \n
-        For whisper transcription there is transcribe.py
+        Whisper transcription is implemented in transcribe.py called as external service and will replace youtube transcript for word level precision\n
         '''
 
         if "transcript_data" in self.data.keys():
@@ -844,7 +843,7 @@ class VideoAnalyzer:
             transcript_words_lemmatized = {}
             for sentence in self.data["transcript_data"]["text"]:
                 for word in sentence["words"]:
-                    transcript_words_lemmatized[word["word"]] = word["lemma_indx"]
+                    transcript_words_lemmatized[word["word"].lower()] = word["lemma_indx"]
             lemmatized_terms = []
             for term in terms:
                 lemmatized_term = ""
@@ -1209,15 +1208,15 @@ def workers_queue_scheduler(queue:'ListProxy[any]'):
 
 
 if __name__ == '__main__':
-    #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=yLtpcMPADMo")
+    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=yLtpcMPADMo")
     
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=8cwNzffXPT0")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
-    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
+    #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
     vid_analyzer.download_video()
     vid_analyzer.request_transcript()
     vid_analyzer.analyze_transcript()
-    #lemmatized_concepts = vid_analyzer.lemmatize_terms()
+    lemmatized_concepts = vid_analyzer.lemmatize_terms()
     #vid_analyzer.create_thumbnails()
     #vid_analyzer.analyze_video()
     #vid.is_slide_video()

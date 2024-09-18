@@ -88,9 +88,9 @@ class ItaliaNLAPI():
         else:
             raise Exception(f"ItalianNLP API hasn't sent the requested data in {n_try*5} seconds")
         
-        import json
-        with open("terms.json","w") as f:
-            json.dump(res,f,indent=4)
+        #import json
+        #with open("terms.json","w") as f:
+        #    json.dump(res,f,indent=4)
         terms = DataFrame(res['terms'])
         terms['word_count'] = terms['term'].apply(lambda x: len(x.split()))
         return terms.sort_values(by='word_count').drop(columns=['word_count'])
