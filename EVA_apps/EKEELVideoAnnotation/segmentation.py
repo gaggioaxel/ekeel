@@ -162,7 +162,7 @@ class VideoAnalyzer:
 
         try:
             #print("using ytdl")
-            yt_dlp.YoutubeDL({'format': 'bestvideo[height<=720]+bestaudio', 'quiet': True}).download([url])
+            yt_dlp.YoutubeDL({'format': 'bestvideo[height<=480]', 'quiet': True}).download([url])
             #yt_dlp.YoutubeDL({  'quiet': False,
             #                    'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]',
             #                    'outtmpl': video_id+'.mp4',
