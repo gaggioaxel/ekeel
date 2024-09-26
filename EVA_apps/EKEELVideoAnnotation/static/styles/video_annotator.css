@@ -123,6 +123,10 @@
   padding-right: 1em;
 }
 
+.timestamp{
+    user-select: none;
+}
+
 .add-relation-box {
     display: flex;
     flex-direction: column;
@@ -186,7 +190,7 @@
 }
 
 .definitionInTranscript{
-    background-color: rgba(76, 255, 76, 0.3);
+    background-color: #00ff4050;
 }
 
 .clickableConcept{

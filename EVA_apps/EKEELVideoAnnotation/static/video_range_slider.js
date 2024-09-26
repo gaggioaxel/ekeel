@@ -6,7 +6,7 @@ let position_indicator ='<span tabindex="0" id="position_indicator" ' +
 
 function startVideoSlider(){
     let start = video.currentTime
-    let end = video.currentTime+30
+    let end = video.currentTime+10
     if (start < 0) start = 0
     if (end > videoDuration) end = videoDuration
     highlightExplanationInTranscript(null, start, end, ".youtube-in-description-marker")
@@ -52,7 +52,7 @@ function startVideoSlider(){
           min: 0,
           max: videoDuration,
           step: 0.1,
-          values: [ start, end],
+          values: [start, end],
           slide: function( event, ui ) {
             start = ui.values[0]
             end = ui.values[1]

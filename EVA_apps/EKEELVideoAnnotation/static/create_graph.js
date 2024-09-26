@@ -31,7 +31,7 @@ $(document).on('click','.clickableConcept',function(){
 function addRelation(){
 
   let prereq = document.getElementById("prerequisite").value.toLowerCase();
-  let weight = document.getElementById("weight").value.toLowerCase();
+  let weight = document.getElementById("weight").value;
   weight = weight.charAt(0).toUpperCase() + weight.slice(1)
   let target = document.getElementById("target").value.toLowerCase();
 
@@ -282,28 +282,45 @@ function uploadManuGraphOnDB(){
   
   
 /* Creation of the table containing the relations*/
-function printRelations(){
+function printRelations() {
+    let relationTable = document.getElementById("relationsTable");
 
-    let relationTable = document.getElementById("relationsTable")
+    relationTable.innerHTML = "";
 
-    relationTable.innerHTML = ""
+    for (let i in relations) {
+        let p = relations[i].prerequisite;
+        let t = relations[i].target;
+        let w = relations[i].weight.toLowerCase();
+        let ti = relations[i].time;
 
-    for(let i in relations){
+        let selectHTML = `<select onchange="changeWeight(this, '${t}', '${p}', '${ti}')">
+                            <option value="strong" ${w === 'strong' ? 'selected' : ''}>Strong</option>
+                            <option value="weak" ${w === 'weak' ? 'selected' : ''}>Weak</option>
+                          </select>`;
 
-        let p = relations[i].prerequisite
-        let t = relations[i].target
-        let w = relations[i].weight
-        let ti = relations[i].time
+        let relToVisualize = `<tr><td>${t}</td><td>${p}</td><td>${selectHTML}</td><td>${ti}</td>` +
+            `<td><button class="icon-button" onclick="deleteRelation(this,'${t}','${p}','${w}','${ti}')">` +
+            `<i class="fa fa-trash"></i></button></td></tr>`;
 
-        let relToVisualize = "<tr><td>"+ t +"</td><td>"+ p + "</td><td>"+ w +"</td><td>"+ ti +"</td>"+
-            "<td><button class=\"icon-button\" " +
-                "onclick=\"deleteRelation(this,'"+t+"','"+p+"','"+w+"','"+ti+"')\">" +
-            "<i class=\"fa fa-trash\"></i></button></td></tr>"
+        relationTable.innerHTML += relToVisualize;
+    }
+}
 
-        relationTable.innerHTML += relToVisualize
+/* Function to update the weight */
+function changeWeight(selectElement, target, prerequisite, time) {
+    let newWeight = selectElement.value;
 
+    // Find the relation in the relations array and update its weight
+    for (let i in relations) {
+        if (relations[i].target === target && relations[i].prerequisite === prerequisite && relations[i].time === time) {
+            relations[i].weight = newWeight;
+            break;
+        }
     }
 
+    // Optionally, you can re-render the table to reflect the updated values
+    printRelations();
+    uploadManuGraphOnDB()
 }
 
 

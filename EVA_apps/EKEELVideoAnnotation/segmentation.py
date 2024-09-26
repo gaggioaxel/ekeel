@@ -1209,11 +1209,11 @@ def workers_queue_scheduler(queue:'ListProxy[any]'):
 
 
 if __name__ == '__main__':
-    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=yLtpcMPADMo")
+    #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=yLtpcMPADMo")
     
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=8cwNzffXPT0")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
-    #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
+    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
     vid_analyzer.download_video()
     vid_analyzer.request_transcript()
     vid_analyzer.analyze_transcript()

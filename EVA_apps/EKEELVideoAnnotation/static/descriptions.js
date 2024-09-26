@@ -47,6 +47,7 @@ function closeDescriptionDiv(){
     // Add event listener for Escape key
     document.removeEventListener('keydown', handleKeys);
     inDescription = false
+    highlightExplanationInTranscript(null, -1, -1, ".youtube-in-description-marker")
 
 
 }
@@ -82,18 +83,30 @@ function addDescription(){
         return
     }
 
-    let start = $('#videoSlider').slider("values")[0];
-    let end = $('#videoSlider').slider("values")[1];
+    var values = document.getElementById("handleSinistro").innerText.split(':').map(Number);
+    if(values.length == 2)
+        var start = values[0]*60+values[1];
+    else if(values.length == 3)   
+        var start = values[0]*3600+values[1]*60+values[2];
+
+    values = document.getElementById("handleDestro").innerText.split(':').map(Number);
+    if(values.length == 2)
+        var end = values[0]*60+values[1];
+    else if(values.length == 3)   
+        var end = values[0]*3600+values[1]*60+values[2];
+
     let descriptionType = document.getElementById("descriptionType").value;
     
     //console.log(concept, start, end, descriptionType)
     let start_sub = getCurrentSubtitle(start)
     let startSentID = getSentenceIDfromSub(start_sub)
+
     let end_sub = getCurrentSubtitle(end)
+    if(end_sub == undefined)
+        end_sub = $(".youtube-marker").last()
     
-    if(end_sub == undefined) end_sub = $(".youtube-marker").last()
+    endSentID = getSentenceIDfromSub(end_sub)
     
-        let endSentID = getSentenceIDfromSub(end_sub)
     //console.log(concept, start, end, startSentID,endSentID)
     addDefinition(concept, start, end, startSentID,endSentID, descriptionType)
     printDefinitions()

@@ -217,14 +217,14 @@ tr {
 }
 
 .m-synonym-text {
-  color: #51ae28;
+  color: #10677ca8;
   font-size: 16px;
   font-family: serif;
   font-weight: normal;
   margin-bottom: 10px;
 }
 .m-synonym-text2 {
-  color: #51ae28;
+  color: #10677ca8;
   font-size: 16px;
   font-family: serif;
   font-weight: normal;
@@ -241,7 +241,7 @@ tr {
 }
 
 .synonym-set-class{
-  color: #51ae28;
+  color: #10677ca8;
   font-family: serif, Helvetica, sans-serif;
   font-weight: bold;
   font-size: 18px;
@@ -409,7 +409,7 @@ tr {
 }
 
 .selected-synonyms-text{
-  background-color: #1cde7a63 !important;
+  background-color: #1cb7de63 !important;
 }
 
 .trash-concept:hover {

@@ -5,38 +5,38 @@ function sleep(ms) {
 }
 
 
-$(document).on("click", ".concept", function (e) {
-    
-  let conceptElements =  document.getElementsByClassName("concept");
-
-  // reset classes for the elements
-  for(let el of conceptElements) {
-    el.className = "concept";
-  }
-
-  var target = e.currentTarget;
-  var selectedConcept = target.getAttribute("concept")
-    .split(" ")
-    .sort((a, b) => a.split("_").length - b.split("_").length)
-    .reverse()[0];
-  var selectedConceptText = selectedConcept.replaceAll("_", " ");
-
-  if (document.getElementById("transcript-selected-concept").innerHTML == selectedConceptText) {
-    document.getElementById("transcript-selected-concept").innerHTML = "";
-    document.getElementById("transcript-selected-concept-synonym").innerHTML = "--";
-    return
-  }
-  
-  document.getElementById("transcript-selected-concept").innerHTML = selectedConceptText;
-
-  let syns = $conceptVocabulary[selectedConceptText] || [];
-  let synsText = syns.join(", ");
-
-  document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText || "--";
-
-  $("[concept~='" + " " + selectedConcept + " " + "']").get().forEach(function(element) { element.classList.add("selected-concept-text") });
-  syns.forEach(function(syn) { $("[concept~='" + " " + syn.replaceAll(" ","_") + " " + "']").get().forEach(function(element) { element.classList.add("selected-synonyms-text")}) })
-});
+//$(document).on("click", ".concept", function (e) {
+//    
+//  let conceptElements =  document.getElementsByClassName("concept");
+//
+//  // reset classes for the elements
+//  for(let el of conceptElements) {
+//    el.className = "concept";
+//  }
+//
+//  var target = e.currentTarget;
+//  var selectedConcept = target.getAttribute("concept")
+//    .split(" ")
+//    .sort((a, b) => a.split("_").length - b.split("_").length)
+//    .reverse()[0];
+//  var selectedConceptText = selectedConcept.replaceAll("_", " ");
+//
+//  if (document.getElementById("transcript-selected-concept").innerHTML == selectedConceptText) {
+//    document.getElementById("transcript-selected-concept").innerHTML = "";
+//    document.getElementById("transcript-selected-concept-synonym").innerHTML = "--";
+//    return
+//  }
+//  
+//  document.getElementById("transcript-selected-concept").innerHTML = selectedConceptText;
+//
+//  let syns = $conceptVocabulary[selectedConceptText] || [];
+//  let synsText = syns.join(", ");
+//
+//  document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText || "--";
+//
+//  $("[concept~='" + " " + selectedConcept + " " + "']").get().forEach(function(element) { element.classList.add("selected-concept-text") });
+//  syns.forEach(function(syn) { $("[concept~='" + " " + syn.replaceAll(" ","_") + " " + "']").get().forEach(function(element) { element.classList.add("selected-synonyms-text")}) })
+//});
 
 $(document).on("click", ".concept-row", function (e) {
   
@@ -59,7 +59,7 @@ $(document).on("click", ".concept-row", function (e) {
   let synsText = syns.join(", ");
 
   document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText;
-
+  
   conceptElements.each(function() { 
     let concepts = this.getAttribute("concept")
     if (concepts.includes(" " + selectedConcept + " "))
@@ -72,18 +72,51 @@ $(document).on("click", ".concept-row", function (e) {
   });
 
   // Find all occurrences of the selected concept or synonyms
-  let occurrences = $(".selected-concept-text, .selected-synonyms-text");
+  let occurrences_text = $("#transcript .selected-concept-text").get();
+  if (occurrences_text.length == 0)
+    return
+
+  conceptWords = conceptText.split(" ");
+  obj = []
+  occurrences = []
+  for(let occurrence of occurrences_text) {
+    if (occurrence.getAttribute("lemma") == conceptWords[conceptWords.length-1]){
+      obj.push(occurrence);
+      occurrences.push(obj);
+      obj = []
+    } else
+      obj.push(occurrence)
+  }
+
+  let occurrences_syn = $("#transcript .selected-synonyms-text");
+  obj = [];
+  syns = syns.map(syn => syn.replaceAll(" ","_"));
+
+  for(let occurrence of occurrences_syn) {
+    for(let syn of syns){
+      if (occurrence.getAttribute("concept").includes(" " + syn + " ")) {
+        syn = syn.split("_")
+        if(syn[syn.length-1] == occurrence.getAttribute("lemma")){
+          obj.push(occurrence);
+          occurrences.push(obj);
+          obj = [];
+        } else
+          obj.push(occurrence);
+      }
+    }
+  }
+
 
   let focusIndex = -1;
-  for (let i in occurrences.get()){
-    if ($(occurrences[i]).is("[onfocus=true]"))
+  for (let i in occurrences){
+    if ($(occurrences[i][0]).is("[onfocus=true]"))
       focusIndex = parseInt(i)
-    $(occurrences[i]).attr("onfocus",false)
+    $(occurrences[i][0]).attr("onfocus",false)
   }
-  $(occurrences[(focusIndex+1) % occurrences.length]).attr("onfocus",true)
-      
+  $(occurrences[(focusIndex+1) % occurrences.length][0]).attr("onfocus",true)
+
   // Scroll the second nearest element into view
-  occurrences[(focusIndex+1) % occurrences.length].scrollIntoView({
+  occurrences[(focusIndex+1) % occurrences.length][0].scrollIntoView({
     behavior: 'smooth',
     block: 'center' // Align in the middle of the view
   });
@@ -320,7 +353,7 @@ function deleteConcept(button,concept) {
 
 function addConcept(){
 
-  let concept = document.getElementById("newConcept").value
+  let concept = document.getElementById("newConcept").value.toLowerCase()
 
   if(concept === "") {
     document.getElementById("errorConcept").innerHTML ="empty field !"
@@ -776,16 +809,16 @@ function selectSynonymSet(){
     
 
     document.getElementById("errorNewSynonym").style.display = "none"
-    let conceptWords = newSynonym.split(" ")
-    let lemmas = []
-    conceptWords.forEach(word => lemmas.push($allWordsLemmas[word]))
-    if (lemmas.some(item => item === undefined)) {
-      document.getElementById("errorConcept").innerHTML ="some words are not present in the text !"
-      showMsg("errorConcept", "red")
-      return
-    }
+    //let conceptWords = newSynonym.split(" ")
+    //let lemmas = []
+    //conceptWords.forEach(word => lemmas.push($allWordsLemmas[word]))
+    //if (lemmas.some(item => item === undefined)) {
+    //  document.getElementById("errorConcept").innerHTML ="some words are not present in the text !"
+    //  showMsg("errorConcept", "red")
+    //  return
+    //}
 
-    lemma = lemmas.join(" ")
+    let lemma = newSynonym;
     if($synonymList.includes(lemma)) {  // already present
       document.getElementById("errorNewSynonym").innerHTML ="the word typed is already present in the synonym set !"
       showMsg("errorNewSynonym", "orange")
@@ -846,15 +879,15 @@ function selectSynonymSet(){
       return
     }
 
-    let conceptWords = synonymToRemove.split(" ")
-    let lemmas = []
-    conceptWords.forEach(word => lemmas.push($allWordsLemmas[word]))
-    if (lemmas.some(item => item === undefined)) {
-      document.getElementById("errorConcept").innerHTML ="some words are not present in the text !"
-      showMsg("errorConcept", "red")
-      return
-    }
-    lemma = lemmas.join(" ")
+    //let conceptWords = synonymToRemove.split(" ")
+    //let lemmas = []
+    //conceptWords.forEach(word => lemmas.push($allWordsLemmas[word]))
+    //if (lemmas.some(item => item === undefined)) {
+    //  document.getElementById("errorConcept").innerHTML ="some words are not present in the text !"
+    //  showMsg("errorConcept", "red")
+    //  return
+    //}
+    let lemma = synonymToRemove;
     if (!$concepts.includes(lemma)){ // not a concept
       document.getElementById("errorRemoveSynonym").innerHTML ="the word typed is not a concept !"
       showMsg("errorRemoveSynonym", "red")

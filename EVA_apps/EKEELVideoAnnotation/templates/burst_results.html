@@ -127,7 +127,7 @@
                       <div id="synset-selection" class="spaced-text synset-selection-class row">
                         <div class="row">
                           <label for="selectSynonymSet">Word of Synonym Set:</label>
-                          <input type="text" class="form-control" autocomplete="off" id="selectSynonymSet"  placeholder="Select one of the synonym set word">
+                          <input type="text" class="form-control" autocomplete="on" id="selectSynonymSet"  placeholder="Select one of the synonym set word">
                         </div>
                         <div class="row button-center">
                             <button onclick="selectSynonymSet()" class="btn btn-primary button-select-synset">Select Synonym Set</button>
@@ -267,7 +267,6 @@
   </body>
 
 {% block scripts %}
-<!-- <script src="{{ url_for('static', filename='autocomplete.js') }}"></script> -->
 <script src="{{ url_for('static', filename='download.js') }}"></script>
 <script src="{{ url_for('static', filename='burstVocabulary.js') }}"></script>
 <script src="{{ url_for('static', filename='graph_visualization.js') }}"></script>
@@ -371,6 +370,7 @@
         document.getElementById("loadingAutomatic").style.display = "block"
     }
 </script>
+<script src="{{ url_for('static', filename='autocomplete.js') }}"></script> 
 
 
 {% endblock %}
