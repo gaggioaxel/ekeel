@@ -124,7 +124,6 @@ function addRelation(){
      "xywh": xywh
    }
    relations.push(relToInsert)
-   console.log(relations)
 
    printRelations()
    closeRelationDiv();

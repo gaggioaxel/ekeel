@@ -182,44 +182,12 @@
     </div>
 
     <div id="bottomdiv">
-
       <div class="timeline" id="timeline"></div>
-
         <div class="row">
-            <div class="col relations" id="relations">
-                <div class="row">
-                    <div class="col">
-                        <h2>RELATIONS</h2>
-                    </div>
-                    <div class="col">
-                      <button type="button" onclick="startVisualization()" class="btn btn-primary btn-addrelation btn-dodgerblue" data-toggle="modal" data-target="#graphModal" style="
-                            float: right; padding:5px;">
-                      Graph
-                      </button>
-                    </div>
-
-                </div>
-
-          <table class="table" style="max-height:450px">
-              <thead>
-                <tr>
-                  <th scope="col">Target</th>
-                  <th scope="col">Prerequisite</th>
-                  <th scope="col">Weight</th>
-                  <th scope="col">Start time</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody id="relationsTable">
-              </tbody>
-          </table>
-
-        </div>
-
-            <div class="col relations" id="definitions">
+          <div class="col relations" id="definitions">
             <h2>DEFINITIONS</h2>
 
-          <table class="table" style="max-height:450px">
+            <table class="table" style="max-height:450px">
               <thead>
                 <tr>
                   <th scope="col">Concept</th>
@@ -232,10 +200,37 @@
               </thead>
               <tbody id="definitionsTable">
               </tbody>
-          </table>
+            </table>
+          </div>
+          
+          <div class="col relations" id="relations">
+            <div class="row">
+                <div class="col">
+                    <h2>RELATIONS</h2>
+                </div>
+                <div class="col">
+                  <button type="button" onclick="startVisualization()" class="btn btn-primary btn-addrelation btn-dodgerblue" data-toggle="modal" data-target="#graphModal" style="
+                        float: right; padding:5px;">
+                  Graph
+                  </button>
+                </div>
+            </div>
+            <table class="table" style="max-height:450px">
+              <thead>
+                <tr>
+                  <th scope="col">Target</th>
+                  <th scope="col">Prerequisite</th>
+                  <th scope="col">Weight</th>
+                  <th scope="col">Start time</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody id="relationsTable">
+              </tbody>
+            </table>
+          </div>
 
-        </div>
-
+          
         </div>
 
       </div>

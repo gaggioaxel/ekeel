@@ -335,7 +335,7 @@ function secondsToHms(d) {
 function secondsToH_m_s_ms(d){
 
   str = secondsToHms(d)
-  return str + "." + Number(d).toFixed(2).toString().split(".")[1] || "0";
+  return str + "." + Number(d).toFixed(2).split(".")[1] || "0";
 }
 
 function secondsToTime(d) {
@@ -343,7 +343,7 @@ function secondsToTime(d) {
   var h = Math.floor(d / 3600);
   var m = Math.floor(d % 3600 / 60);
   var s = Math.floor(d % 3600 % 60);
-  var ms = d.toString().split(".")[1] || "0";
+  var ms = d.toFixed(2).split(".")[1] || "0";
 
   if (m<10)
     m = "0"+m;

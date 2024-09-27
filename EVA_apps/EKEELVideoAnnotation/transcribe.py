@@ -22,8 +22,12 @@ if __name__ == "__main__":
                 print(f"New job: {video_id}")
                 start_time = time()
                 video_folder_path = base_folder.joinpath(video_id)
-                convert_mp4_to_wav(video_folder_path, video_id)
-                
+                try:
+                    convert_mp4_to_wav(video_folder_path, video_id)
+                except Exception as e:
+                    sleep(30)
+                    continue
+
                 wav_path = video_folder_path.joinpath(video_id+".wav")
                 json_path = video_folder_path.joinpath(video_id+".json")
                 

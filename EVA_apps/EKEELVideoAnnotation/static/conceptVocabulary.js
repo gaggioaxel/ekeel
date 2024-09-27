@@ -487,8 +487,12 @@ function deleteConcept(button,concept) {
   uploadManuGraphOnDB()
 }
 
-/* highlight a concept in a div with id div_id */
+let concepts_spanned = {}
+let max_spans = 10
+for (let i=1; i<= max_spans; i++)
+  concepts_spanned[i] = []
 
+/* highlight a concept in a div with id div_id */
 function highlightConcept(concept, div_id) {
 
   let words = concept.split(" ")
@@ -511,7 +515,7 @@ function highlightConcept(concept, div_id) {
       let allSpan = [this]
       let currentSpan = this
       let isConcept = true
-      let num_words_tol = 3 // number of words of tolerance to skip when looking for a concept 
+      let num_words_tol = 1 // number of words of tolerance to skip when looking for a concept 
       // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
 
       for(let j=1; j<words.length; j++){
@@ -539,8 +543,8 @@ function highlightConcept(concept, div_id) {
         }
         if (nextWord == words[j]) {
           allSpan.push(currentSpan)
-          num_words_tol = 3
-        } else if(nextWord !== words[j] && num_words_tol > 0) {
+          num_words_tol = 1
+        } else if(num_words_tol > 0) {
           // if a word is part of the concept but not the right one, this is not the same concept
           if (words.includes(nextWord)) {
             isConcept = false
@@ -570,6 +574,72 @@ function highlightConcept(concept, div_id) {
         });
       }
     })
+
+    
+
+//    $("#"+div_id+" [lemma='" + words[0] + "']").each(function () {
+//
+//      let allSpan = [this]
+//      let currentSpan = this
+//      let isConcept = false
+//      let num_words_tol = max_spans // number of words of tolerance to skip when looking for a concept 
+//      // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
+//      let num_skips = 0
+//
+//      for(let j=1; j<words.length; j++){
+//
+//        let nextSpan =  $(currentSpan).nextAll('span:first')
+//        let nextWord
+//
+//        if(nextSpan[0] !== undefined){
+//
+//          nextWord = nextSpan[0].attributes[0].nodeValue
+//          currentSpan = nextSpan[0]
+//
+//        }else{
+//
+//          //controllo che le altre parole non siano nella riga successiva
+//          //prendo riga successiva
+//          let nextRow =  $(currentSpan).parent().nextAll('p:first')
+//          
+//          //prendo la prima parola
+//            if(nextRow !== undefined){
+//                currentSpan = nextRow.find("span")[0]
+//                if(currentSpan !== undefined)
+//                    nextWord = currentSpan.attributes[0].nodeValue
+//            }
+//        }
+//        if (nextWord == words[j]) {
+//          if(num_words_tol < max_spans) {
+//            isConcept = true
+//            num_skips = num_skips > max_spans-num_words_tol ? num_skips : max_spans-num_words_tol
+//          }
+//          num_words_tol = max_spans
+//        } else if(num_words_tol > 0) {
+//          // if a word is part of the concept but not the right one, this is not the same concept
+//          if (words.includes(nextWord)) {
+//            isConcept = false
+//            break
+//          }
+//          num_words_tol--;
+//          j--;
+//        } else {
+//          isConcept = false
+//          break
+//        }
+//        allSpan.push(currentSpan)
+//      }
+//      if(isConcept && div_id=="transcript") {
+//        concepts_spanned[num_skips].push({
+//          "concept_lemmatized": concept, 
+//          "lemmas_segment":allSpan.map((elem) => elem.getAttribute("lemma")).join(" "),
+//          "words_segment":allSpan.map((elem) => elem.innerText.trim()).join(" ")
+//        })
+//      }
+//      // to copy results call on devtools: JSON.stringify(concepts_spanned,null, 4) and copy its content
+//    })
+//    concepts_spanned["transcript"] = $captions.map(elem => elem.text).join(" ")
+//    concepts_spanned["all_concepts"] = $concepts
   }
   return foundAny;
 }
