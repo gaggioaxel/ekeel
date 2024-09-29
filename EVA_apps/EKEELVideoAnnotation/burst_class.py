@@ -36,6 +36,7 @@ import pyld
 
 from itertools_extension import double_iterator
 from db_mongo import get_video_data
+from segmentation import SemanticText
 
 oa = Namespace("http://www.w3.org/ns/oa#")
 dc = Namespace("http://purl.org/dc/elements/1.1/")
@@ -324,14 +325,14 @@ class Burst:
         definitions = []
 
         video = VideoAnalyzer("https://www.youtube.com/watch?v="+self.video_id,{"transcript_data"})
-        subtitles = video.data["transcript_data"]["text"]
+        sem_text= SemanticText(self.text, video.data["language"])
         
         if not use_conll:
-            sentences = tokenize.sent_tokenize(self.text)
+            sentences = sem_text.tokenize()
         else:
             sentences = [sent.metadata["text"] for sent in self.conll]
 
-        timed_sentences = get_timed_sentences(subtitles, sentences)
+        timed_sentences = get_timed_sentences(video.data["transcript_data"]["text"], sentences)
 
         if self.top_n is not None:
             sorted_edgelist = sorted_edgelist.head(self.top_n)

@@ -368,7 +368,7 @@ class VideoAnalyzer:
         
         '''Divide into sentences the punctuated transcription'''
         print("Extracting sentences..")
-        sentences = semantic_transcript.tokenize()
+        sentences = [sent.replace(" ,",",").replace(" .",".") for sent in semantic_transcript.tokenize()]
 
         '''For each sentence, add its start and end time obtained from the subtitles'''
         timed_sentences = get_timed_sentences(self.data["transcript_data"]["text"], sentences)
@@ -380,6 +380,7 @@ class VideoAnalyzer:
 
         '''Compute a vector of numbers (the embedding) to idenfity each sentence'''
         #embeddings = model.encode(sentences, convert_to_tensor=True)
+        # All moved inside semantic transcript class
         embeddings = semantic_transcript.get_embeddings()
 
         '''Create clusters based on semantic textual similarity, using the BERT embeddings'''
@@ -1213,7 +1214,8 @@ if __name__ == '__main__':
     
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=8cwNzffXPT0")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
-    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
+    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=5rLub-Tz65M")
+    #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
     vid_analyzer.download_video()
     vid_analyzer.request_transcript()
     vid_analyzer.analyze_transcript()

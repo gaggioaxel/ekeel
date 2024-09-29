@@ -135,7 +135,7 @@ class SemanticText():
 
 
 def automatic_transcript_to_str(timed_transcript:'list[dict]'):
-    return " ".join(timed_sentence["text"].strip().replace("."," .").replace(","," ,") for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
+    return " ".join(timed_sentence["text"].replace("."," .").replace(","," ,") for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
 
 
 def apply_italian_fixes(data:dict, min_segment_len:int=4):
@@ -233,6 +233,12 @@ def apply_italian_fixes(data:dict, min_segment_len:int=4):
                 segment["text"] = segment["text"].replace("°"," ° ")
                 segment["words"].insert(j+1, new_word)
                 word["word"] = word["word"][:-1]
+            
+            elif any(re.findall(r"\.[0-9]+", word["word"])):
+                new_word = word.copy()
+                new_word["word"] = word["word"][1:]
+                segment["words"].insert(j+1, new_word)
+                word["word"] = "."
             
             if word["word"] == "%":
                 segment["text"] = segment["text"].replace("%"," % ")
@@ -684,7 +690,6 @@ def get_real_keywords(video_id, annotator_id=None):
 
 def get_timed_sentences(subtitles, sentences: List['str']):
     '''For each sentence, add its start and end time obtained from the subtitles'''
-    # TODO improvements: add a way to return it as a list of tuples because accessing inside a list of dicts can be slow
     # Compute the number of words for each sentence and for each sub
     num_words_sentence = []
     num_words_sub = []
