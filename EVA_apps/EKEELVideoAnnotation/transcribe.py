@@ -17,7 +17,20 @@ if __name__ == "__main__":
     
     try:
         while True:
-            videos_metadata:list = get_untranscribed_videos()
+            try:
+                videos_metadata:list = get_untranscribed_videos()
+            except Exception as e:
+                # If there is an error at network level sleep and try again reconnecting
+                sleep(300)
+                from environment import MONGO_CLUSTER_USERNAME, MONGO_CLUSTER_PASSWORD
+                import pymongo
+                global client
+                global db
+                client = pymongo.MongoClient(
+                            "mongodb+srv://"+MONGO_CLUSTER_USERNAME+":"+MONGO_CLUSTER_PASSWORD+"@clusteredurell.z8aeh.mongodb.net/ekeel?retryWrites=true&w=majority")
+
+                db = client.ekeel
+                continue
             for (video_id, language) in videos_metadata:
                 print(f"New job: {video_id}")
                 start_time = time()
