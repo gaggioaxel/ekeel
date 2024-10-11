@@ -20,7 +20,7 @@ function showDescriptionDiv(){
     player.controls(false)
     video.pause()
     $("#playButton").removeClass("paused")
-    inDescription = true
+    state = "desc"
 
 
     startVideoSlider()
@@ -46,7 +46,7 @@ function closeDescriptionDiv(){
 
     // Add event listener for Escape key
     document.removeEventListener('keydown', handleKeys);
-    inDescription = false
+    state = "home"
     highlightExplanationInTranscript(null, -1, -1, ".youtube-in-description-marker")
 
 
@@ -103,7 +103,7 @@ function addDescription(){
 
     let end_sub = getCurrentSubtitle(end)
     if(end_sub == undefined)
-        end_sub = $(".youtube-marker").last()
+        end_sub = $(".sentence-marker").last()
     
     endSentID = getSentenceIDfromSub(end_sub)
     

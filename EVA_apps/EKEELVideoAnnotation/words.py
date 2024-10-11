@@ -202,6 +202,10 @@ def apply_italian_fixes(data:dict, min_segment_len:int=4):
                     new_word["word"] = "primo"
                     segment["words"].insert(j+1,new_word)
                     segment["text"] = segment["text"].replace(match_,match_[:-1]+" primo")
+                # fixes some random " l 'apostrofo mal messo" -> " l'apostrofo mal messo"
+                elif any(re.findall(r"[a-zA-Z]+ '", segment["text"])):
+                    match_ = re.findall(r"[a-zA-Z]+ '", segment["text"])[0]
+                    segment["text"] = segment["text"].replace(match_, match_[:-2]+"'")
                     
             # Match "po'" but ignores "anch'" or "dell'" 
             elif any(re.findall(r"[a-zA-Z]+'", word["word"])) and word["word"].endswith("'") and len(word["word"]) >= 3:
@@ -209,14 +213,20 @@ def apply_italian_fixes(data:dict, min_segment_len:int=4):
                 if match_ in accent_replacements.keys():
                     replacement = accent_replacements[word["word"]]
                     word["word"] = replacement
-                        
-            
+
+
             # Case "termo" "-idrometrico" -> merged into "termo-idrometrico" for T2K compatibility
             elif word["word"].startswith("-"):
                 prev_word = segment["words"][j-1]
                 prev_word["word"] = prev_word["word"] + word["word"]
                 prev_word["end"] = word["end"]
                 to_remove_words.append(j)
+                
+            # Sometime happened the shift of the apostrophe ["accetta l", "'ipotesi forte"] 
+            if segment["text"].startswith("'") and not "'" in segment["words"][0] and i > 0:
+                segment["text"] = segment["text"][1:]
+                timed_sentences[i-1]["text"] += "'"
+                timed_sentences[i-1]["words"][-1]["word"] += "'"
             
             # Case "25°C" -> "25°" "celsius"
             if any(re.findall(temperature_regex,word["word"])):
@@ -239,6 +249,25 @@ def apply_italian_fixes(data:dict, min_segment_len:int=4):
                 new_word["word"] = word["word"][1:]
                 segment["words"].insert(j+1, new_word)
                 word["word"] = "."
+            
+            # Sometimes words list don't perfectly match the text: "'attrito della ruota", words: ["attrito","della", "ruota'"]  
+            if word["word"] not in segment["text"]:
+                longest_substring = ''
+                text = segment["text"]
+                word_ = word["word"]
+                for ch_l in range(len(word_)):
+                    for ch_r in range(ch_l + 1, len(word_) + 1):
+                        if word_[ch_l:ch_r] in text and len(word_[ch_l:ch_r]) > len(longest_substring):
+                            longest_substring = word_[ch_l:ch_r]
+                # Replace the word with the longest substring
+                word["word"] = longest_substring
+            
+            # Random points in words
+            if len(word["word"]) > 1 and word["word"].endswith("."):
+                new_word = word.copy()
+                new_word["word"] = "."
+                word["word"] = word["word"][:-1]
+                segment["words"].insert(j+1, new_word)
             
             if word["word"] == "%":
                 segment["text"] = segment["text"].replace("%"," % ")

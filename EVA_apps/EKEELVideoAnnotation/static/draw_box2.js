@@ -2,10 +2,20 @@
 
 let video = document.getElementById("video-active")
 
+function deleteBox(conceptType){
+    if(document.getElementById(conceptType+"Box") != null){
+        let box = document.getElementById(conceptType+"Box");
+        box.parentNode.removeChild(box);
+        $("#drawButton").get()[0].innerText = "Add Box";
+        $("#clearDrawButton").fadeOut("slow");
+    }
+}
+
 function initDraw(conceptType) {
 
     $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
 
+    player.controls(false);
     //video.pause()
     let classBox 
     if(conceptType=="target")
@@ -23,10 +33,7 @@ function initDraw(conceptType) {
     parentDiv.prepend(canvas);
 
     //se già presente elimino box precedente
-    if(document.getElementById(conceptType+"Box") != null){
-        let box = document.getElementById(conceptType+"Box");
-        box.parentNode.removeChild(box);
-    }
+    deleteBox(conceptType)
 
     var mouse = {
         x: 0,
@@ -75,7 +82,10 @@ function initDraw(conceptType) {
 
             canvas.style.cursor = "default";
             canvas.remove()
-            
+            $("#drawButton").get()[0].disabled = false;
+            $("#drawButton").get()[0].innerText = "Edit Box";
+            $("#clearDrawButton").fadeIn("fast");
+            player.controls(true)
 
         } else {
             //start position
@@ -88,6 +98,8 @@ function initDraw(conceptType) {
             element.style.top = mouse.y + 'px';
             parentDiv.appendChild(element)
             canvas.style.cursor = "crosshair";
+            $("#drawButton").get()[0].innerText = "Drawing...";
+            $("#drawButton").get()[0].disabled = true;
         }
     }
 }

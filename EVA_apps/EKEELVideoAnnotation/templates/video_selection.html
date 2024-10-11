@@ -5,7 +5,7 @@
       {% block head %}
           {{ super() }}
           <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/form_video.css') }}"/>
-
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
       {% endblock %}
 
@@ -76,9 +76,36 @@
                     <hr>
                     {% for vid in vids|sort(attribute='title') %}
                         <label class="video_radio" video="{{ vid.video_id }}">
-                            <input type="radio" name="video" value="{{ vid.video_id }}" id="{{ vid.video_id }}">
-                            <img src="https://img.youtube.com/vi/{{ vid.video_id }}/hqdefault.jpg">
-                            <p class="video_title">{{ vid.title }}</p>
+                          <input type="radio" name="video" value="{{ vid.video_id }}" id="{{ vid.video_id }}">
+                          <div class="btn-container">
+                            {% if (vid.annotation_status == "Completed" or vid.annotation_status == "Progressing") %}
+                              <button class="btn-expanding delete" onclick="deleteAnnotation('{{ vid.video_id }}')">
+                                <span class="checkmark">&#9932;</span>
+                                <span class="label">Unannotate</span>
+                              </button>
+                            {% else %}
+                              <!-- Placeholder to maintain alignment -->
+                              <span></span>
+                            {% endif %}
+                          </div>
+                          <img src="https://img.youtube.com/vi/{{ vid.video_id }}/hqdefault.jpg">
+                          <div class="status-container">
+                            {% if vid.annotation_status == "Completed" %}
+                              <button class="btn-expanding status" disabled>
+                                <span class="checkmark">&#10004;</span>
+                                <span class="label">Annotated</span>
+                              </button>
+                            {% elif vid.annotation_status == "Progressing" %}
+                              <button class="btn-expanding status annotating" disabled>
+                                <i class="fa-solid fa-pen-to-square annotating"></i>
+                                <span class="label">Annotating</span>
+                              </button>
+                            {% else %}
+                              <!-- Placeholder to maintain alignment -->
+                              <span></span>
+                            {% endif %}
+                        </div>
+                          <p class="video_title">{{ vid.title }}</p>
                         </label>
                     {% endfor %}
                 </div>
@@ -157,7 +184,7 @@
         
         document.getElementById("frontPopupWindowTextContainer").style.display = "none"
         document.getElementById("loadingInForwardWindow").style.display = "block"
-        document.getElementById("stopAndCloseButtonsFooter").style.justifyContent = "space-between"
+        //document.getElementById("stopAndCloseButtonsFooter").style.justifyContent = "space-between"
         document.getElementById("breakButton").style.display = "block"
         
     }
@@ -199,6 +226,8 @@
     }
 
     $(".video_radio").click(function(e) {
+        if ($(e.target).closest('.btn-expanding').length)
+          return;
         selectVideoLoading()
         e.preventDefault();
         document.getElementById("youtube_url").value = "https://www.youtube.com/watch?v=" + this.getAttribute("video")

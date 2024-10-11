@@ -84,7 +84,7 @@ class VideoAnalyzer:
             self.video_id = self.extract_video_id(url)
             self.url = url
         else:
-            raise Exception("not implemented!")
+            raise Exception("This is not a Youtube video!")
 
         response = requests.get(url)
         if response.status_code == 200 and ("Video non disponibile" in response.text or "Video unavailable" in response.text):
@@ -779,7 +779,7 @@ class VideoAnalyzer:
         #    json.dump(self.data["transcript_data"]["text"],f,indent=4)
         
         in_words_and_lemmas_indx = 0
-        for sentence in transcript_dict:
+        for sent_id, sentence in enumerate(transcript_dict):
             sentence["text"] = sentence["text"].replace(" % ", "%") \
                                                .replace(", ",",") \
                                                .replace(" ° ", "°")
@@ -1214,7 +1214,7 @@ if __name__ == '__main__':
     
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=8cwNzffXPT0")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
-    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=5rLub-Tz65M")
+    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=N4pPnZg3jiI")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
     vid_analyzer.download_video()
     vid_analyzer.request_transcript()

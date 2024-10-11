@@ -31,8 +31,12 @@
     margin-left: 10px;
 }
 
+.sentence-marker{
+    background-color: transparent;
+    transition: background-color 0.6s ease;
+}
 
-.youtube-marker:hover {
+.sentence-marker:hover {
     cursor: pointer;
     text-decoration: underline;
 }
@@ -42,17 +46,12 @@
     text-decoration: underline;
 }
 
-.youtube-marker-current {
+.sentence-marker.current {
     background-color: rgba(0, 0, 0, 0.075);
     transition: background-color 0.6s ease;
 }
 
-.youtube-marker-faded {
-    background-color: rgba(0, 0, 0, 0);
-    transition: background-color 0.6s ease;
-}
-
-.word-marker-current {
+.word-current {
     color: rgb(0, 140, 255);
     /*text-decoration: underline;*/
 }
@@ -67,6 +66,11 @@
     padding: 1em;
     /*gap:1em;*/
     /*width: 370;*/
+}
+
+#transcript-in-relation.transcript{
+    padding-left: 1em;
+    padding-right: 0em;
 }
 
 .transcript p {
@@ -138,6 +142,12 @@
     position: relative;
     z-index: 1000;
     height: 370px;
+}
+
+#relation.add-relation-box{
+    padding-bottom: 1em;
+    height: 370px;
+    width: 420px;
 }
 
 .relation-box-close-btn {
@@ -259,6 +269,10 @@
     color: white;
 }
 
+#handleDestro.sidecar{
+    top: 20px;
+}
+
 #timeSlider{
     top: 70px;
     width: 40px;
@@ -301,4 +315,77 @@
 
 .conceptList a{
     color: #495057;
+}
+
+
+/* Container to hold the text and the switch */
+.switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: auto; /* Adjust width based on your layout */
+}
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-left: 1em;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #6c757d;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: dodgerblue;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }

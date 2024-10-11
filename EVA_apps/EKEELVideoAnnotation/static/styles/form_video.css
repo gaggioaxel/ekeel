@@ -23,6 +23,11 @@
   transition: all .15s ease-in-out;
 }
 
+.video_radio img {
+  width: 100%; /* Ensure the image takes up the full width of the label */
+  height: auto; /* Maintain the aspect ratio of the image */
+}
+
 .video_radio:hover{
   transform: scale(1.05);
   transition: 0.1s;
@@ -56,6 +61,10 @@ label:hover, annotator-label:hover{
 
 /* IMAGE STYLES */
 [type=radio] + img {
+  width: 195px;
+}
+
+.video_radio + img {
   width: 195px;
 }
 

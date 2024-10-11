@@ -1,5 +1,22 @@
 let definingSynonyms = []
 
+$(function() {
+
+  $(".draggable").closest(".modal-content").draggable({
+    handle: ".rectangle",  // Only the rectangle is draggable
+    containment: "#conceptsModal", // Keeps the dragging inside the window
+  });
+
+  $(".draggable").on("mousedown", function() {
+    // Set the cursor to "grabbing" when the mouse is pressed down
+    $(this).css("cursor", "grabbing");
+  });
+  $(".draggable").mouseup(function() {
+    // Set the cursor to "grabbing" only if dragging starts
+    $(this).css("cursor", "grab");
+  });
+});
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -213,6 +230,7 @@ function addConcept(){
     return
   }
   highlightConcept(conceptLemmas, "transcript-in-description");
+  highlightConcept(conceptLemmas, "transcript-in-relation")
   $concepts.push(conceptLemmas)
   $conceptVocabulary[conceptLemmas]=[];
   $concepts.sort()
@@ -645,3 +663,10 @@ function highlightConcept(concept, div_id) {
 }
 
 
+function toggleAnnotationStatus(){
+
+  const checkbox = document.querySelector(".switch input");
+  isCompleted = checkbox.checked;
+  uploadManuGraphOnDB();
+
+}

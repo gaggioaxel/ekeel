@@ -221,6 +221,15 @@ def video_selection():
     print("***** EKEEL - Video Annotation: main.py::video_selection(): Inizio ******")
     form = addVideoForm()
     videos = db_mongo.get_videos(["video_id","title", "creator"])
+    annotator = current_user.mongodb_id
+    for video in videos:
+        annotation_status = db_mongo.get_annotation_status(annotator, video["video_id"])
+        if annotation_status is None:
+            annotation_status = "None"
+        else:
+            annotation_status = "Completed" if annotation_status["annotation_completed"] else "Progressing"
+        video["annotation_status"] = annotation_status
+
 
     if not form.validate_on_submit():
         return render_template('video_selection.html', form=form, videos=videos)
@@ -252,6 +261,9 @@ def video_selection():
         annotator = current_user.complete_name
         relations = db_mongo.get_concept_map(current_user.mongodb_id, video_id)
         definitions = db_mongo.get_definitions(current_user.mongodb_id, video_id)
+        completed_graph = db_mongo.get_annotation_status(current_user.mongodb_id, video_id)
+        marked_completed = completed_graph is not None and completed_graph["annotation_completed"]
+        
         # Obtaining concept vocabulary from DB
         conceptVocabulary  = db_mongo.get_vocabulary(current_user.mongodb_id, video_id)
         
@@ -284,7 +296,7 @@ def video_selection():
         return render_template('mooc_annotator.html', 
                                result=data["transcript_data"]["text"], video_id=video_id, start_times=list(map(lambda x: x[0],data["video_data"]["segments"])),
                                images_path=vid_analyzer.images_path, concepts=lemmatized_concepts,is_temp_transcript=not data["transcript_data"]["is_whisper_transcribed"],
-                               video_duration=data['duration'], lemmatized_subtitles=lemmatized_subtitles, annotator=annotator, language=language,
+                               video_duration=data['duration'], lemmatized_subtitles=lemmatized_subtitles, annotator=annotator, language=language, is_completed=marked_completed,
                                conceptVocabulary=conceptVocabulary, title=data['title'], all_lemmas=all_lemmas, relations=relations, definitions=definitions)
     except Exception as e:
         import sys
@@ -344,6 +356,7 @@ def upload_annotated_graph():
     data["annotator_name"] = current_user.complete_name
     data["email"] = current_user.email
     data["conceptVocabulary"] = create_skos_dictionary(annotations["conceptVocabulary"], annotations["id"], "manu", annotations["language"])
+    data["annotation_completed"] = annotations["is_completed"]
 
     data["graph"]["@graph"].extend([{"id": x["id"], "type" : "skos:Concept"} for x in data["conceptVocabulary"]["@graph"]])
 
@@ -383,6 +396,12 @@ def prepare_annotated_graph():
     # real download happens on the js side
     return result   
 
+@app.route('/delete_annotation', methods=["GET", "POST"])
+def delete_annotated_graph():
+    video_id = request.json["video_id"]
+    #db_mongo.delete_annotation(current_user.mongodb_id, video_id)
+    return {}
+    
 
 @app.route('/analysis', methods=['GET', 'POST'])
 @login_required

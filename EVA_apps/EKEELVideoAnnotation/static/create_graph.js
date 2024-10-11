@@ -6,12 +6,12 @@ printDefinitions()
 
 /*
 * By clicking on a concept in the box below the video, it will automatically add the concept in the form.
-* */
-$(document).on('click','.clickableConcept',function(){
+* 
+document.getElementById("transcript-in-relation").on('click','.concept',function(){
 
   if( document.getElementById("target").value == ""){
 
-    let lemma = $(this).attr("lemma")
+    let concept = $(this).attr("concept")
 
     document.getElementById("target").value = lemma.replaceAll("_"," ")
 
@@ -26,7 +26,60 @@ $(document).on('click','.clickableConcept',function(){
   }
   else
     document.getElementById("prerequisite").value = $(this).attr("lemma").replaceAll("_"," ")
-})
+}) */
+
+$("#transcript-in-relation").on('click', '.concept', function() {
+
+    let concept = $($(this).attr("concept").trim().split(" ")).last().get()[0];
+    if ($("#target").val() == "") {
+      $("#target").val(concept.replaceAll("_", " "));
+  
+      if (concept.split("_").length > 1) {
+        targetSentID = $(this).closest("[lemma='" + concept.split("_")[0] + "']").attr("sent_id");
+        targetWordID = $(this).closest("[lemma='" + concept.split("_")[0] + "']").attr("word_id");
+      } else {
+        targetSentID = $(this).attr("sent_id");
+        targetWordID = $(this).attr("word_id");
+      }
+  
+    } else
+      $("#prerequisite").val(concept.replaceAll("_", " "));
+  
+});
+  
+
+function getSentenceIDandWordID(time, concept){
+
+    let all_subs = $("#transcript-in-relation .sentence-marker");
+    let after_subtitles = all_subs.filter(function() {
+        return parseFloat($(this).attr("data-start")) >= time;
+    });
+
+    if (after_subtitles.length > 0) {
+        for(sub of after_subtitles) {
+            let this_concept_element = sub.find('.concept').filter(function() {
+                return $(this).attr('concept').includes(" "+concept+" ");
+            });
+            if(this_concept_element.length > 0)
+                return {"sentID": this_concept_element.first().attr("sent_id"), 
+                        "wordID": this_concept_element.first().attr("word_id")}
+        }
+
+    } else {
+        last_subtitle = all_subs.filter(function() {
+            return parseFloat($(this).attr("data-start")) < time;
+        }).last()
+        let this_concept_element = last_subtitle.find('.concept').filter(function() {
+            return $(this).attr('concept').includes(" "+concept+" ");
+        });
+        if (this_concept_element.length > 0)
+            return {"sentID": this_concept_element.first().attr("sent_id"), 
+                    "wordID": this_concept_element.first().attr("word_id")}
+        else
+            return {"sentID": last_subtitle.find("[lemma]").last().attr("sent_id"),
+                    "wordID":last_subtitle.find("[lemma]").last().attr("word_id") }
+    }
+}
 
 function addRelation(){
 
@@ -52,42 +105,25 @@ function addRelation(){
     return false;
   }
 
-
-  let start = video.currentTime
-
-  //sentence ID e word ID nel conll
+  //sentence ID and word ID in Conll
   let sentID;
   let wordID;
+  let curr_time = video.currentTime;
 
+  // if sentID and wordID are set by clicking on them, take them 
   if(targetSentID != null){
       sentID = targetSentID;
       wordID = targetWordID;
+  // otherwise find them in the sentences after
   }else{
-
-      if (target.split(" ").length > 1){
-
-          let t = $("#relationText [lemma='" + target.replaceAll(" ", "_")+ "'] [lemma='" + target.split(" ")[0]+ "']")
-
-          sentID = t.attr("sent_id");
-          wordID = t.attr("word_id");
-      }else{
-          sentID = $("#relationText [lemma='" + target+ "']").attr("sent_id");
-          wordID = $("#relationText [lemma='" + target+ "']").attr("word_id");
-      }
-
-
-  }
-
-  //nel caso il target non sia presente nella frase
-  if(sentID == undefined){
-      let currentSub = getCurrentSubtitle(start)
-      sentID = getSentenceIDfromSub(currentSub)
-      wordID = "None"
+    let ids = getSentenceIDandWordID(curr_time, target);
+    sentID = ids.sentID;
+    wordID = ids.wordID;
   }
 
   console.log(sentID)
 
-  // se è stata aggiunta una box del concetto prendo le dimensioni in percentuale
+  // if a box has been added take it based on percentage
   let targetBox = document.getElementById("targetBox")
   let xywh
 
@@ -115,7 +151,7 @@ function addRelation(){
 
 
    let relToInsert = {
-     "time": secondsToTime(start),
+     "time": secondsToTime(curr_time),
      "prerequisite": prereq,
      "target": target,
      "weight": weight,
@@ -125,7 +161,7 @@ function addRelation(){
    }
    relations.push(relToInsert)
 
-   printRelations()
+   printRelations();
    closeRelationDiv();
 
   targetSentID = null
@@ -149,14 +185,21 @@ function deleteRelation(button, target, prereq, weight, time) {
         });
 
 
-
+    let check = false
     for(let i=0; i<relations.length; i++){
 
-        if(relations[i].target == target && relations[i].prerequisite == prereq && relations[i].weight == weight && relations[i].time == time){
+        if(relations[i].target == target &&
+           relations[i].prerequisite == prereq &&
+           relations[i].weight == weight &&
+           relations[i].time.split(":").filter(elem => elem != "00").join(": ") == time){
             relations.splice(i,1)
+            check = true;
             break
         }
     }
+
+    if(!check)
+        alert("error in removing relation!")
 
     uploadManuGraphOnDB()
     //console.log(relations)
@@ -250,6 +293,7 @@ function uploadManuGraphOnDB(){
         "annotator": $annotator,
         "conceptVocabulary": $conceptVocabulary,
         "language": $language,
+        "is_completed": isCompleted
     }
     //savedText = document.getElementById("saveGraphText")
     //savedText.style.display = "block"
@@ -289,16 +333,16 @@ function printRelations() {
     for (let i in relations) {
         let p = relations[i].prerequisite;
         let t = relations[i].target;
-        let w = relations[i].weight.toLowerCase();
+        let w = relations[i].weight;
         let ti = relations[i].time;
 
         let selectHTML = `<select onchange="changeWeight(this, '${t}', '${p}', '${ti}')">
-                            <option value="strong" ${w === 'strong' ? 'selected' : ''}>Strong</option>
-                            <option value="weak" ${w === 'weak' ? 'selected' : ''}>Weak</option>
+                            <option value="Strong" ${w === 'Strong' ? 'selected' : ''}>Strong</option>
+                            <option value="Weak" ${w === 'Weak' ? 'selected' : ''}>Weak</option>
                           </select>`;
-
-        let relToVisualize = `<tr><td>${t}</td><td>${p}</td><td>${selectHTML}</td><td>${ti}</td>` +
-            `<td><button class="icon-button" onclick="deleteRelation(this,'${t}','${p}','${w}','${ti}')">` +
+        
+        let relToVisualize = `<tr><td>${t}</td><td>${p}</td><td>${selectHTML}</td><td>${ti.split(":").filter(elem => elem != "00").join(":")}</td>` +
+            `<td><button class="icon-button" onclick="deleteRelation(this,'${t}','${p}','${w}','${ti.split(":").filter(elem => elem != "00").join(":")}')">` +
             `<i class="fa fa-trash"></i></button></td></tr>`;
 
         relationTable.innerHTML += relToVisualize;
@@ -336,9 +380,9 @@ function printDefinitions(){
         let e = definitions[i].end
         let t = definitions[i].description_type
 
-        let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s + "</td><td>"+ e +"</td><td>"+ t +"</td>"+
+        let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s.split(":").filter(elem => elem != "00").join(":") + "</td><td>"+ e.split(":").filter(elem => elem != "00").join(":") +"</td><td>"+ t +"</td>"+
             "<td><button style=\" margin-right: 40% \" class=\"icon-button\" " +
-                "onclick=\"highlightExplanationInTranscript('"+i+"','"+s+"','"+e+"','.youtube-marker')\">" +
+                "onclick=\"highlightExplanationInTranscript('"+i+"','"+s+"','"+e+"','.sentence-marker')\">" +
             "<i class=\"fa fa-magic\"></i></button></td>" +
             
             "<td><button class=\"icon-button\" " +

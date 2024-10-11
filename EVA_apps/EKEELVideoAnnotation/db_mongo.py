@@ -42,15 +42,16 @@ def insert_graph(data):
     collection = db.graphs
     query = {
         "annotator_id": data["annotator_id"],
-        "annotator_name": data["annotator_name"],
-        "email": data["email"],
         "video_id": data["video_id"]
     }
 
     if collection.find_one(query) is None:
         collection.insert_one(data)
     else:
-        new_graph = {"$set": {"graph": data["graph"], "conceptVocabulary": data["conceptVocabulary"]}}
+        new_graph = {"$set": 
+            {"graph": data["graph"], 
+             "conceptVocabulary": data["conceptVocabulary"], 
+             "annotation_completed": data["annotation_completed"]}}
         collection.update_one(query, new_graph)
 
     print("***** EKEEL - Video Annotation: db_mongo.py::insert_graph(): Fine ******")    
@@ -279,6 +280,11 @@ def get_concepts(annotator, video_id):
 
     return concepts
 
+def get_annotation_status(annotator, video_id):
+    return db.graphs.find_one({"video_id":video_id, "annotator_id":str(annotator)},{"annotation_completed":1}) 
+
+def delete_annotation(annotator, video_id):
+    db.graphs.delete_one({"annotator_id": annotator, "video_id":video_id})
 
 def get_concept_map(annotator, video_id):
     print("***** EKEEL - Video Annotation: db_mongo.py::get_concept_map(): Inizio ******")

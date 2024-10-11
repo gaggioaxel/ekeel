@@ -232,7 +232,7 @@ function addSubtitles(){
   for (let x in $captions){
 
     transcriptDiv.innerHTML +=
-        '<p class="youtube-marker" data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
+        '<p class="sentence-marker" data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
         $lemmatizedSubs[x].text + '</p>';
   }
 
@@ -667,7 +667,7 @@ function printDefinitions(definitions, update){
         let e = definitions[i].end.split(".")[0]
         let t = definitions[i].description_type
 
-        let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s + "</td><td>"+ e +"</td><td>"+ t +"</td>"+
+        let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s.split(":").filter(elem => elem != "00").join(":") + "</td><td>"+ e.split(":").filter(elem => elem != "00").join(":") +"</td><td>"+ t +"</td>"+
             "<td><button class=\"icon-button\" " +
                 "onclick=\"playDefinition("+hmsToSeconds(s)+")\">" +
             "<i class=\"fa fa-play\"></i></button></td></tr>"

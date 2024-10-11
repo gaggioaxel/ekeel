@@ -6,6 +6,8 @@
         {{ super() }}
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/video_annotator.css') }}"/>
         <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
     {% endblock %}
   </head>
 
@@ -38,49 +40,48 @@
             </p>
           </video>
         </div>
-
-         <div id="relationText" class="bottomVideo">
-
-         </div>
-         <div id="videoSlider"  class="bottomVideo">
-             <div style="text-align: center" class="playButtonDiv">
-                 <button id="playButton" class='playButton' onclick="playDefinition(this)"></button>
-                 <span id="timeSlider"></span>
-             </div>
-
-         </div>
+        <!--<div id="relationText" class="bottomVideo"></div>-->
+        <div id="transcript-in-relation" style="display:none; margin-top:10px;" class="transcript"></div>
+        <div id="videoSlider"  class="bottomVideo">
+          <div style="text-align: center" class="playButtonDiv">
+            <button id="playButton" class='playButton' onclick="playDefinition(this)"></button>
+            <span id="timeSlider"></span>
+          </div>
+        </div>
 
         <div class="buttons">
-            <button onclick="showRelationDiv()" class="btn btn-primary btn-addrelation btn-dodgerblue">
-              Add Relation
-            </button>
-
-            <button onclick="showDescriptionDiv()" class="btn btn-primary btn-addrelation btn-dodgerblue">
-              Add description
-            </button>
 
             <button type="button" onclick="showVocabulary($conceptVocabulary)" class="btn btn-primary btn-addrelation btn-dodgerblue" data-toggle="modal" data-target="#conceptsModal">
               Concepts & Synonyms
             </button>
 
-            <!-- Now it saves automatically -->
-            <!-- <button onclick="uploadManuGraphOnDB()" class="btn btn-primary btn-addrelation btn-dodgerblue">
-             Save graph
-            </button> -->
+            <button onclick="showDescriptionDiv()" class="btn btn-primary btn-addrelation btn-dodgerblue">
+              Add Description
+            </button>
+
+            <button onclick="showRelationDiv()" class="btn btn-primary btn-addrelation btn-dodgerblue">
+              Add Relation
+            </button>
 
             <button onclick="downloadManuGraphAsJson()" class="btn btn-primary btn-addrelation btn-dodgerblue">
-              Download graph
+              JSON Graph
             </button>
         </div>
         
 
      </div>
-     
       <div id="right-body" class="right-body-class">
+        <div class="switch-container">
+          <label style><strong>Mark as Annotated:</strong></label>
+          <label class="switch">
+              <input onchange="toggleAnnotationStatus()" type="checkbox">
+              <span class="slider round"></span>
+          </label>
+        </div>
         <div id="temp-transcript-warning"
              style="display:none; text-align:center; background-color: #edb95e; color: black;"
              title="It will be replaced by one transcribed from a model and annotations will be removed">
-              Warning! This transcript is temporary and will change!
+              Warning! This transcript is temporary and will change, annotations will be lost!
             <br>
         </div>
         <div id="transcript" class="transcript"></div>
@@ -94,6 +95,7 @@
         </div>
       </div>
 
+      <!-- ADD RELATION SECTION -->
       <div id="relation" class="add-relation-box" style="display:none">
 
         <div class="relation-box-close-btn">
@@ -101,19 +103,38 @@
             <span aria-hidden="true" onclick="closeRelationDiv();">&times;</span>
           </button>
         </div>
-
-        <h2>Add Relation</h2>
+        
+        <div style="display:flex">
+          <h2>Add Relation</h2>
+          <div title="Fields target and prerequise can be filled also by clicking on concepts in the transcript">
+            <!-- Info by C. V. Galli from <a href="https://thenounproject.com/browse/icons/term/info/" target="_blank" title="Info Icons">Noun Project</a> (CC BY 3.0) -->
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="15 15 75 75" style="cursor: help; width:25px; height:25px; margin-left: 5px;" xml:space="preserve">
+              <g>
+                <g>
+                  <path d="M50,81c-17.1,0-31-13.9-31-31s13.9-31,31-31s31,13.9,31,31S67.1,81,50,81z M50,23c-14.9,0-27,12.1-27,27s12.1,27,27,27 s27-12.1,27-27S64.9,23,50,23z"/>
+                </g>
+                <g>
+                  <path d="M52.5,64.5c0,1.1-0.9,2-2,2s-2-0.9-2-2v-13h-2c-1.1,0-2-0.9-2-2s0.9-2,2-2h4c1.1,0,2,0.9,2,2V64.5z"/>
+                </g>
+                <g>
+                  <circle cx="50.5" cy="38.5" r="4"/>
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
 
         <div>
           <label for="target">Target:</label>
           <div class="row">
 
-              <div class="col-md-7 autocomplete">
+              <div class="col-md-5 autocomplete">
                 <input type="text" class="form-control" autocomplete="off" id="target"  placeholder="Enter target">
               </div>
 
-              <div class="col-md-5">
+              <div class="col-md-7" style="display:flex; column-gap:10px;">
                   <button id="drawButton" onclick="initDraw('target')" class="btn btn-primary">Add Box</button>
+                  <button id="clearDrawButton" style="display:none" onclick="deleteBox('target')" class="btn btn-primary delete">Remove Box</button>
               </div>
           </div>
         </div>
@@ -122,27 +143,35 @@
           <label for="prerequisite">Prerequisite:</label>
           <div class="row">
 
-            <div class="col-md-7 autocomplete">
+            <div class="col-md-5 autocomplete" style="width=100px;">
               <input type="text" class="form-control" autocomplete="off" id="prerequisite" placeholder="Enter prerequisite">
             </div>
 
-            <div class="col-md-5">
-               <!-- <button id="drawButton" onclick="initDraw('prerequisite')" class="btn btn-primary">Add Box</button>-->
-            </div>
+            <!--<div class="col-md-5">
+              <button id="drawButton" onclick="initDraw('prerequisite')" class="btn btn-primary">Add Box</button>
+            </div>-->
           </div>
         </div>
 
         <div>
-            <label for="weight">Weight</label>
-            <select class="form-control" id="weight">
-              <option value="strong">Strong</option>
-              <option value="weak">Weak</option>
-            </select>
-          </div>
+          <label for="weight">Weight</label>
+          <select class="form-control" id="weight">
+            <option value="strong">Strong</option>
+            <option value="weak">Weak</option>
+          </select>
+        </div>
+
+        <!--<div>
+          <label for="amount">Target Instant Relation Instant:</label>
+          <input type="text" id="amount" readonly style="border:0; color:dodgerblue; font-weight:bold;">
+        </div>-->
 
         <button  onclick="addRelation();" class="btn btn-primary">Add Relation</button>
-
       </div>
+      
+
+
+      <!-- ADD DESCRIPTION SECTION -->
       <div id="right-body-description" style="display:none">
         <div id="add-concept-description" class="add-relation-box">
 
@@ -153,25 +182,79 @@
           </div>
 
           <h2>Add description</h2>
-          <p>For better precision, click on a handle and press the left and right arrow keys or select directly the text on the transcript</p>
 
             <div class="autocomplete">
+              <div style="display:flex;">
                 <label for="conceptDefined">Concept:</label>
+                <div title="Select a concept in the transcript or insert it manually">
+                  <!-- Info by C. V. Galli from <a href="https://thenounproject.com/browse/icons/term/info/" target="_blank" title="Info Icons">Noun Project</a> (CC BY 3.0) -->
+                  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="15 15 75 75" style="cursor: help; width:25px; height:25px; margin-left: 7px;" xml:space="preserve">
+                    <g>
+                      <g>
+                        <path d="M50,81c-17.1,0-31-13.9-31-31s13.9-31,31-31s31,13.9,31,31S67.1,81,50,81z M50,23c-14.9,0-27,12.1-27,27s12.1,27,27,27 s27-12.1,27-27S64.9,23,50,23z"/>
+                      </g>
+                      <g>
+                        <path d="M52.5,64.5c0,1.1-0.9,2-2,2s-2-0.9-2-2v-13h-2c-1.1,0-2-0.9-2-2s0.9-2,2-2h4c1.1,0,2,0.9,2,2V64.5z"/>
+                      </g>
+                      <g>
+                        <circle cx="50.5" cy="38.5" r="4"/>
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+              </div>
                 <input type="text" class="form-control" autocomplete="off" id="conceptDefined" placeholder="Concept">
             </div>
 
             <div>
-              <label for="amount">Description range:</label>
+              <div style="display:flex;">
+                <label for="amount">Description range:</label>
+                <div title="Highlight a description in the transcript to select it, or click on a handle and, using the arrow keys, make precise adjustments.">
+                  <!-- Info by C. V. Galli from <a href="https://thenounproject.com/browse/icons/term/info/" target="_blank" title="Info Icons">Noun Project</a> (CC BY 3.0) -->
+                  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="15 15 75 75" style="cursor: help; width:25px; height:25px; margin-left: 7px;" xml:space="preserve">
+                    <g>
+                      <g>
+                        <path d="M50,81c-17.1,0-31-13.9-31-31s13.9-31,31-31s31,13.9,31,31S67.1,81,50,81z M50,23c-14.9,0-27,12.1-27,27s12.1,27,27,27 s27-12.1,27-27S64.9,23,50,23z"/>
+                      </g>
+                      <g>
+                        <path d="M52.5,64.5c0,1.1-0.9,2-2,2s-2-0.9-2-2v-13h-2c-1.1,0-2-0.9-2-2s0.9-2,2-2h4c1.1,0,2,0.9,2,2V64.5z"/>
+                      </g>
+                      <g>
+                        <circle cx="50.5" cy="38.5" r="4"/>
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+              </div>
               <input type="text" id="amount" readonly style="border:0; color:dodgerblue; font-weight:bold;">
             </div>
 
           <div>
-              <label for="descriptionType">Type</label>
-              <select class="form-control" id="descriptionType" onchange="changeColor()" required>
-                <option value="" selected disabled hidden style="color:gray;">Select an option</option>
-                <option value="Definition">Definition</option>
-                <option value="Expansion">In depth</option>
-              </select>
+            <div style="display:flex;">
+              <label for="descriptionType">Type:</label>
+              <div title="Definition: the portion of the video where a concept is defined 
+In depth: the portion of the video where the concept is explained in more detail">
+                <!-- Info by C. V. Galli from <a href="https://thenounproject.com/browse/icons/term/info/" target="_blank" title="Info Icons">Noun Project</a> (CC BY 3.0) -->
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="15 15 75 75" style="cursor: help; width:25px; height:25px; margin-left: 7px;" xml:space="preserve">
+                  <g>
+                    <g>
+                      <path d="M50,81c-17.1,0-31-13.9-31-31s13.9-31,31-31s31,13.9,31,31S67.1,81,50,81z M50,23c-14.9,0-27,12.1-27,27s12.1,27,27,27 s27-12.1,27-27S64.9,23,50,23z"/>
+                    </g>
+                    <g>
+                      <path d="M52.5,64.5c0,1.1-0.9,2-2,2s-2-0.9-2-2v-13h-2c-1.1,0-2-0.9-2-2s0.9-2,2-2h4c1.1,0,2,0.9,2,2V64.5z"/>
+                    </g>
+                    <g>
+                      <circle cx="50.5" cy="38.5" r="4"/>
+                    </g>
+                  </g>
+                </svg>
+              </div>
+            </div>
+            <select class="form-control" id="descriptionType" onchange="changeColor()" required>
+              <option value="" selected disabled hidden style="color:gray;">Select an option</option>
+              <option value="Definition">Definition</option>
+              <option value="Expansion">In depth</option>
+            </select>
           </div>
           <button  onclick="addDescription()" class="btn btn-primary">Add Description</button>
         </div>
@@ -185,7 +268,7 @@
       <div class="timeline" id="timeline"></div>
         <div class="row">
           <div class="col relations" id="definitions">
-            <h2>DEFINITIONS</h2>
+            <h2>CONCEPTS</h2>
 
             <table class="table" style="max-height:450px">
               <thead>
@@ -209,9 +292,8 @@
                     <h2>RELATIONS</h2>
                 </div>
                 <div class="col">
-                  <button type="button" onclick="startVisualization()" class="btn btn-primary btn-addrelation btn-dodgerblue" data-toggle="modal" data-target="#graphModal" style="
-                        float: right; padding:5px;">
-                  Graph
+                  <button type="button" onclick="startVisualization()" class="btn btn-primary btn-addrelation btn-dodgerblue" data-toggle="modal" data-target="#graphModal" style="float: right; width:auto;">
+                  Show Graph
                   </button>
                 </div>
             </div>
@@ -230,7 +312,6 @@
             </table>
           </div>
 
-          
         </div>
 
       </div>
@@ -241,9 +322,13 @@
 {% include 'graph.html' %}
 
 <!-- Modal concepts -->
-<div style="top:40px;" class="modal fade" id="conceptsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div style="top:40px; left:-10%;" class="modal fade" id="conceptsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" style="right:100px" role="document">
-    <div class="modal-content custom-modal">
+    <div class="modal-content custom-modal ">
+
+      <div class="rectangle-container">
+        <div class="rectangle draggable"></div> 
+      </div>
 
       <!-- Modal Concepts & Synonyms -->
       <div class="modal-body">
@@ -406,9 +491,13 @@
 
       let relations = {{ relations|tojson }};
       let definitions = {{ definitions|tojson }};
+      let isCompleted = {{ is_completed|tojson }};
+
+      document.querySelector(".switch input").checked = isCompleted;
+
       let definedConcepts = []
       let definitionID = definitions.length
-      let inDescription = false;
+      let state = "home";
 
       for(let i=0; i<definitions.length; i++){
           definitions[i].id = i
