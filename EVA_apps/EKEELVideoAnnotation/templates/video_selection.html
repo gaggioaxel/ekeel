@@ -5,7 +5,7 @@
       {% block head %}
           {{ super() }}
           <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/form_video.css') }}"/>
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+          <script src="https://kit.fontawesome.com/11e33f488a.js" crossorigin="anonymous"></script>
 
       {% endblock %}
 
@@ -78,15 +78,14 @@
                         <label class="video_radio" video="{{ vid.video_id }}">
                           <input type="radio" name="video" value="{{ vid.video_id }}" id="{{ vid.video_id }}">
                           <div class="btn-container">
-                            {% if (vid.annotation_status == "Completed" or vid.annotation_status == "Progressing") %}
+                            <!--{% if (vid.annotation_status == "Completed" or vid.annotation_status == "Progressing") %}
                               <button class="btn-expanding delete" onclick="deleteAnnotation('{{ vid.video_id }}')">
                                 <span class="checkmark">&#9932;</span>
                                 <span class="label">Unannotate</span>
                               </button>
                             {% else %}
-                              <!-- Placeholder to maintain alignment -->
                               <span></span>
-                            {% endif %}
+                            {% endif %}-->
                           </div>
                           <img src="https://img.youtube.com/vi/{{ vid.video_id }}/hqdefault.jpg">
                           <div class="status-container">

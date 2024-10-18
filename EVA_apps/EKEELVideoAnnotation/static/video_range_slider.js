@@ -4,12 +4,12 @@ let position_indicator ='<span tabindex="0" id="position_indicator" ' +
             'style="width: 0.1em !important;"></span>'
 
 
-function startVideoSlider(){
-    let start = video.currentTime
-    let end = video.currentTime+10
+function startVideoSlider(start_time, end_time){
+    let start = start_time!=null ? start_time : player.currentTime()
+    let end = end_time!=null ? end_time : player.currentTime()+10
     if (start < 0) start = 0
     if (end > videoDuration) end = videoDuration
-    highlightExplanationInTranscript(null, start, end, ".youtube-in-description-marker")
+    highlightExplanationInTranscript(null, start, end, "#transcript-in-description", ".youtube-in-description-marker")
     //console.log(start,end)
 
     // disable clicks on track
@@ -42,7 +42,7 @@ function startVideoSlider(){
     };
 
 
-  $( "#amount" ).val( "Start: " + secondsToH_m_s_ms(start) + " - End: " + secondsToH_m_s_ms(end) );
+  $( "#descriptionRangeInput" ).val( "Start: " + secondsToH_m_s_ms(start) + " - End: " + secondsToH_m_s_ms(end) );
 
     $( "#videoSlider" )
         .on('mousedown', sliderMouseDown)
@@ -56,13 +56,13 @@ function startVideoSlider(){
           slide: function( event, ui ) {
             start = ui.values[0]
             end = ui.values[1]
-            $( "#amount" ).val( "Start: " + secondsToH_m_s_ms(start) + " - End: " + secondsToH_m_s_ms(end) );
+            $( "#descriptionRangeInput" ).val( "Start: " + secondsToH_m_s_ms(start) + " - End: " + secondsToH_m_s_ms(end) );
             document.getElementById("handleSinistro").innerHTML = secondsToH_m_s_ms(start)
             document.getElementById("handleDestro").innerHTML = secondsToH_m_s_ms(end)
-            video.pause()
+            player.pause()
             $("#playButton").removeClass("paused")
             clearInterval(interval_indicator)
-            highlightExplanationInTranscript(null, start, end, ".youtube-in-description-marker")
+            highlightExplanationInTranscript(null, start, end, "#transcript-in-description", ".youtube-in-description-marker")
 
           }
     });
@@ -81,17 +81,18 @@ function startVideoSlider(){
 }
 
 function updateIndicator(end){
-    let position = (video.currentTime * 100 / videoDuration)+"%"
-    if(video.currentTime < end){
+    let currentTime = player.currentTime()
+    let position = (currentTime * 100 / videoDuration)+"%"
+    if(currentTime < end){
         $("#position_indicator").css({left: position})
-        document.getElementById("timeSlider").innerHTML = secondsToHms(video.currentTime)
+        document.getElementById("timeSlider").innerHTML = secondsToHms(currentTime)
     }
     else{
-        video.pause()
+        player.pause()
         $("#position_indicator" ).remove();
         clearInterval(interval_indicator)
         $("#playButton").removeClass("paused")
-        document.getElementById("timeSlider").innerHTML = ""
+        $("#timeSlider").text("")
 
     }
 
@@ -112,24 +113,25 @@ function playDefinition(btn) {
             changeTime(start)
         }
 
-        if(video.currentTime < start || video.currentTime > end){
+        let currentTime = player.currentTime()
+
+        if(currentTime < start || currentTime > end){
             changeTime(start)
             $("#position_indicator").css({left: start_position})
-            document.getElementById("timeSlider").innerHTML = secondsToHms(video.currentTime)
-
+            document.getElementById("timeSlider").innerHTML = secondsToHms(currentTime)
         }
 
-        document.getElementById("timeSlider").innerHTML = secondsToHms(video.currentTime)
+        document.getElementById("timeSlider").innerHTML = secondsToHms(currentTime)
 
         interval_indicator = window.setInterval(function(){
             updateIndicator(end)
         }, 1000);
 
-        video.play()
+        player.play()
     }
 
     else{
-        video.pause()
+        player.pause()
         $(btn).removeClass("paused")
         clearInterval(interval_indicator)
 

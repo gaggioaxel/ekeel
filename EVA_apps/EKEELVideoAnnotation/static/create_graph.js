@@ -108,7 +108,7 @@ function addRelation(){
   //sentence ID and word ID in Conll
   let sentID;
   let wordID;
-  let curr_time = video.currentTime;
+  let curr_time = player.currentTime();
 
   // if sentID and wordID are set by clicking on them, take them 
   if(targetSentID != null){
@@ -206,7 +206,7 @@ function deleteRelation(button, target, prereq, weight, time) {
 
 }
 
-function addDefinition(concept, start, end, startSentID, endSentID, description_type){
+function pushDefinition(concept, start, end, startSentID, endSentID, description_type){
 
     let definitionToInsert = {
         "concept": concept,
@@ -221,11 +221,87 @@ function addDefinition(concept, start, end, startSentID, endSentID, description_
     definedConcepts.push(concept)
     definitions.push(definitionToInsert)
     definitionID += 1
-    uploadManuGraphOnDB()
+    uploadManuGraphOnDB();
     //console.log(definitions)
 }
 
-function deleteDescription(button, concept, start, end){
+function revertChanges(mainDiv){
+    
+    closeDefinitionDiv()
+
+    mainDiv.find("h2").text("Add Definition");
+    
+    mainDiv.find("#concept-definition-hint").show();
+
+    mainDiv.find("#conceptDefined")
+            .val("")
+            .prop("readonly", false)
+            .css("opacity","1")
+            .css("border","")
+    
+    mainDiv.find("#descriptionRangeInput").css("color","dodgerblue");
+    
+    mainDiv.find("#descriptionType").val("").change();
+
+    mainDiv.find("#saveDefinitionButton")
+            .prop("onclick","addDefinition();")
+            .off("click")
+            .on("click", addDefinition )
+            .text("Add Definition")
+    
+    mainDiv.find(".relation-box-close-btn .close")
+        .off("click")
+        .attr("onclick", "closeDefinitionDiv();")
+        .on("click", closeDefinitionDiv)
+}
+
+function editConceptAnnotation(button, concept, start_time, end_time, description_type){
+    const mainDiv = $("#add-concept-description")
+
+    mainDiv.find("h2").text("Edit Definition");
+
+    mainDiv.find("#concept-definition-hint").hide();
+
+    mainDiv.find("#conceptDefined")
+            .val(concept)
+            .prop("readonly", true)
+            .css("opacity","0.7")
+            .css("border","0")
+            .change();
+    
+    startVideoSlider(timeToSeconds(start_time), timeToSeconds(end_time))
+
+    mainDiv.find("#descriptionType").val(description_type).change();
+
+    mainDiv.find(".relation-box-close-btn .close")
+            .off("click")
+            .attr("onclick",null)
+            .on("click", function() { revertChanges(mainDiv) })
+    
+    mainDiv.find("#saveDefinitionButton")
+            .attr("onclick",null)
+            .off("click")
+            .text("Save Changes")
+            .on("click", function(){
+                let res = readDefinitionFromDocument()
+                definitions.forEach(element => {
+                    if(element.concept == concept && element.start == start_time && element.end == end_time){
+                        element.start = secondsToTime(res.start);
+                        element.end = secondsToTime(res.end);
+                        element.start_sent_id = res.startSentID;
+                        element.end_sent_id = res.endSentID;
+                        element.description_type = res.descriptionType;
+                    }
+                });
+                uploadManuGraphOnDB();
+                printDefinitions();
+                closeDefinitionDiv();
+            });
+
+    showDefinitionDiv(false)
+}
+
+function deleteDefinition(button, concept, start, end){
 
     let toDelete
 
@@ -238,22 +314,22 @@ function deleteDescription(button, concept, start, end){
 
     }
     /* remove row with fade out*/
-    let row = $(button).closest('tr')
-        $(row)
-            .children('td, th')
-            .animate({
-                padding: 0
-            })
-            .wrapInner('<div />')
-            .children()
-            .slideUp(function () {
-                $(row).remove();
-            });
+    if(button!=null)
+        $(button).closest('tr')
+                .children('td, th')
+                .animate({
+                    padding: 0
+                })
+                .wrapInner('<div />')
+                .children()
+                .slideUp(function () {
+                    $(row).remove();
+                });
 
     definitions.splice(toDelete, 1)
     definedConcepts.splice(toDelete, 1)
     uploadManuGraphOnDB()
-  }
+}
 
 
 
@@ -342,8 +418,12 @@ function printRelations() {
                           </select>`;
         
         let relToVisualize = `<tr><td>${t}</td><td>${p}</td><td>${selectHTML}</td><td>${ti.split(":").filter(elem => elem != "00").join(":")}</td>` +
-            `<td><button class="icon-button" onclick="deleteRelation(this,'${t}','${p}','${w}','${ti.split(":").filter(elem => elem != "00").join(":")}')">` +
-            `<i class="fa fa-trash"></i></button></td></tr>`;
+            `<td><button `+
+                `class="icon-button trash" ` +
+                `style="font-size:20" `+ 
+                `onclick="deleteRelation(this,'${t}','${p}','${w}','${ti.split(":").filter(elem => elem != "00").join(":")}')"`+
+                `title="Delete relation between the two concepts">` +
+            `<i class="fa-solid fa-trash"></i></button></td></tr>`;
 
         relationTable.innerHTML += relToVisualize;
     }
@@ -381,13 +461,20 @@ function printDefinitions(){
         let t = definitions[i].description_type
 
         let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s.split(":").filter(elem => elem != "00").join(":") + "</td><td>"+ e.split(":").filter(elem => elem != "00").join(":") +"</td><td>"+ t +"</td>"+
-            "<td><button style=\" margin-right: 40% \" class=\"icon-button\" " +
-                "onclick=\"highlightExplanationInTranscript('"+i+"','"+s+"','"+e+"','.sentence-marker')\">" +
-            "<i class=\"fa fa-magic\"></i></button></td>" +
+            "<td><button class=\"icon-button play-definition\" " +
+                "onclick=\"playExplanation('"+i+"','"+s+"','"+e+"','#transcript','.sentence-marker')\" " +
+                "title=\"play this annotation\">" +
+            "<i class=\"fa-solid fa-circle-play\" aria-hidden=\"true\"></i></button></td>" +
+
+            "<td><button class=\"btn btn-primary btn-addrelation btn-dodgerblue\" " +
+                "onclick=\"editConceptAnnotation(this,'"+c+"','"+s+"','"+e+"','"+t+"')\" " +
+                "title=\"Edit this annotation\">Edit" +
+            "</button></td>" +
             
-            "<td><button class=\"icon-button\" " +
-                "onclick=\"deleteDescription(this,'"+c+"','"+s+"','"+e+"')\">" +
-            "<i class=\"fa fa-trash\"></i></button></td></tr>"
+            "<td><button class=\"icon-button trash\" " +
+                "onclick=\"deleteDefinition(this,'"+c+"','"+s+"','"+e+"')\"" +
+                "title=\"Delete concept description\">" +
+            "<i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></button></td></tr>"
 
         definitionTable.innerHTML += relToVisualize
 

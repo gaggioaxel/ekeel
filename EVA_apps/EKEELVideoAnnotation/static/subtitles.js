@@ -2,6 +2,7 @@ let main_markers = []
 let in_description_markers = []
 let in_relation_markers = []
 
+
 addSubtitles("transcript");
 addSubtitles("transcript-in-description");
 addSubtitles("transcript-in-relation");
@@ -88,11 +89,11 @@ document.getElementById("transcript-in-description").addEventListener('mouseup',
   end_time = Math.trunc((parseFloat(end_time)+0.01)*100)/100
 
   // Highlight the selection with the found start and end times
-  highlightExplanationInTranscript(null, start_time, end_time, ".youtube-in-description-marker");
+  highlightExplanationInTranscript(null, start_time, end_time, "#transcript-in-description", ".youtube-in-description-marker");
 
   // Update the slider values
   $("#videoSlider").slider("values", [start_time, end_time]);
-  $("#amount").val("Start: " + secondsToH_m_s_ms(start_time) + " - End: " + secondsToH_m_s_ms(end_time));
+  $("#descriptionRangeInput").val("Start: " + secondsToH_m_s_ms(start_time) + " - End: " + secondsToH_m_s_ms(end_time));
     
   // Update the handle labels
   document.getElementById("handleSinistro").innerHTML = secondsToH_m_s_ms(start_time);
@@ -107,9 +108,7 @@ function showRelationDiv(){
   document.getElementById("prerequisite").value = ""
   document.getElementById("target").value = ""
 
-  video.pause()
-  //video.removeAttribute( 'controls' );
-  //player.controls(false)
+  player.pause()
 
   $('#canvas-wrap').dimBackground();
   $('#drawButton').dimBackground();
@@ -148,11 +147,6 @@ function closeRelationDiv(){
 
   removeCanvas()
   state="home"
-
-  //video.play()
-  //video.setAttribute( 'controls', '' );
-  //player.controls(true)
-
 }
 
 function addSubtitles(id){
@@ -192,7 +186,7 @@ function addSubtitles(id){
 
 
 function changeTime(time){
-  video.currentTime = time;
+  player.currentTime(time);
 }
 
 
@@ -221,6 +215,8 @@ function MarkersInit(html_field, markers) {
 
 
 function UpdateMarkers(current_time) {
+  player.controlBar.currentTimeDisplay.updateContent();
+  player.controlBar.progressControl.seekBar.update({"percent":(player.currentTime() / player.duration()) * 100});
   scrolled = false
   
   switch (state) {
@@ -240,7 +236,10 @@ function UpdateMarkers(current_time) {
     if (parseFloat(marker.time_start)-1 < current_time & current_time < parseFloat(marker.time_end)+1) {
       marker.dom.classList.add("current");
       if (!scrolled){
-        marker.dom.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        marker.dom.parentNode.scrollTo({
+          top: marker.dom.offsetTop - marker.dom.parentNode.offsetTop,
+          behavior: 'smooth'
+        });
         scrolled = true
       }
       
@@ -266,9 +265,7 @@ function UpdateMarkers(current_time) {
 
 }
 
-let transcriptShownId = null;
-
-function highlightExplanationInTranscript(descriptionIndx, start, end, class_field) {
+function highlightExplanationInTranscript(descriptionIndx, start, end, parent_id, class_field) {
 
   // We are in the transcript in the annotator page 
   if (class_field == ".sentence-marker") {
@@ -277,15 +274,14 @@ function highlightExplanationInTranscript(descriptionIndx, start, end, class_fie
     definition_end = [hours, minutes, seconds] = end.split(':').map(Number);
     definition_end = hours * 3600 + minutes * 60 + seconds;
 
-    // user is de-selecting the concept
-    if (transcriptShownId != null & transcriptShownId == descriptionIndx) {
+    // user is stopping the active video
+    if ($(".play-definition.active").length > 0 && $(".play-definition")[descriptionIndx].classList.contains("active")) {
         definition_start = -1
         definition_end = -1
-        transcriptShownId = null
-        document.getElementById("highlight-col").classList.remove("definitionInTranscript");
+        $(".play-definition.active").removeClass("active").blur()
     } else {
-        transcriptShownId = descriptionIndx;
-        document.getElementById("highlight-col").classList.add("definitionInTranscript");
+        $(".play-definition.active").removeClass("active").blur()
+        $(".play-definition")[descriptionIndx].classList.add("active")
     }
   // otherwise we are in the transcript in description window and values are passed already as float seconds
   } else {
@@ -293,30 +289,62 @@ function highlightExplanationInTranscript(descriptionIndx, start, end, class_fie
     definition_end = end
   }
 
-  let subtitleElements = Array.from(document.querySelectorAll(class_field));
+  let subtitleElements = $(parent_id+" "+class_field).get()//Array.from(document.querySelectorAll(class_field));
   //console.log(subtitleElements)
   let scrollToElem = null;
   
   // Iterate over each subtitle element to highlight the matching ones
   subtitleElements.forEach((element,index) => {
-    //element.classList.add('definitionInTranscript');
+    //element.classList.add('highlight');
     element.querySelectorAll('span').forEach(function(word) {
-      word.classList.remove('definitionInTranscript');
+      word.classList.remove('highlighted');
       wordStart = parseFloat(word.getAttribute('start_time'));
       wordEnd = parseFloat(word.getAttribute('end_time')) 
       if (wordStart >= definition_start & wordEnd <= definition_end) {
-        word.classList.add('definitionInTranscript');
+        word.classList.add('highlighted');
         if (!scrollToElem) 
           scrollToElem = subtitleElements[index > 0 ? index-1 : index];
       }
     });
   });
   if (scrollToElem) {
-    scrollToElem.scrollIntoView({ behavior: 'smooth', block: 'start', inline:"nearest"});
+    scrollToElem.parentNode.scrollTo({
+      top: scrollToElem.offsetTop - scrollToElem.parentNode.offsetTop,
+      behavior: 'smooth'
+    });
+    return true;
+  } else {
+    return false;
   }
 
 }
 
+function playExplanation(descriptionIndx, start, end, parent_id, class_field) {
+  if (!highlightExplanationInTranscript(descriptionIndx, start, end, parent_id, class_field)){
+    player.controls(true);
+    player.pause();
+    return
+  }
+  player.pause();
+  player.controls(false);
+  let prevTime = player.currentTime();
+  player.currentTime(timeToSeconds(start));
+
+  player.off('timeupdate'); // Remove any previous timeupdate listeners
+  player.on('timeupdate', function() {
+    UpdateMarkers(player.currentTime())
+    if (player.currentTime() >= timeToSeconds(end) || player.currentTime() < timeToSeconds(start)) {
+      player.pause();
+      player.currentTime(prevTime);
+      player.controls(true);
+      player.off('timeupdate');
+      player.on("timeupdate", function(){ UpdateMarkers(player.currentTime()) });
+      $(".play-definition.active").removeClass("active").blur();
+      $(".highlighted").removeClass("highlighted");
+    }
+  });
+  player.play();
+}
 
 function secondsToHms(d) {
   d = Number(d);
@@ -361,7 +389,17 @@ function secondsToTime(d) {
 
   return h +":" + m + ":" + s + "." + ms;
 
-  }
+}
+
+function timeToSeconds(time_text){
+  let time = time_text.split(':').map(Number);
+  if(time.length == 2)
+    time = time[0]*60+time[1];
+  else if(time.length == 3)   
+    time = time[0]*3600+time[1]*60+time[2];
+  return time
+}
+
 
 
 //function getLastSentence(){

@@ -70,7 +70,7 @@ function showVocabulary(inputVocabulary) {
   document.getElementById("newConcept").value = ""
   document.getElementById("errorConcept").style.display = "none"
 
-  video.pause()
+  player.pause()
 
   document.getElementById("conceptVocabularyContent").innerHTML = ""
 
@@ -97,7 +97,7 @@ function showVocabulary(inputVocabulary) {
         '<a href=\"#'+href+'\" data-toggle=\"collapse\" aria-expanded=\"false\" id="menu_'+c_in_text+'" >'
 
     row += '<p id="concept_'+c_in_text+'" class=\" m-concept-text\">'+ conceptX +': </p>'
-    row += '<button class="icon-button trash-concept" onclick="deleteConcept(this,'+"'"+c_in_text+"'"+')"><i class="fa fa-trash"></i></button>'
+    row += '<button class="icon-button trash" onclick="deleteConcept(this,'+"'"+c_in_text+"'"+')"><i class="fa-solid fa-trash"></i></button>'
     if(synonymsX.length > 0)
       row += '<ul id="synonyms_'+c_in_text+'" class=\" m-synonym-text\"><li>'+ synonymsX +'</li></ul>'
   
@@ -185,9 +185,11 @@ $(document).on("click", ".concept-row", function (e) {
   $(occurrences[(focusIndex+1) % occurrences.length][0]).attr("onfocus",true)
       
   // Scroll the second nearest element into view
-  occurrences[(focusIndex+1) % occurrences.length][0].scrollIntoView({
-    behavior: 'smooth',
-    block: 'center' // Align in the middle of the view
+  let scrollToElem = occurrences[(focusIndex+1) % occurrences.length][0]
+  
+  scrollToElem.parentNode.scrollTo({
+    top: scrollToElem.offsetTop - scrollToElem.parentNode.offsetTop,
+    behavior: 'smooth'
   });
 
 });

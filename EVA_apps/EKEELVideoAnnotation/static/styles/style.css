@@ -33,9 +33,21 @@ h1 {
     margin-right: 10%;
 }
 
-.video-player {
-    width: 100%;
+.video-js {
+  width: 100%;
 }
+
+
+.vjs-control-bar .vjs-current-time.vjs-time-control {
+  display: block;
+  font-size: 1.3em;
+  line-height: 2.35em;
+}
+
+.vjs-control-bar .vjs-remaining-time.vjs-time-control {
+  display: none;
+}
+
 
 .btn-addrelation {
     justify-self:center;
@@ -216,79 +228,85 @@ input[type=submit] {
 
 /* Style buttons */
 .icon-button {
-  background-color:rgba(0, 0, 0, 0);
+  background-color:#f8f9fa;
   border: none; /* Remove borders */
   color: gray; /* White text */
-  padding: 12px 10px; /* Some padding */
-  font-size: 14px; /* Set a font size */
+  padding: 8px 6px; /* Some padding */
+  font-size: 1.4em; /* Set a font size */
   cursor: pointer; /* Mouse pointer on hover */
-  float:right;
+  float: right;
+}
+
+.icon-button.play-definition {
+  font-size: 1.8em;
+  margin: 0 40%;
 }
 
 /* Darker background on mouse-over */
 .icon-button:hover {
-    color:#007bff
+    color:#0069d9;
 }
 
-.deleteDefinitionIcon {
-  background-color:rgba(0, 0, 0, 0);
-  border: none; /* Remove borders */
-  color: red; /* White text */
-
-  font-size: 16px; /* Set a font size */
-  cursor: pointer; /* Mouse pointer on hover */
+.icon-button.trash:hover {
+  color: crimson;
 }
 
-/* Darker background on mouse-over */
-.deleteDefinitionIcon:hover {
-    color:#007bff
+.icon-button.active {
+  color: dodgerblue;
 }
-
-
 
 .list-group-item{
   padding: 0.1rem;
 }
 
 .title{
-    font-size: 2rem;
-    font-weight: bold;
-    color:#343a40;
-    margin-top:2%;
-    line-height: 1.2;
+  font-size: 2rem;
+  font-weight: bold;
+  color:#343a40;
+  margin-top:2%;
+  line-height: 1.2;
 }
 
 .titleLower{
-    font-size: 1.5rem;
-    font-weight: 300;
-    line-height: 1.2;
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1.2;
 }
 
 table {
-    display: flex;
-    flex-flow: column;
-    width: 100%;
+  display: flex;
+  flex-flow: column;
+  width: 100%;
 }
 
 thead {
-    flex: 0 0 auto;
+  flex: 0 0 auto;
 }
 
 tbody {
-    flex: 1 1 auto;
-    display: block;
-    overflow-y: auto;
-    overflow-x: hidden;
+  flex: 1 1 auto;
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 tr {
-    width: 100%;
-    display: table;
-    table-layout: fixed;
+  width: 100%;
+  display: table;
+  table-layout: fixed;
+}
+
+td {
+  vertical-align: middle;
+}
+
+td .btn {
+  display: block;
+  margin: 5px auto;
 }
 
 .result_text{
-    float: right;
+  float: right;
 }
 
 /*
@@ -433,6 +451,29 @@ tr {
   display: table;
 }
 
+.concept {
+  cursor: pointer;
+}
+
+.relations-sortable-header::after,
+.descriptions-sortable-header::after {
+  content: ""; /* No content by default */
+}
+
+.relations-sortable-header.ascending::after,
+.descriptions-sortable-header.ascending::after {
+  content: "↑"; /* Add the arrow symbol */
+  font-size: 30;
+  margin-left: 4px; /* Optional: Add some space before the symbol */
+}
+
+.relations-sortable-header.descending::after,
+.descriptions-sortable-header.descending::after {
+  content: "↓"; /* Add the arrow symbol */
+  font-size: 30;
+  margin-left: 4px; /* Optional: Add some space before the symbol */
+}
+
 #conceptVocabularyContent {
   margin: 15px 0px;
 }
@@ -529,16 +570,12 @@ tr {
   justify-content: center;
 }
 
-.selected-concept-text{
-  background-color: #1c7ade63 !important;
+.concept.selected-concept-text{
+  background-color: #1c7ade63;
 }
 
-.selected-synonyms-text{
-  background-color: #1cb7de63 !important;
-}
-
-.trash-concept:hover {
-  color: #ff01017a;
+.concept.selected-synonyms-text{
+  background-color: #1cb7de63;
 }
 
 .filter-vocabulary-class {

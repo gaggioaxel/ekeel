@@ -7,6 +7,7 @@
           <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/form_video.css') }}"/>
           <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/video_annotator.css') }}"/>
 
+          <script src="https://kit.fontawesome.com/11e33f488a.js" crossorigin="anonymous"></script>
           <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
           <style>
 
@@ -220,7 +221,7 @@
                     <div id="video" class="col">
                     <video
                         id="video-active"
-                        class="video-js video-player"
+                        class="video-js"
                         preload="none"
                         controls poster="https://img.youtube.com/vi/{{ video_id }}/maxresdefault.jpg" >
                     <source src="{{url_for('static', filename='videos/'+video_id+'/'+video_id+'.mp4')}}" type="video/mp4">

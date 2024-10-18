@@ -38,12 +38,6 @@
 
 .sentence-marker:hover {
     cursor: pointer;
-    text-decoration: underline;
-}
-
-.subtitle-time:hover {
-    cursor: pointer;
-    text-decoration: underline;
 }
 
 .sentence-marker.current {
@@ -56,8 +50,8 @@
     /*text-decoration: underline;*/
 }
 
-.transcript{
-    overflow-y: scroll;
+.transcript {
+    overflow-y: auto;
     height: 500px;
     background-color: #f8f9fa;
     /*display: flex;
@@ -68,6 +62,10 @@
     /*width: 370;*/
 }
 
+.transcript.transcript-in-description {
+    padding:0em;
+}
+
 #transcript-in-relation.transcript{
     padding-left: 1em;
     padding-right: 0em;
@@ -75,6 +73,7 @@
 
 .transcript p {
     margin-bottom:5px;
+    overflow-y: auto;
 }
 
 .timeline {
@@ -137,16 +136,16 @@
     box-sizing: content-box;
     background-color: #f8f9fa;
     padding: 1em;
-    padding-bottom: 4em;
+    padding-bottom: 1em;
     gap:1em;
     position: relative;
     z-index: 1000;
-    height: 370px;
+    height: auto;
 }
 
 #relation.add-relation-box{
     padding-bottom: 1em;
-    height: 370px;
+    height: fit-content;
     width: 420px;
 }
 
@@ -157,11 +156,24 @@
 }
 
 #canvasBox {
-    border: 2px solid green;
+    outline: 3px solid dodgerblue;
     position:absolute;
     width: 100%;
     height: 100%;
     z-index: 9;
+    /*animation: outlineGrow .6s infinite alternate;*/
+}
+
+@keyframes outlineGrow {
+    0% {
+        outline-width: 3px;
+    }
+    50% {
+        outline-width: 10px;
+    }
+    100% {
+        outline-width: 7px;
+    }
 }
 
 .rectangleTarget {
@@ -199,13 +211,9 @@
     margin-right: 4px;
 }
 
-.definitionInTranscript{
-    background-color: #00ff4050;
-}
-
-.clickableConcept{
-    cursor:pointer;
-    text-decoration: underline;
+.highlighted {
+    text-decoration: underline !important;
+    font-weight: 600 !important;
 }
 
 

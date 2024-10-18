@@ -116,9 +116,11 @@ $(document).on("click", ".concept-row", function (e) {
   $(occurrences[(focusIndex+1) % occurrences.length][0]).attr("onfocus",true)
 
   // Scroll the second nearest element into view
-  occurrences[(focusIndex+1) % occurrences.length][0].scrollIntoView({
-    behavior: 'smooth',
-    block: 'center' // Align in the middle of the view
+  let scrollToElem = occurrences[(focusIndex+1) % occurrences.length][0]
+  
+  scrollToElem.parentNode.scrollTo({
+    top: scrollToElem.offsetTop - scrollToElem.parentNode.offsetTop,
+    behavior: 'smooth'
   });
 
 });
@@ -291,7 +293,7 @@ function showVocabularyBurst(inputVocabulary){
           "<a href=\"#"+href+"\" data-toggle=\"collapse\" aria-expanded=\"false\" id='menu_"+c+"' >"
 
       row += "<p id='concept_"+c+"' class=\" m-concept-text\">"+ conceptX +": </p>"
-      row += '<button class="icon-button trash-concept" onclick="deleteConcept(this,'+"'"+c+"'"+')"><i class="fa fa-trash"></i></button>'
+      row += '<button class="icon-button trash" onclick="deleteConcept(this,'+"'"+c+"'"+')"><i class="fa-solid fa-trash"></i></button>'
       if(synonymsX.length > 0)
         row += "<ul id='synonyms_"+c+"' class=\" m-synonym-text\"><li>"+ synonymsX +"</li></ul>"
     
@@ -730,8 +732,8 @@ function hmsToSeconds(time){
 
 function playDefinition(start){
     console.log(start)
-    video.currentTime = start;
-    video.play()
+    player.currentTime(start);
+    player.play()
 }
 
 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
