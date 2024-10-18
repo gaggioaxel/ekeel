@@ -18,6 +18,9 @@ def string_to_seconds(str):
 
     return seconds
 
+def get_emails_registered():
+    return [user['email'] for user in users.find({}, {"email": 1, "_id": 0})]
+
 
 def reset_password(email, password):
     query = {"email": email}

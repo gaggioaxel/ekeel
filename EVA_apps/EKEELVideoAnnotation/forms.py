@@ -41,11 +41,11 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Register')
 
     def validate_email(self, email):
-        #users = db_mongo.users
-        unverified_users = db_mongo.unverified_users
 
-        if unverified_users.find_one({"email":email.data}):
-            raise ValidationError('Email already present')
+        if db_mongo.unverified_users.find_one({"email":email.data}):
+            raise ValidationError('There is an unverified account already registered under this email')
+        elif db_mongo.users.find_one({"email":email.data}):
+            raise ValidationError('There is already an account registered under this email')
 
 
 class LoginForm(FlaskForm):
