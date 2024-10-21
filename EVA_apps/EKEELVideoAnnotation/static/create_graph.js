@@ -338,6 +338,7 @@ function deleteDefinition(button, concept, start, end){
 
     }
     /* remove row with fade out*/
+    let row = $(button).closest('tr')
     if(button!=null)
         $(button).closest('tr')
                 .children('td, th')

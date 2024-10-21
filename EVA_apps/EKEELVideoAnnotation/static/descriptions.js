@@ -72,7 +72,7 @@ function changeColor(){
 
 }
 
-function readDefinitionFromDocument(){
+function readDefinitionElements(){
     var start = timeToSeconds(document.getElementById("handleSinistro").innerText);
     var end = timeToSeconds(document.getElementById("handleDestro").innerText);
 
@@ -97,12 +97,35 @@ function addDefinition(){
         return
     }
     let concept = document.getElementById("conceptDefined").value;
-    if (!$concepts.includes(concept)) {
-        alert("Concept not defined")
+    if(concept.length == 0){
+        alert("Concept cannot be empty")
         return
     }
+    if (!$concepts.includes(concept)) {
+        let conceptSplit = concept.split(" ")
+        let filteredElements = $('.transcript-in-description').find('[lemma]:contains("'+conceptSplit[0]+'")')
+        for(wordIndx in conceptSplit) {
+            if(parseInt(wordIndx)!=0)
+                filteredElements = filteredElements.filter( function() { return this.nextSibling.innerText.includes(conceptSplit[parseInt(wordIndx)]) })
+            if(filteredElements.length == 0) break
+        }
+        if(filteredElements.length == 0) {
+            alert("This concept is not defined")
+            return
+        }
+        let filteredConcept = $(filteredElements)
+                                        .attr("concept")
+                                        .split(" ")
+                                        .map(element => element.split('_'))
+                                        .filter( (element,_) => element.length == conceptSplit.length )
+        if(filteredConcept.length == 0 || filteredConcept.length > 1){
+            alert("Error when filtering, try selecting directly the concept")
+            return
+        }
+        concept = filteredConcept[0].join(" ")
+    }
 
-    res = readDefinitionFromDocument()
+    res = readDefinitionElements()
     
     //console.log(concept, start, end, startSentID,endSentID)
     pushDefinition(concept, res.start, res.end, res.startSentID, res.endSentID, res.descriptionType);
