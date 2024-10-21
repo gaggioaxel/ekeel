@@ -7,19 +7,19 @@ addSubtitles("transcript");
 addSubtitles("transcript-in-description");
 addSubtitles("transcript-in-relation");
 MarkersInit("#transcript.sentence-marker", main_markers);
-MarkersInit("#transcript-in-description.youtube-in-description-marker", in_description_markers);
+MarkersInit("#transcript-in-description.sentence-marker-in-description", in_description_markers);
 MarkersInit("#transcript-in-relation.sentence-marker", in_relation_markers);
 
 $(document).on("click", ".concept", function (e) {
     
   let conceptElements = document.getElementsByClassName("concept");
 
-  let in_description = e.target.parentElement.classList.contains("youtube-in-description-marker");
+  let in_description = e.target.parentElement.classList.contains("sentence-marker-in-description");
   
-  // reset classes for the elements
-  for(let el of conceptElements) {
-    el.className = "concept";
-  }
+  // removes the fields for the elements
+  $(conceptElements).each( function(){
+    $(this).removeClass("selected-concept-text").removeClass("selected-synonym-text")
+  })
 
   var target = e.currentTarget;
   var selectedConcept = target.getAttribute("concept")
@@ -55,7 +55,7 @@ $(document).on("click", ".concept", function (e) {
     $("[concept~='" + syn.replaceAll(" ","_") + "']")
       .get()
       .forEach(function(element) { 
-        element.classList.add("selected-synonyms-text")
+        element.classList.add("selected-synonym-text")
       }) 
     })
 });
@@ -69,7 +69,7 @@ document.getElementById("transcript-in-description").addEventListener('mouseup',
   
   var start_container = selection.getRangeAt(0).commonAncestorContainer
   if(!start_container.classList || 
-      (!start_container.classList.contains("transcript-in-description") && !start_container.classList.contains("youtube-in-description-marker"))) {
+      (!start_container.classList.contains("transcript-in-description") && !start_container.classList.contains("sentence-marker-in-description"))) {
     selection.removeAllRanges()
     return
   }
@@ -81,7 +81,7 @@ document.getElementById("transcript-in-description").addEventListener('mouseup',
 
   selection.removeAllRanges()
 
-  if(!end_time) end_time = document.querySelector('p.youtube-in-description-marker:last-child').getAttribute("data-end");
+  if(!end_time) end_time = document.querySelector('p.sentence-marker-in-description:last-child').getAttribute("data-end");
 
   if (!start_time || !end_time) return
     
@@ -89,7 +89,7 @@ document.getElementById("transcript-in-description").addEventListener('mouseup',
   end_time = Math.trunc((parseFloat(end_time)+0.01)*100)/100
 
   // Highlight the selection with the found start and end times
-  highlightExplanationInTranscript(null, start_time, end_time, "#transcript-in-description", ".youtube-in-description-marker");
+  highlightExplanationInTranscript(start_time, end_time, "#transcript-in-description", ".sentence-marker-in-description");
 
   // Update the slider values
   $("#videoSlider").slider("values", [start_time, end_time]);
@@ -101,7 +101,8 @@ document.getElementById("transcript-in-description").addEventListener('mouseup',
 });
 
 function showRelationDiv(){
-
+  state="rel"
+  clearAnnotatorVisualElements()
   //$("html, body").animate({ scrollTop: 0 }, "slow");
   $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
 
@@ -109,6 +110,7 @@ function showRelationDiv(){
   document.getElementById("target").value = ""
 
   player.pause()
+  UpdateMarkers(player.currentTime())
 
   $('#canvas-wrap').dimBackground();
   $('#drawButton').dimBackground();
@@ -119,7 +121,7 @@ function showRelationDiv(){
   $('#transcript-in-relation').show();
   $('#relation').dimBackground();
   //$('#relationText').dimBackground();
-  state="rel"
+  
   
 
   //getLastRows()
@@ -127,8 +129,6 @@ function showRelationDiv(){
 
   targetSentID = null
   targetWordID = null
-
-
 }
 
 function closeRelationDiv(){
@@ -159,12 +159,13 @@ function addSubtitles(id){
   if (id == "transcript" || id=="transcript-in-relation") {
     for (let x in $captions) {
       transcriptDiv.innerHTML +=
-        '<p class="sentence-marker" data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
+        '<p class=" sentence-marker " data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
           '<b class="timestamp"> ' + secondsToHms($captions[x].start) + ": </b>" + $lemmatizedSubs[x].text + '</p>';
     }
 
     // Add event listener for click to prevent time change on concept click
     transcriptDiv.addEventListener('click', function (event) {
+      clearAnnotatorVisualElements();
       if (event.target.classList.contains("concept"))
         return;
 
@@ -176,7 +177,7 @@ function addSubtitles(id){
   } else if (id == "transcript-in-description") {
     for (let x in $captions){
       transcriptDiv.innerHTML +=
-          '<p class="youtube-in-description-marker" data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
+          '<p class=" sentence-marker-in-description " data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
             '<b class="timestamp"> ' + secondsToHms($captions[x].start) +": </b>" + $lemmatizedSubs[x].text + '</p>';
     }
   }
@@ -215,8 +216,10 @@ function MarkersInit(html_field, markers) {
 
 
 function UpdateMarkers(current_time) {
+  let controlsState = player.controls();
   player.controlBar.currentTimeDisplay.updateContent();
   player.controlBar.progressControl.seekBar.update({"percent":(player.currentTime() / player.duration()) * 100});
+  player.controls(controlsState)
   scrolled = false
   
   switch (state) {
@@ -235,14 +238,7 @@ function UpdateMarkers(current_time) {
 
     if (parseFloat(marker.time_start)-1 < current_time & current_time < parseFloat(marker.time_end)+1) {
       marker.dom.classList.add("current");
-      if (!scrolled){
-        marker.dom.parentNode.scrollTo({
-          top: marker.dom.offsetTop - marker.dom.parentNode.offsetTop,
-          behavior: 'smooth'
-        });
-        scrolled = true
-      }
-      
+
       // Cycle through child spans
       marker.dom.querySelectorAll('span').forEach(function(span) {
         span.classList.remove("word-current");
@@ -252,6 +248,18 @@ function UpdateMarkers(current_time) {
           span.classList.add("word-current");
         }
       });
+
+      if (!scrolled){
+        if(state != "home")
+          marker.dom.parentElement.scrollTo({ top: marker.dom.offsetTop - 40, behavior: "smooth" })
+        else
+          marker.dom.parentNode.scrollTo({
+            top: marker.dom.offsetTop - marker.dom.parentElement.offsetTop - 40,
+            behavior: 'smooth'
+          });
+        scrolled = true
+      }
+
     } else {
       if (marker.dom.classList.contains("current"))
         marker.dom.classList.remove("current");
@@ -265,7 +273,7 @@ function UpdateMarkers(current_time) {
 
 }
 
-function highlightExplanationInTranscript(descriptionIndx, start, end, parent_id, class_field) {
+function highlightExplanationInTranscript(start, end, parent_id, class_field) {
 
   // We are in the transcript in the annotator page 
   if (class_field == ".sentence-marker") {
@@ -274,15 +282,6 @@ function highlightExplanationInTranscript(descriptionIndx, start, end, parent_id
     definition_end = [hours, minutes, seconds] = end.split(':').map(Number);
     definition_end = hours * 3600 + minutes * 60 + seconds;
 
-    // user is stopping the active video
-    if ($(".play-definition.active").length > 0 && $(".play-definition")[descriptionIndx].classList.contains("active")) {
-        definition_start = -1
-        definition_end = -1
-        $(".play-definition.active").removeClass("active").blur()
-    } else {
-        $(".play-definition.active").removeClass("active").blur()
-        $(".play-definition")[descriptionIndx].classList.add("active")
-    }
   // otherwise we are in the transcript in description window and values are passed already as float seconds
   } else {
     definition_start = start
@@ -290,59 +289,50 @@ function highlightExplanationInTranscript(descriptionIndx, start, end, parent_id
   }
 
   let subtitleElements = $(parent_id+" "+class_field).get()//Array.from(document.querySelectorAll(class_field));
-  //console.log(subtitleElements)
-  let scrollToElem = null;
   
   // Iterate over each subtitle element to highlight the matching ones
   subtitleElements.forEach((element,index) => {
-    //element.classList.add('highlight');
     element.querySelectorAll('span').forEach(function(word) {
       word.classList.remove('highlighted');
       wordStart = parseFloat(word.getAttribute('start_time'));
       wordEnd = parseFloat(word.getAttribute('end_time')) 
-      if (wordStart >= definition_start & wordEnd <= definition_end) {
+      if (wordStart >= definition_start & wordEnd <= definition_end)
         word.classList.add('highlighted');
-        if (!scrollToElem) 
-          scrollToElem = subtitleElements[index > 0 ? index-1 : index];
-      }
     });
   });
-  if (scrollToElem) {
-    scrollToElem.parentNode.scrollTo({
-      top: scrollToElem.offsetTop - scrollToElem.parentNode.offsetTop,
-      behavior: 'smooth'
-    });
-    return true;
-  } else {
-    return false;
-  }
-
 }
 
-function playExplanation(descriptionIndx, start, end, parent_id, class_field) {
-  if (!highlightExplanationInTranscript(descriptionIndx, start, end, parent_id, class_field)){
-    player.controls(true);
+function playExplanation(button, start, end, parent_id, class_field) {
+  if ($(button).hasClass("active")){
+    $("highlighted").removeClass("highlighted");
+    $(button).removeClass("active");
+    player.currentTime(prevTime);
     player.pause();
+    player.controls(true);
     return
   }
+  $(".visual-effect.active").removeClass("active")
+  $(button).addClass("active");
   player.pause();
   player.controls(false);
-  let prevTime = player.currentTime();
+  prevTime = player.currentTime();
   player.currentTime(timeToSeconds(start));
 
-  player.off('timeupdate'); // Remove any previous timeupdate listeners
+  player.off("timeupdate")
   player.on('timeupdate', function() {
-    UpdateMarkers(player.currentTime())
-    if (player.currentTime() >= timeToSeconds(end) || player.currentTime() < timeToSeconds(start)) {
+    let currentTime = player.currentTime()
+    UpdateMarkers(currentTime)
+    if (currentTime >= timeToSeconds(end) || currentTime < timeToSeconds(start)) {
       player.pause();
       player.currentTime(prevTime);
-      player.controls(true);
-      player.off('timeupdate');
-      player.on("timeupdate", function(){ UpdateMarkers(player.currentTime()) });
-      $(".play-definition.active").removeClass("active").blur();
+      $(".play-definition.active").removeClass("active");
       $(".highlighted").removeClass("highlighted");
+      player.off("timeupdate")
+      player.on("timeupdate", function (){ UpdateMarkers(player.currentTime()) })
     }
   });
+  highlightExplanationInTranscript(start,end,parent_id,class_field)
+
   player.play();
 }
 

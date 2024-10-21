@@ -62,13 +62,13 @@
             </button>
 
             <button onclick="showDefinitionDiv(true)" 
-                    class="btn btn-primary btn-addrelation btn-dodgerblue"
+                    class="btn btn-primary btn-addrelation btn-dodgerblue visual-effect"
                     title="Add concepts' definitions present in the transcript">
               Add Definition
             </button>
 
             <button onclick="showRelationDiv()" 
-                    class="btn btn-primary btn-addrelation btn-dodgerblue"
+                    class="btn btn-primary btn-addrelation btn-dodgerblue visual-effect"
                     title="Annotate a relation between two concepts">
               Add Relation
             </button>
@@ -135,13 +135,13 @@
       <div id="relation" class="add-relation-box" style="display:none">
 
         <div class="relation-box-close-btn">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeRelationDiv();">
+          <button id="closeRelationButton" type="button" class="close visual-effect" data-dismiss="modal" aria-label="Close" onclick="closeRelationDiv();">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         
         <div style="display:flex">
-          <h2>Add Relation</h2>
+          <h2 id="newRelationTitle">Add Relation</h2>
           <div title="Fields target and prerequise can be filled also by clicking on concepts in the transcript">
             <!-- Info by C. V. Galli from <a href="https://thenounproject.com/browse/icons/term/info/" target="_blank" title="Info Icons">Noun Project</a> (CC BY 3.0) -->
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="15 15 75 75" style="cursor: help; width:25px; height:25px; margin-left: 5px;" xml:space="preserve">
@@ -207,7 +207,7 @@
           <input type="text" id="descriptionRangeInput" readonly style="border:0; color:dodgerblue; font-weight:bold;">
         </div>-->
 
-        <button id="insertRelationButton" onclick="addRelation();" class="btn btn-primary">Add Relation</button>
+        <button id="insertRelationButton" onclick="addRelation(null);" class="btn btn-primary">Add Relation</button>
       </div>
       
 
@@ -217,7 +217,7 @@
         <div id="add-concept-description" class="add-relation-box">
 
           <div class="relation-box-close-btn">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeDefinitionDiv();">
+            <button type="button" class="close visual-effect" data-dismiss="modal" aria-label="Close" onclick="closeDefinitionDiv();">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -359,6 +359,7 @@
                 <th class="relations-sortable-header" scope="col" onclick="sortRelations(this)" style="cursor:pointer">Prerequisite</th>
                 <th class="relations-sortable-header" scope="col" onclick="sortRelations(this)" style="cursor:pointer">Weight</th>
                 <th class="relations-sortable-header" scope="col" onclick="sortRelations(this)" style="cursor:pointer">Start time</th>
+                <th scope="col" style="text-align: center">Box</th>
                 <th scope="col" style="text-align: end">Delete</th>
               </tr>
             </thead>

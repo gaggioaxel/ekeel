@@ -9,7 +9,8 @@ function startVideoSlider(start_time, end_time){
     let end = end_time!=null ? end_time : player.currentTime()+10
     if (start < 0) start = 0
     if (end > videoDuration) end = videoDuration
-    highlightExplanationInTranscript(null, start, end, "#transcript-in-description", ".youtube-in-description-marker")
+    highlightExplanationInTranscript(start, end, "#transcript-in-description", ".sentence-marker-in-description")
+    UpdateMarkers(start)
     //console.log(start,end)
 
     // disable clicks on track
@@ -62,7 +63,7 @@ function startVideoSlider(start_time, end_time){
             player.pause()
             $("#playButton").removeClass("paused")
             clearInterval(interval_indicator)
-            highlightExplanationInTranscript(null, start, end, "#transcript-in-description", ".youtube-in-description-marker")
+            highlightExplanationInTranscript(start, end, "#transcript-in-description", ".sentence-marker-in-description")
 
           }
     });

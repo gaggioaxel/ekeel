@@ -57,7 +57,7 @@ function getSentenceIDandWordID(time, concept){
 
     if (after_subtitles.length > 0) {
         for(sub of after_subtitles) {
-            let this_concept_element = sub.find('.concept').filter(function() {
+            let this_concept_element = $(sub).find('.concept').filter(function() {
                 return $(this).attr('concept').includes(" "+concept+" ");
             });
             if(this_concept_element.length > 0)
@@ -81,96 +81,109 @@ function getSentenceIDandWordID(time, concept){
     }
 }
 
-function addRelation(){
+function addRelation(replaceIndx){
 
-  let prereq = document.getElementById("prerequisite").value.toLowerCase();
-  let weight = document.getElementById("weight").value;
-  weight = weight.charAt(0).toUpperCase() + weight.slice(1)
-  let target = document.getElementById("target").value.toLowerCase();
+    let prereq = document.getElementById("prerequisite").value.toLowerCase();
+    let weight = document.getElementById("weight").value;
+    weight = weight.charAt(0).toUpperCase() + weight.slice(1)
+    let target = document.getElementById("target").value.toLowerCase();
 
-  if ((prereq === "") || (target === "")) {
-    alert("Concepts must be non-empty!");
-    return false;
-  }else if (!$concepts.includes(prereq)) {
-    alert(prereq + " is not a concept");
-    return false;
-  }else if (!$concepts.includes(target)) {
-    alert(target + " is not a concept");
-    return false;
-  }else if (checkCycle(prereq, target)){
-    alert("Cannot insert the relation because it would create a cycle");
-    return false;
-  }else if (prereq == target){
-    alert("A concept can't be a prerequisite of itself");
-    return false;
-  }
+    if ((prereq === "") || (target === "")) {
+      alert("Concepts must be non-empty!");
+      return false;
+    }else if (!$concepts.includes(prereq)) {
+      alert(prereq + " is not a concept");
+      return false;
+    }else if (!$concepts.includes(target)) {
+      alert(target + " is not a concept");
+      return false;
+    }else if (checkCycle(prereq, target)){
+      alert("Cannot insert the relation because it would create a cycle");
+      return false;
+    }else if (prereq == target){
+      alert("A concept can't be a prerequisite of itself");
+      return false;
+    }
 
-  //sentence ID and word ID in Conll
-  let sentID;
-  let wordID;
-  let curr_time = player.currentTime();
+    //sentence ID and word ID in Conll
+    let sentID;
+    let wordID;
+    let curr_time = player.currentTime();
 
-  // if sentID and wordID are set by clicking on them, take them 
-  if(targetSentID != null){
-      sentID = targetSentID;
-      wordID = targetWordID;
-  // otherwise find them in the sentences after
-  }else{
-    let ids = getSentenceIDandWordID(curr_time, target);
-    sentID = ids.sentID;
-    wordID = ids.wordID;
-  }
+    // if sentID and wordID are set by clicking on them, take them 
+    if(targetSentID != null){
+        sentID = targetSentID;
+        wordID = targetWordID;
+    // otherwise find them in the sentences after
+    }else{
+      let ids = getSentenceIDandWordID(curr_time, target);
+      sentID = ids.sentID;
+      wordID = ids.wordID;
+    }
 
-  console.log(sentID)
+    console.log(sentID)
 
-  // if a box has been added take it based on percentage
-  let targetBox = document.getElementById("targetBox")
-  let xywh
+    // if a box has been added take it based on percentage
+    let targetBox = document.getElementById("targetBox")
+    let xywh
 
-  if(targetBox!= undefined){
-      let canvas = document.getElementById('canvas-wrap');
-      let totalWidth = canvas.offsetWidth
-      let totalHeight = canvas.offsetHeight
-      let x = targetBox.offsetLeft
-      let y = targetBox.offsetTop
-      let w = targetBox.offsetWidth
-      let h = targetBox.offsetHeight
+    if(targetBox!= undefined){
+        let canvas = document.getElementById('canvas-wrap');
+        let totalWidth = canvas.offsetWidth
+        let totalHeight = canvas.offsetHeight
+        let x = targetBox.offsetLeft
+        let y = targetBox.offsetTop
+        let w = targetBox.offsetWidth
+        let h = targetBox.offsetHeight
 
-      let percentX = (x*100/totalWidth).toFixed(0)
-      let percentY = (y*100/totalHeight).toFixed(0)
-      let percentW = (w*100/totalWidth).toFixed(0)
-      let percentH = (h*100/totalHeight).toFixed(0)
+        let percentX = (x*100/totalWidth).toFixed(0)
+        let percentY = (y*100/totalHeight).toFixed(0)
+        let percentW = (w*100/totalWidth).toFixed(0)
+        let percentH = (h*100/totalHeight).toFixed(0)
 
-      xywh = "xywh=percent:"+percentX+","+percentY+","+percentW+","+percentH
+        xywh = "xywh=percent:"+percentX+","+percentY+","+percentW+","+percentH
 
-      document.getElementById("targetBox").remove()
+        document.getElementById("targetBox").remove()
 
-  }else
-      xywh = "None"
+    }else
+        xywh = "None"
 
 
 
-   let relToInsert = {
-     "time": secondsToTime(curr_time),
-     "prerequisite": prereq,
-     "target": target,
-     "weight": weight,
-     "sent_id": sentID,
-     "word_id": wordID,
-     "xywh": xywh
-   }
-   relations.push(relToInsert)
+    let relToInsert = {
+        "time": secondsToTime(curr_time),
+        "prerequisite": prereq,
+        "target": target,
+        "weight": weight,
+        "sent_id": sentID,
+        "word_id": wordID,
+        "xywh": xywh
+    }
+    if (replaceIndx==null)
+        relations.push(relToInsert)
+    else
+        relations[replaceIndx] = relToInsert
+    printRelations();
+    closeRelationDiv();
 
-   printRelations();
-   closeRelationDiv();
-
-  targetSentID = null
-  targetWordID = null
-  uploadManuGraphOnDB()
+    targetSentID = null
+    targetWordID = null
+    uploadManuGraphOnDB()
 }
 
 function deleteRelation(button, target, prereq, weight, time) {
 
+    if(!$(button).hasClass("active")) {
+        $(".icon-button.trash.active").removeClass("active")
+        $(button).addClass("active");
+        setTimeout(function() {
+            $(button).removeClass("active").blur();
+        }, 3000);
+        return
+    }
+
+    $(".icon-button.trash.active").removeClass("active")
+    
     /* remove row with fade out*/
     let row = $(button).closest('tr')
     $(row)
@@ -191,7 +204,7 @@ function deleteRelation(button, target, prereq, weight, time) {
         if(relations[i].target == target &&
            relations[i].prerequisite == prereq &&
            relations[i].weight == weight &&
-           relations[i].time.split(":").filter(elem => elem != "00").join(": ") == time){
+           relations[i].time.split(":").filter(elem => elem != "00").join(":") == time){
             relations.splice(i,1)
             check = true;
             break
@@ -225,37 +238,29 @@ function pushDefinition(concept, start, end, startSentID, endSentID, description
     //console.log(definitions)
 }
 
-function revertChanges(mainDiv){
-    
-    closeDefinitionDiv()
-
-    mainDiv.find("h2").text("Add Definition");
-    
-    mainDiv.find("#concept-definition-hint").show();
-
-    mainDiv.find("#conceptDefined")
-            .val("")
-            .prop("readonly", false)
-            .css("opacity","1")
-            .css("border","")
-    
-    mainDiv.find("#descriptionRangeInput").css("color","dodgerblue");
-    
-    mainDiv.find("#descriptionType").val("").change();
-
-    mainDiv.find("#saveDefinitionButton")
-            .prop("onclick","addDefinition();")
-            .off("click")
-            .on("click", addDefinition )
-            .text("Add Definition")
-    
-    mainDiv.find(".relation-box-close-btn .close")
-        .off("click")
-        .attr("onclick", "closeDefinitionDiv();")
-        .on("click", closeDefinitionDiv)
-}
-
 function editConceptAnnotation(button, concept, start_time, end_time, description_type){
+    function revertChanges(mainDiv){
+    
+        closeDefinitionDiv()
+    
+        mainDiv.find("h2").text("Add Definition");
+        
+        mainDiv.find("#concept-definition-hint").show();
+    
+        mainDiv.find("#conceptDefined")
+                .prop("readonly", false)
+        
+        mainDiv.find("#descriptionRangeInput").css("color","dodgerblue");
+        
+        mainDiv.find("#descriptionType").val("").change();
+        
+        mainDiv.find(".clone").remove()
+
+        mainDiv.find(".relation-box-close-btn .close").show()
+        mainDiv.find("#saveDefinitionButton").show()
+
+    }
+
     const mainDiv = $("#add-concept-description")
 
     mainDiv.find("h2").text("Edit Definition");
@@ -265,43 +270,62 @@ function editConceptAnnotation(button, concept, start_time, end_time, descriptio
     mainDiv.find("#conceptDefined")
             .val(concept)
             .prop("readonly", true)
-            .css("opacity","0.7")
-            .css("border","0")
             .change();
     
     startVideoSlider(timeToSeconds(start_time), timeToSeconds(end_time))
 
     mainDiv.find("#descriptionType").val(description_type).change();
 
+    let closeButtonClone = mainDiv.find(".relation-box-close-btn .close")
+                              .clone(false)
+                              .addClass("clone")
+                              .removeAttr("onclick")
+                              .on("click", function(){ revertChanges(mainDiv) })
+
     mainDiv.find(".relation-box-close-btn .close")
-            .off("click")
-            .attr("onclick",null)
-            .on("click", function() { revertChanges(mainDiv) })
+            .hide()
+            .parent()
+            .append(closeButtonClone)
+    
+    let saveChangesButton = mainDiv.find("#saveDefinitionButton")
+                                    .clone(false)
+                                    .addClass("clone")
+                                    .text("Save Changes")
+                                    .on("click", function(){
+                                        let res = readDefinitionFromDocument()
+                                        definitions.forEach(element => {
+                                            if(element.concept == concept && element.start == start_time && element.end == end_time){
+                                                element.start = secondsToTime(res.start);
+                                                element.end = secondsToTime(res.end);
+                                                element.start_sent_id = res.startSentID;
+                                                element.end_sent_id = res.endSentID;
+                                                element.description_type = res.descriptionType;
+                                            }
+                                        });
+                                        uploadManuGraphOnDB();
+                                        printDefinitions();
+                                        closeDefinitionDiv();
+                                    });
     
     mainDiv.find("#saveDefinitionButton")
-            .attr("onclick",null)
-            .off("click")
-            .text("Save Changes")
-            .on("click", function(){
-                let res = readDefinitionFromDocument()
-                definitions.forEach(element => {
-                    if(element.concept == concept && element.start == start_time && element.end == end_time){
-                        element.start = secondsToTime(res.start);
-                        element.end = secondsToTime(res.end);
-                        element.start_sent_id = res.startSentID;
-                        element.end_sent_id = res.endSentID;
-                        element.description_type = res.descriptionType;
-                    }
-                });
-                uploadManuGraphOnDB();
-                printDefinitions();
-                closeDefinitionDiv();
-            });
+            .hide()
+            .parent()
+            .append(saveChangesButton)
 
     showDefinitionDiv(false)
 }
 
 function deleteDefinition(button, concept, start, end){
+
+    if(!$(button).hasClass("active")) {
+        $(".icon-button.trash.active").removeClass("active")
+        $(button).addClass("active");
+        setTimeout(function() {
+            $(button).removeClass("active").blur();
+        }, 1500);
+        return
+    }
+    $(".icon-button.trash.active").removeClass("active")
 
     let toDelete
 
@@ -411,18 +435,32 @@ function printRelations() {
         let t = relations[i].target;
         let w = relations[i].weight;
         let ti = relations[i].time;
+        let bb = relations[i].xywh != "None";
 
         let selectHTML = `<select onchange="changeWeight(this, '${t}', '${p}', '${ti}')">
                             <option value="Strong" ${w === 'Strong' ? 'selected' : ''}>Strong</option>
                             <option value="Weak" ${w === 'Weak' ? 'selected' : ''}>Weak</option>
                           </select>`;
         
-        let relToVisualize = `<tr><td>${t}</td><td>${p}</td><td>${selectHTML}</td><td>${ti.split(":").filter(elem => elem != "00").join(":")}</td>` +
+        let relToVisualize = `<tr index="${i}" ><td>${t}</td><td>${p}</td><td>${selectHTML}</td>` +
+            `<td>${ti.split(":").filter(elem => elem != "00").join(":")}</td>` +
+            `<td>` +
+                `<div style="display:flex;">` +
+                (bb ? 
+                    `<button style="margin:auto" class="icon-button expand visual-effect" onclick="toggleBoundingBox(this)" title="show this bounding box">` +
+                        `<i class="fa-solid fa-expand" aria-hidden="true"></i>` +
+                    `</button>` +
+                    `<button class="btn btn-primary" onclick="afterEditBoundingBox(this)" title="edit this bounding box">Edit</button>`
+                : 
+                    `<button class="btn btn-primary visual-effect" onclick="afterAddBoundingBox(this)" title="create a bounding box for this concept">Add</button>`
+                ) +
+                `</div>` +
+            `</td>`+
             `<td><button `+
                 `class="icon-button trash" ` +
                 `style="font-size:20" `+ 
                 `onclick="deleteRelation(this,'${t}','${p}','${w}','${ti.split(":").filter(elem => elem != "00").join(":")}')"`+
-                `title="Delete relation between the two concepts">` +
+                `title="double click to delete relation between the two concepts">` +
             `<i class="fa-solid fa-trash"></i></button></td></tr>`;
 
         relationTable.innerHTML += relToVisualize;
@@ -461,19 +499,19 @@ function printDefinitions(){
         let t = definitions[i].description_type
 
         let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s.split(":").filter(elem => elem != "00").join(":") + "</td><td>"+ e.split(":").filter(elem => elem != "00").join(":") +"</td><td>"+ t +"</td>"+
-            "<td><button class=\"icon-button play-definition\" " +
-                "onclick=\"playExplanation('"+i+"','"+s+"','"+e+"','#transcript','.sentence-marker')\" " +
+            "<td><button index='"+i+"' class=\"icon-button play-definition visual-effect\" " +
+                "onclick=\"playExplanation(this,'"+s+"','"+e+"','#transcript','.sentence-marker')\" " +
                 "title=\"play this annotation\">" +
             "<i class=\"fa-solid fa-circle-play\" aria-hidden=\"true\"></i></button></td>" +
 
-            "<td><button class=\"btn btn-primary btn-addrelation btn-dodgerblue\" " +
+            "<td><button class=\"btn btn-primary btn-addrelation btn-dodgerblue visual-effect\" " +
                 "onclick=\"editConceptAnnotation(this,'"+c+"','"+s+"','"+e+"','"+t+"')\" " +
                 "title=\"Edit this annotation\">Edit" +
             "</button></td>" +
             
             "<td><button class=\"icon-button trash\" " +
                 "onclick=\"deleteDefinition(this,'"+c+"','"+s+"','"+e+"')\"" +
-                "title=\"Delete concept description\">" +
+                "title=\"double click to delete concept description\">" +
             "<i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></button></td></tr>"
 
         definitionTable.innerHTML += relToVisualize

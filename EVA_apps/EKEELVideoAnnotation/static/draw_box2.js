@@ -1,10 +1,5 @@
-
-
 function deleteBox(conceptType){
-    if(document.getElementById(conceptType+"Box") != null){
-        let box = document.getElementById(conceptType+"Box");
-        box.parentNode.removeChild(box);
-    }
+    $("#"+conceptType+"Box").remove()
     $("#drawButton").text("Add Box").prop("disabled",false).css("cursor","pointer");
     $("#clearDrawButton").fadeOut("fast");
     $("#insertRelationButton").prop("disabled",false).css("cursor","pointer");
@@ -56,17 +51,20 @@ function initDraw(conceptType) {
 
     };
 
-
-    var element = null;
+    if( typeof(box) == "undefined" )
+        box = null
+    else if( box != null )
+        box.remove()
+    
 
     canvas.onmousemove = function (e) {
         setMousePosition(e);
 
-        if (element !== null) {
-            element.style.width = Math.abs(mouse.x - mouse.startX) + 'px';
-            element.style.height = Math.abs(mouse.y - mouse.startY) + 'px';
-            element.style.left = (mouse.x - mouse.startX < 0) ? mouse.x + 'px' : mouse.startX + 'px';
-            element.style.top = (mouse.y - mouse.startY < 0) ? mouse.y + 'px' : mouse.startY + 'px';
+        if (box !== null) {
+            box.style.width = Math.abs(mouse.x - mouse.startX) + 'px';
+            box.style.height = Math.abs(mouse.y - mouse.startY) + 'px';
+            box.style.left = (mouse.x - mouse.startX < 0) ? mouse.x + 'px' : mouse.startX + 'px';
+            box.style.top = (mouse.y - mouse.startY < 0) ? mouse.y + 'px' : mouse.startY + 'px';
         }
     }
 
@@ -76,13 +74,13 @@ function initDraw(conceptType) {
 
     canvas.onclick = function (e) {
 
-        if (element !== null) {
+        if (box !== null) {
             //end position = mouse.x, mouse.y
 
-            element = null;
+            box = null;
             canvas.style.cursor = "default";
             canvas.remove()
-            $("#drawButton").text("Edit Box").prop("disabled",false).css("cursor","pointer");
+            $("#drawButton").text("Redo Box").prop("disabled",false).css("cursor","pointer");
             $("#clearDrawButton").fadeIn("fast");
             $("#insertRelationButton").prop("disabled",false).css("cursor","pointer");
 
@@ -90,12 +88,12 @@ function initDraw(conceptType) {
             //start position
             mouse.startX = mouse.x;
             mouse.startY = mouse.y;
-            element = document.createElement('div');
-            element.className = classBox
-            element.id = conceptType+"Box"
-            element.style.left = mouse.x + 'px';
-            element.style.top = mouse.y + 'px';
-            parentDiv.appendChild(element)
+            box = document.createElement('div');
+            box.className = classBox
+            box.id = conceptType+"Box"
+            box.style.left = mouse.x + 'px';
+            box.style.top = mouse.y + 'px';
+            parentDiv.appendChild(box)
             canvas.style.cursor = "crosshair";
             $("#helpAddBox").hide();
         }
@@ -103,10 +101,7 @@ function initDraw(conceptType) {
 }
 
 function removeCanvas(){
-    if(document.getElementById("canvasBox") != null){
-      let box = document.getElementById("canvasBox");
-      box.parentNode.removeChild(box);
-    } 
+    $("#canvasBox").remove()
     deleteBox()
 }
 
@@ -348,4 +343,152 @@ function showDrawTutorial(){
     };
 
     movePointer(circle)
+}
+
+function clearAnnotatorVisualElements(){
+    $("#canvasBox").remove()
+    if(typeof(box) != "undefined" && box!=null) {
+        box.remove()
+    }
+    $(".visual-effect.active").removeClass("active");
+    player.controls(true);
+}
+
+function toggleBoundingBox(element){
+    let index = parseInt($(element).parents("tr:first").attr("index"))
+    let activeElement = $(".icon-button.expand.active");
+    clearAnnotatorVisualElements();
+    if (activeElement.length != 0){
+        // same element => user is deselecting 
+        if (parseInt($(activeElement).parents("tr:first").attr("index")) == index){
+            player.currentTime(prevTime);
+            player.controls(true);
+            $(element).removeClass("active");
+            return
+        }
+    }
+
+    $(element).addClass("active")
+    let parentDiv = document.getElementById('canvas-wrap');
+    let canvas = document.createElement("canvas");
+    canvas.id = "canvasBox";
+    canvas.style.display = "none";
+
+    // Append the canvas to the parent and move the video inside the canvas
+    parentDiv.prepend(canvas);
+
+    // Set the canvas dimensions to match the video's size
+    let videoActive = document.getElementById('video-active');
+    canvas.style.top = videoActive.offsetTop + 'px';
+    canvas.style.left = videoActive.offsetLeft + 'px';
+    canvas.style.width = videoActive.offsetWidth + 'px';
+    canvas.style.height = videoActive.offsetHeight + 'px';
+
+    let canvasRect = {
+        x: videoActive.offsetLeft,
+        y: videoActive.offsetTop,
+        w: videoActive.offsetWidth,
+        h: videoActive.offsetHeight
+    };
+
+    let xywhPercent = relations[index].xywh.split(":")[1].split(',').map(Number).map(a => a/100);
+    let relation = $(element).parents("tr:first").find("td").get();
+    //let concept = relation[0].innerText
+    //let prerequisite = relation[1].innerText
+    let start_time = timeToSeconds(relation[3].innerText);
+    prevTime = player.currentTime();
+    player.play();
+    player.pause();
+    player.currentTime(start_time);
+    player.controls(false);
+
+    box = document.createElement('div');
+    box.className = "rectangleTarget";
+    box.style.display = "none";
+    box.style.left = Math.floor(canvasRect.x + canvasRect.w*xywhPercent[0]) + 'px';
+    box.style.top = Math.floor(canvasRect.y + canvasRect.h*xywhPercent[1]) + 'px';
+    box.style.width = Math.floor(canvasRect.w*xywhPercent[2]) + 'px';
+    box.style.height = Math.floor(canvasRect.h*xywhPercent[3]) + 'px';
+    parentDiv.appendChild(box)
+
+    $(canvas).fadeIn("slow")
+    $(box).fadeIn("slow")
+
+    // Animate the outline using the Web Animations API
+    box.animate([
+        { outline: '1px solid #FF0000' }, // Start state
+        { outline: '5px solid #FF0000' },  // End state
+        { outline: '3px solid #FF0000' }
+    ], {
+        duration: 700,  // Animation duration in milliseconds
+        iterations: Infinity, // Repeat the animation indefinitely
+        direction: 'alternate' // Alternate between the states
+    });
+
+    window.scrollTo({
+        top: canvas.offsetTop-50,
+        behavior: 'smooth'
+      });
+}
+
+function afterAddBoundingBox(element){
+
+    // removes the eventual visual elements
+    let index = parseInt($(element).parents("tr:first").attr("index"))
+    let relation = $(element).parents("tr:first").find("td").get();
+
+    showRelationDiv();
+    $("#newRelationTitle").text("Edit Relation").get()[0].parentElement.children[1].style.display ="none";
+
+    $("#prerequisite").prop("value", relation[1].innerText).prop("readonly",true);
+    $("#target").prop("value", relation[0].innerText).prop("readonly",true);
+
+    function revertChanges(){
+        $("#newRelationTitle").text("Add Relation") // change back title text
+                              .get()[0].parentElement.children[1].style.display ="block"; //show again the hint
+        $("#prerequisite").prop("readonly",false);
+        $("#target").prop("readonly",false);
+        $("button.clone").remove()
+        $("#insertRelationButton").show()
+        $("#closeRelationButton").show()
+        clearAnnotatorVisualElements();
+    }
+
+    let clonedAddRelationButton = $("#insertRelationButton").clone(false)
+                                        .addClass("clone")
+                                        .removeAttr("onclick") // Clone without events
+                                        .text("Save Changes")
+                                        .on("click", function(){
+                                            addRelation(index);
+                                            revertChanges();
+                                        }); 
+    $("#insertRelationButton").hide()
+                             .parent()
+                             .append(clonedAddRelationButton);
+
+    let clonedCloseButton = $("#closeRelationButton").clone(false)
+                                                     .addClass("clone")
+                                                     .removeAttr("onclick")
+                                                     .on("click", function() {
+                                                        closeRelationDiv();
+                                                        revertChanges();
+                                                    })
+    $("#closeRelationButton").hide()
+                             .parent()
+                             .append(clonedCloseButton);
+
+}
+
+function afterEditBoundingBox(element){
+    afterAddBoundingBox(element);
+    let helpButton = $("#helpAddBox")
+    let prevStateHelpButton = helpButton.css("display")
+    helpButton.hide()
+    $("button.clone").on("click", function(){
+        if (prevStateHelpButton == "block")
+            helpButton.show()
+    })
+    $("#drawButton").text("Redo Box").prop("disabled",false).css("cursor","pointer");
+    $("#clearDrawButton").show();
+    toggleBoundingBox(element.parentElement.children[0])
 }

@@ -136,7 +136,7 @@ $(document).on("click", ".concept-row", function (e) {
     else {
       for (let syn of syns) 
         if (concepts.includes(" " + syn.replaceAll(" ","_") + " "))
-          this.classList.add("selected-synonyms-text") 
+          this.classList.add("selected-synonym-text") 
     }
   });
 
@@ -157,7 +157,7 @@ $(document).on("click", ".concept-row", function (e) {
       obj.push(occurrence)
   }
 
-  let occurrences_syn = $("#transcript .selected-synonyms-text");
+  let occurrences_syn = $("#transcript .selected-synonym-text");
   obj = [];
   syns = syns.map(syn => syn.replaceAll(" ","_"));
 
@@ -487,7 +487,7 @@ function deleteConcept(button,concept) {
   let elementsToRemove = $("[concept~=" + underlinedConcept + "]");
   elementsToRemove.removeClass("selected-concept-text");
   for(let wtd of synonymsToDel) {
-    $("[concept~=" + wtd.replaceAll(" ", "_") + "]").removeClass("selected-synonyms-text");
+    $("[concept~=" + wtd.replaceAll(" ", "_") + "]").removeClass("selected-synonym-text");
   }
   elementsToRemove.each((_, element) => { 
       element.setAttribute("concept", element.getAttribute("concept").replace(underlinedConcept,""));

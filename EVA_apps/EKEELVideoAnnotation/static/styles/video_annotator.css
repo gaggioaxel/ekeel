@@ -177,7 +177,7 @@
 }
 
 .rectangleTarget {
-    border: 2px solid #FF0000;
+    outline: 2px solid #FF0000;
     position: absolute !important;
 }
 
@@ -199,7 +199,7 @@
 
 }
 
-.concept{
+.concept {
     background-color: rgba(255, 255, 0, 0.76);
 }
 

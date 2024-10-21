@@ -63,9 +63,13 @@ h1 {
     background-color: dodgerblue;
 }
 
-.btn.delete{
+.btn.delete {
   background-color: crimson;
   border: none;
+}
+
+.btn.delete:hover {
+  background-color: hsl(348, 83%, 42%);
 }
 
 .btn-container, .status-container {
@@ -99,7 +103,7 @@ h1 {
   left: 40%;
 }
 
-.btn-expanding.delete{
+.btn-expanding.delete {
   background-color: crimson;
   position: relative;
   top: 5px;
@@ -174,6 +178,18 @@ input[type=text] {
   /*background-color: #f1f1f1;*/
   width: 100%;
 }
+
+input[type=text][readonly]:not(#descriptionRangeInput) {
+  opacity: 0.7;
+  border: 0;
+  cursor: not-allowed;
+}
+
+input[type=text]:not([readonly]):not(#descriptionRangeInput) {
+  opacity: 1;
+  border: 1px solid #ced4da;
+}
+
 input[type=submit] {
   background-color: DodgerBlue;
   color: #fff;
@@ -235,6 +251,7 @@ input[type=submit] {
   font-size: 1.4em; /* Set a font size */
   cursor: pointer; /* Mouse pointer on hover */
   float: right;
+  transition: color 0.6s ease;
 }
 
 .icon-button.play-definition {
@@ -248,6 +265,10 @@ input[type=submit] {
 }
 
 .icon-button.trash:hover {
+  color: hsl(348, 83%, 40%);
+}
+
+.icon-button.trash.active {
   color: crimson;
 }
 
@@ -574,7 +595,7 @@ td .btn {
   background-color: #1c7ade63;
 }
 
-.concept.selected-synonyms-text{
+.concept.selected-synonym-text{
   background-color: #1cb7de63;
 }
 

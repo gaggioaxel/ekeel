@@ -1,5 +1,5 @@
 function showDefinitionDiv(reset_fields){
-
+    clearAnnotatorVisualElements()
     $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
 
     $('#canvas-wrap').dimBackground();
@@ -48,7 +48,7 @@ function closeDefinitionDiv(){
     // Add event listener for Escape key
     document.removeEventListener('keydown', handleKeys);
     state = "home"
-    highlightExplanationInTranscript(null, -1, -1, "#transcript-in-description", ".youtube-in-description-marker")
+    highlightExplanationInTranscript(-1, -1, "#transcript-in-description", ".sentence-marker-in-description")
 
 
 }
@@ -106,10 +106,13 @@ function addDefinition(){
     
     //console.log(concept, start, end, startSentID,endSentID)
     pushDefinition(concept, res.start, res.end, res.startSentID, res.endSentID, res.descriptionType);
-    $(".descriptions-sortable-header").filter(function() {
-        $(this).text().includes("↑")
+    $(".descriptions-sortable-header.ascending, .descriptions-sortable-header.descending").each(function (){
+        if(this.classList.contains("ascending"))
+            this.classList.replace("ascending","descending");
+        else
+            this.classList.replace("descending","ascending");
+        sortDescriptions(this);
     });
-    //printDefinitions();
     closeDefinitionDiv();
     
 }

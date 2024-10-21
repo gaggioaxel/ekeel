@@ -35,7 +35,7 @@ function sleep(ms) {
 //  document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText || "--";
 //
 //  $("[concept~='" + " " + selectedConcept + " " + "']").get().forEach(function(element) { element.classList.add("selected-concept-text") });
-//  syns.forEach(function(syn) { $("[concept~='" + " " + syn.replaceAll(" ","_") + " " + "']").get().forEach(function(element) { element.classList.add("selected-synonyms-text")}) })
+//  syns.forEach(function(syn) { $("[concept~='" + " " + syn.replaceAll(" ","_") + " " + "']").get().forEach(function(element) { element.classList.add("selected-synonym-text")}) })
 //});
 
 $(document).on("click", ".concept-row", function (e) {
@@ -60,6 +60,7 @@ $(document).on("click", ".concept-row", function (e) {
 
   document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText;
   
+
   conceptElements.each(function() { 
     let concepts = this.getAttribute("concept")
     if (concepts.includes(" " + selectedConcept + " "))
@@ -67,7 +68,7 @@ $(document).on("click", ".concept-row", function (e) {
     else {
       for (let syn of syns) 
         if (concepts.includes(" " + syn.replaceAll(" ","_")+" "))
-          this.classList.add("selected-synonyms-text") 
+          this.classList.add("selected-synonym-text") 
     }
   });
 
@@ -88,7 +89,7 @@ $(document).on("click", ".concept-row", function (e) {
       obj.push(occurrence)
   }
 
-  let occurrences_syn = $("#transcript .selected-synonyms-text");
+  let occurrences_syn = $("#transcript .selected-synonym-text");
   obj = [];
   syns = syns.map(syn => syn.replaceAll(" ","_"));
 
@@ -118,11 +119,11 @@ $(document).on("click", ".concept-row", function (e) {
   // Scroll the second nearest element into view
   let scrollToElem = occurrences[(focusIndex+1) % occurrences.length][0]
   
-  scrollToElem.parentNode.scrollTo({
-    top: scrollToElem.offsetTop - scrollToElem.parentNode.offsetTop,
-    behavior: 'smooth'
-  });
-
+  scrollToElem.scrollIntoView({ behavior:"smooth", block:"start" })
+  //scrollToElem.parentNode.scrollTo({
+  //  top: scrollToElem.offsetTop - scrollToElem.parentNode.offsetTop,
+  //  behavior: 'smooth'
+  //});
 });
 
 
@@ -156,7 +157,7 @@ async function showMsg(id, color) {
 function highlightConcept(concept, div_id) {
 
   let words = concept.split(" ")
-  let foundAny = false; 
+  let foundAny = false;
 
   if(words.length == 1) {
       $("#"+div_id+" [lemma='" + words[0]+ "']").each((_,conceptElem) => {
@@ -234,7 +235,7 @@ function addSubtitles(){
   for (let x in $captions){
 
     transcriptDiv.innerHTML +=
-        '<p class="sentence-marker" data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
+        '<p class="sentence-marker" style="cursor:default;" data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
         $lemmatizedSubs[x].text + '</p>';
   }
 
@@ -339,7 +340,7 @@ function deleteConcept(button,concept) {
   let elementsToRemove = $("[concept~=" + underlinedConcept + "]");
   elementsToRemove.removeClass("selected-concept-text");
   for(let wtd of synonymsToDel) {
-    $("[concept~=" + wtd.replaceAll(" ", "_") + "]").removeClass("selected-synonyms-text");
+    $("[concept~=" + wtd.replaceAll(" ", "_") + "]").removeClass("selected-synonym-text");
   }
   elementsToRemove.each((_, element) => { 
       element.setAttribute("concept", element.getAttribute("concept").replace(underlinedConcept,""));
@@ -731,7 +732,6 @@ function hmsToSeconds(time){
 }
 
 function playDefinition(start){
-    console.log(start)
     player.currentTime(start);
     player.play()
 }
