@@ -511,6 +511,8 @@
       let $conceptVocabulary = {{ conceptVocabulary|tojson }};
       let $synonymList = [];
       let $lemmatizedSubs = {{ lemmatized_subtitles|tojson }};
+      let $allLemmas = [];
+
       let $allWordsLemmas = {};
 
       // Regular expression to match <span> tags and extract lemma and word
@@ -529,6 +531,8 @@
           // Split by space and take the first word (if needed)
           let word = match[2].split(" ")[0].toLowerCase();
           let lemma = match[1];
+          if (!$allLemmas.includes(lemma))
+            $allLemmas.push(lemma)
 
           // Add the word -> lemma pair to the map
           $allWordsLemmas[word] = lemma;
@@ -539,7 +543,6 @@
       let $isTempTranscript = {{ is_temp_transcript|tojson }};
       let $video_id = {{ video_id|tojson }};
       let $annotator = {{ annotator|tojson }};
-      let $allLemmas = {{ all_lemmas|tojson }};
       let $language = {{ language|tojson }}
       let videoDuration = {{ video_duration|tojson }};
 

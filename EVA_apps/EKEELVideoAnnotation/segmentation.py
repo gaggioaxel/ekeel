@@ -362,7 +362,7 @@ class VideoAnalyzer:
         #                                         .replace("Dr.","Dr").replace("dr.","dr") \
         #                                         .replace("Mr.","Mr").replace("mr.","mr")
         #print("Checking punctuation...")
-        semantic_transcript = SemanticText(automatic_transcript_to_str(self.data["transcript_data"]["text"]),language)
+        semantic_transcript = SemanticText(transcript_to_string(self.data["transcript_data"]["text"]),language)
 
         #video = db_mongo.get_video(video_id)
         
@@ -741,80 +741,81 @@ class VideoAnalyzer:
             raise Exception(f"Language is not between supported ones: {locale.get_supported_languages()}")
         return self.data['language'] if format =='pt1' else locale.get_full_from_pt1(self.data['language'])
 
-    def  analyze_transcript(self, async_call=False):
+    def analyze_transcript(self, async_call=False):
 
         #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
         if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
             return
         
-        transcript_dict = self.data["transcript_data"]["text"].copy()
+        timed_transcript = self.data["transcript_data"]["text"].copy()
         if self.identify_language() == "it":
-            transcript_dict = apply_italian_fixes(transcript_dict)
-        transcript = automatic_transcript_to_str(transcript_dict).lower()
+            timed_transcript = apply_italian_fixes(timed_transcript)
+        string_transcript = transcript_to_string(timed_transcript)
         language = self.identify_language()
         api_obj = ItaliaNLAPI()
-        doc_id = api_obj.upload_document(transcript, language = language, async_call=async_call)
+        doc_id = api_obj.upload_document(string_transcript, language=language, async_call=async_call)
         
         tagged_sentences = api_obj.wait_for_pos_tagging(doc_id)
-        all_lemmas:set = set()
-        for sentence in tagged_sentences:
-            sentence['words'] = [{"word": word["word"], "lemma": word["lemma"]} for word in sentence["words"]]
-            for word in sentence["words"]:
-                all_lemmas.add(word["lemma"])
-        all_lemmas = {lemma: i for i, lemma in enumerate(sorted(all_lemmas))}
-        for sentence in tagged_sentences:
-            for word in sentence["words"]:
-                word["lemma_indx"] = all_lemmas[word["lemma"]]
-                word.pop("lemma",None)
-        words_and_lemmas = []
-        for sentence in tagged_sentences:
-            for word in sentence["words"]:
-                words_and_lemmas.append((word["word"], word["lemma_indx"]))
         
-        #import json
-        #with open("tagged_sentences.json","w") as f:
-        #    json.dump(tagged_sentences,f,indent=4)
-        #
-        #with open("transcript.json","w") as f:
-        #    json.dump(self.data["transcript_data"]["text"],f,indent=4)
-        
-        in_words_and_lemmas_indx = 0
-        for sent_id, sentence in enumerate(transcript_dict):
-            sentence["text"] = sentence["text"].replace(" % ", "%") \
-                                               .replace(", ",",") \
-                                               .replace(" ° ", "°")
+        tagged_transcript = {"full_text":"", "words":[]}
+        start_word_indx = 0
+        for sentence in tagged_sentences:
+            tagged_transcript["full_text"] += sentence["sentence"]+" "
+            for word in sentence["words"]:
+                if word["pos"] in ["FC","FF","FS"]:
+                    start_word_indx -= 1
+                word = {"word":     word["word"], 
+                        "lemma":    word["lemma"], 
+                        "pos":      word["pos"], 
+                        "gen":      word["gen"], 
+                        "cpos":     word["cpos"],
+                        "num":      word["num"],
+                        "indx_first_letter":start_word_indx}
+                if word["cpos"] == "V" and word["word"].endswith("-"):
+                    word["word"] = word["word"][:-1]
+                    start_word_indx -= 1
+                start_word_indx += len(word["word"]) + 1
+                if (word["pos"] in ["EA","E"] or word["cpos"] == "R") and word["word"].endswith("'"):
+                    start_word_indx -= 1
+                tagged_transcript["words"].append(word)
+            assert tagged_transcript["full_text"][tagged_transcript["words"][-1]["indx_first_letter"]] == tagged_transcript["full_text"][-2]
+
+        word_counter = 0
+        tagged_transcript_words = tagged_transcript["words"]
+        is_first_part_of_word = True
+        for sentence in timed_transcript:
             for word_indx, word in enumerate(sentence["words"]):
+                if word["word"] == tagged_transcript_words[word_counter]["word"]:
+                    transcript_word = tagged_transcript_words[word_counter]
+                    word["gen"] = transcript_word["gen"] if transcript_word["gen"] is not None else ""
+                    word["lemma"] = transcript_word["lemma"]
+                    word["pos"] = transcript_word["pos"]
+                    word["cpos"] = transcript_word["cpos"]
+                    word["num"] = transcript_word["num"] if transcript_word["num"] is not None else ""
                 
-                multi_token_word = False
-                word_text = word["word"].lower()
-                
-                # Match between word in transcript and in all words
-                if word_text == words_and_lemmas[in_words_and_lemmas_indx][0]:
-                    word["lemma_indx"] = words_and_lemmas[in_words_and_lemmas_indx][1]
-                    
-                # Case "esserci" split into "esser-" and "ci"
-                elif words_and_lemmas[in_words_and_lemmas_indx][0][-1] == "-":
-                    word["word"] = words_and_lemmas[in_words_and_lemmas_indx][0]
-                    word["lemma_indx"] = words_and_lemmas[in_words_and_lemmas_indx][1]
-                    multi_token_word = True
-                
-                in_words_and_lemmas_indx += 1
-                
-                if multi_token_word:
-                    punct_word = word.copy()
-                    punct_word["word"] = words_and_lemmas[in_words_and_lemmas_indx][0]
-                    sentence["words"].insert(word_indx+1, punct_word)
+                elif tagged_transcript_words[word_counter]["word"] in word["word"]:
+                    if is_first_part_of_word:
+                        new_word = word.copy()
+                    transcript_word = tagged_transcript_words[word_counter]
+                    word["gen"] = transcript_word["gen"] if transcript_word["gen"] is not None else ""
+                    word["lemma"] = transcript_word["lemma"]
+                    word["pos"] = transcript_word["pos"]
+                    word["cpos"] = transcript_word["cpos"]
+                    word["num"] = transcript_word["num"] if transcript_word["num"] is not None else ""
+                    if is_first_part_of_word:
+                        word["end"] = 0.8*(word["end"]-word["start"]) + word["start"]
+                    else:
+                        word["start"] = sentence["words"][word_indx-1]["end"]
+                    if is_first_part_of_word:
+                        sentence["words"].insert(word_indx+1, new_word) 
+                        is_first_part_of_word = False
+                    else:
+                        is_first_part_of_word = True
+                else:
+                    assert False
+                word.pop("lemma_indx",None)
+                word_counter += 1
 
-                assert "lemma_indx" in word.keys(), "Error in finding lemmas for every word"
-                
-            for word in sentence["words"]:
-                assert "lemma_indx" in word.keys(), "Error in finding lemmas for every word"              
-                    
-                
-
-
-        self.data["transcript_data"]["lemmas"] = list(sorted(all_lemmas.keys()))
-        
         #import json
         #with open("lemmas.json","w") as f:
         #    json.dump(self.data["transcript_data"]["lemmas"],f,indent=4)
@@ -822,7 +823,8 @@ class VideoAnalyzer:
         #with open("transcript.json","w") as f:
         #    json.dump({"transcript": self.data["transcript_data"]["text"], "lemmas": self.data["transcript_data"]["lemmas"]},f,indent=4)
             
-        
+        self.data["transcript_data"]["text"] = timed_transcript
+        self.data["transcript_data"].pop("lemmas",None)
         terms = api_obj.execute_term_extraction(doc_id)
 
         try:
@@ -833,6 +835,14 @@ class VideoAnalyzer:
         
         self.transcript_segmentation_and_thumbnails()
         db_mongo.insert_video_data(self.data)
+        return
+
+    def _get_words_lemma(self):
+        all_lemmas = {}
+        for sentence in self.data["transcript_data"]["text"]:
+            for word in sentence["words"]:
+                all_lemmas[word["word"]] = word["lemma"]
+        return all_lemmas
 
     def lemmatize_terms(self):
         terms = self.data["transcript_data"]["terms"]
@@ -841,23 +851,20 @@ class VideoAnalyzer:
             sem_text = SemanticText("", language=lang)
             return [" ".join(sem_text.set_text(term["term"]).lemmatize()).replace(" ’","’") for term in terms]
         else:
-            all_lemmas = self.data["transcript_data"]["lemmas"]
-            transcript_words_lemmatized = {}
-            for sentence in self.data["transcript_data"]["text"]:
-                for word in sentence["words"]:
-                    transcript_words_lemmatized[word["word"].lower()] = word["lemma_indx"]
+            words_lemmas = self._get_words_lemma()
+            lemmas = set(words_lemmas.values())
             lemmatized_terms = []
             for term in terms:
                 lemmatized_term = ""
-                for word in term["term"].split():
-                    if word in transcript_words_lemmatized.keys():
-                        lemma_indx = transcript_words_lemmatized[word]
-                    elif word in all_lemmas:
-                        lemma_indx = all_lemmas.index(word)
+                for term_word in term["term"].split():
+                    if term_word in words_lemmas.keys(): # is text keyword
+                        lemma = words_lemmas[term_word]
+                    elif term_word in lemmas: # is already lemmatized
+                        lemma = term_word
                     else: 
-                        raise Exception(f"word {word} of term {term} not in lemmas neither in transcript")
-                    lemmatized_term += " " + all_lemmas[lemma_indx]
-                    
+                        raise Exception(f"word {term_word} of term {term} not in lemmas neither in transcript")
+                    lemmatized_term += " " + lemma
+
                 lemmatized_terms.append(lemmatized_term.strip())
             
             return lemmatized_terms
@@ -1214,12 +1221,12 @@ if __name__ == '__main__':
     
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=8cwNzffXPT0")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
-    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=N4pPnZg3jiI")
+    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=cPzDQ5QY3Lc")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
     vid_analyzer.download_video()
     vid_analyzer.request_transcript()
     vid_analyzer.analyze_transcript()
-    lemmatized_concepts = vid_analyzer.lemmatize_terms()
+    #lemmatized_concepts = vid_analyzer.lemmatize_terms()
     #vid_analyzer.create_thumbnails()
     #vid_analyzer.analyze_video()
     #vid.is_slide_video()

@@ -61,7 +61,6 @@ class ItaliaNLAPI():
             if api_res['postagging_executed']:
                 sentences = api_res["sentences"]["data"]
                 return [{"sentence": sentence["raw_text"], "words":sentence["tokens"]} for sentence in sentences]
-                
             
             print('Waiting for pos tagging...')
             time.sleep(5)

@@ -302,23 +302,36 @@ def html_interactable_transcript_legacy(subtitles, conll_sentences, language):
 #    
 #    return html_lemmatized_sents, all_lemmas
     
-def html_interactable_transcript_word_level(sentences, lemmas):
+def html_interactable_transcript_word_level(sentences):
     html_lemmatized_sents = []
     for sent_id, sentence in enumerate(sentences):
         html_sent = []
         for word_id, word in enumerate(sentence["words"]):
-            lemma = lemmas[word["lemma_indx"]]
             word_text = word["word"] + " "
-            if word_text.endswith("- "):
-                word_text = word_text[:-2]
-            if word_id + 1 < len(sentence["words"]) and (sentence["words"][word_id+1]["word"] in [",",".","?","!","°"] or word["word"][-1] == "'"):
-                word_text = word_text[:-1]
-            html_sent += [f'<span lemma="{lemma}" sent_id="{str(sent_id)}" word_id="{str(word_id)}" start_time="{word["start"]}" end_time="{word["end"]}" >{word_text}</span>']
+            # if articulated preposition with apostrophe eg. "dell'" 
+            # or verb with after a cyclic pronoun eg. "specchiar-si" 
+            # or word that has a punctutation mark after
+            # don't add space between 
+            if ((word["pos"] in ["EA","E"] or word["cpos"] == "R") and word["word"].endswith("'")) or \
+                (word["cpos"] == "V" and word_id + 1 < len(sentence["words"]) and sentence["words"][word_id+1]["pos"] == "PC") or \
+                (word_id + 1 < len(sentence["words"]) and sentence["words"][word_id+1]["pos"] in ["FC","FF","FS"]) :
+               word_text = word_text[:-1]
+            html_sent += [f'<span lemma="{word["lemma"]}"' +
+                                f' sent_id="{str(sent_id)}"' +
+                                f' word_id="{str(word_id)}"' +
+                                f' start_time="{word["start"]}"' +
+                                f' cpos="{word["cpos"]}"' +
+                                f' gen="{word["gen"]}"' +
+                                f' num="{word["num"]}"' +
+                                f' pos="{word["pos"]}"' +
+                                f' end_time="{word["end"]}" >' +
+                                f'{word_text}' +
+                            '</span>']
         html_lemmatized_sents.append({"text": "".join(html_sent)})
     return html_lemmatized_sents
 
 if __name__ == '__main__':
     from segmentation import VideoAnalyzer
-    vid = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
-    html_interactable_transcript_word_level(vid.data["transcript_data"]["text"], vid.data["transcript_data"]["lemmas"], "ita")
+    vid = VideoAnalyzer("https://www.youtube.com/watch?v=cPzDQ5QY3Lc")
+    print(html_interactable_transcript_word_level(vid.data["transcript_data"]["text"]))
     #print(conll_gen("L94FfnqrJUk",SemanticText("Hello my name is Ekeel","en")))

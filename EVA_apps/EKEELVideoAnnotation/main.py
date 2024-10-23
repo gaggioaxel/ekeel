@@ -17,7 +17,7 @@ from segmentation import VideoAnalyzer, SemanticText
 from ontology import annotations_to_jsonLD
 from burst_class import create_local_vocabulary, create_burst_graph
 from forms import addVideoForm, RegisterForm, LoginForm, GoldStandardForm, ForgotForm, PasswordResetForm, ConfirmCodeForm, BurstForm
-from words import get_real_keywords, automatic_transcript_to_str
+from words import get_real_keywords, transcript_to_string
 from conll import conll_gen, html_interactable_transcript_legacy, html_interactable_transcript_word_level
 from analysis import compute_data_summary, compute_agreement, linguistic_analysis, fleiss
 from user import User
@@ -247,15 +247,13 @@ def video_selection():
         video_id = vid_analyzer.video_id
         data = vid_analyzer.data
         
-        lemmatized_concepts = vid_analyzer.lemmatize_terms()
         language = vid_analyzer.identify_language()
-        text = SemanticText(automatic_transcript_to_str(data["transcript_data"]["text"]), language)
+        text = SemanticText(transcript_to_string(data["transcript_data"]["text"]), language)
         conll_sentences = conll_gen(video_id,text)
         if vid_analyzer.data["transcript_data"]["is_whisper_transcribed"]:
             #lemmatized_subtitles, all_lemmas = html_interactable_transcript_word_level(data["transcript_data"]["text"], language)
-            all_lemmas = vid_analyzer.data["transcript_data"]["lemmas"]
-            lemmatized_subtitles = html_interactable_transcript_word_level(vid_analyzer.data["transcript_data"]["text"], 
-                                                                    all_lemmas)
+            #all_lemmas = vid_analyzer.data["transcript_data"]["lemmas"]
+            lemmatized_subtitles = html_interactable_transcript_word_level(data["transcript_data"]["text"])
         else:
             lemmatized_subtitles, all_lemmas = html_interactable_transcript_legacy(data["transcript_data"]["text"], conll_sentences, language)
         annotator = current_user.complete_name
@@ -275,6 +273,7 @@ def video_selection():
                 lemmatized_concepts.append(key)
         # If the concept vocabulary is new (empty) in DB then initialize it
         if conceptVocabulary is None :
+            lemmatized_concepts = vid_analyzer.lemmatize_terms()
             #-----------------------------------------------------------------
             # 1) Automatically obtain synonyms using wordnet NLTK
             #
@@ -292,12 +291,12 @@ def video_selection():
                 lemmatized_concepts.append(rel["target"])
         
         NLPSingleton().destroy()  
-        
+                
         return render_template('mooc_annotator.html', 
                                result=data["transcript_data"]["text"], video_id=video_id, start_times=list(map(lambda x: x[0],data["video_data"]["segments"])),
                                images_path=vid_analyzer.images_path, concepts=lemmatized_concepts,is_temp_transcript=not data["transcript_data"]["is_whisper_transcribed"],
                                video_duration=data['duration'], lemmatized_subtitles=lemmatized_subtitles, annotator=annotator, language=language, is_completed=marked_completed,
-                               conceptVocabulary=conceptVocabulary, title=data['title'], all_lemmas=all_lemmas, relations=relations, definitions=definitions)
+                               conceptVocabulary=conceptVocabulary, title=data['title'], relations=relations, definitions=definitions)
     except Exception as e:
         import sys
         import os
@@ -526,16 +525,16 @@ def burst():
             video.request_transcript()
             subtitles = video.data["transcript_data"]["text"]
             #if video.data["transcript_data"]["is_whisper_transcribed"]:
-            all_lemmas = video.data["transcript_data"]["lemmas"]
+            all_lemmas = set(video._get_words_lemma().values())
             lemmatized_subtitles = html_interactable_transcript_word_level(subtitles, all_lemmas)
             #else:
             #    lemmatized_subtitles, all_lemmas = html_interactable_transcript_legacy(subtitles,video.data["language"], concepts=keywords)
 
             return render_template('burst_results.html', result=subtitles, video_id=video_id, language=video.data["language"], concepts=keywords,
-                                   title=title, lemmatized_subtitles=lemmatized_subtitles, all_lemmas=all_lemmas, type="semi")
+                                   title=title, lemmatized_subtitles=lemmatized_subtitles, type="semi")
 
         return render_template('burst_results.html', result=[], video_id=video_id,language=video.data["language"], concepts=keywords, title=title,
-                                lemmatized_subtitles=[], all_lemmas=[], type=form.type.data)
+                                lemmatized_subtitles=[], type=form.type.data)
 
     return render_template('burst.html', form=form, videos=videos)
 

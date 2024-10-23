@@ -114,7 +114,6 @@ class SemanticText():
             self._text = self._text.replace("'ve", " have").replace("'re", " are").replace("'s", " is").replace("'ll", " will")
     
     def extract_keywords_from_title(self):
-        # TODO redo
         #str_text = re.sub(self.get_title_opening(),' ',self._text.lower())
         return None #[keyword[0] for keyword in self._nlp_processors.rake_models[self._language].run(str_text, maxWords=3, minFrequency=1)] 
 
@@ -134,18 +133,22 @@ class SemanticText():
         return NLPSingleton().encode_text(self._tokenized_text)
 
 
-def automatic_transcript_to_str(timed_transcript:'list[dict]'):
-    return " ".join(timed_sentence["text"].replace("."," .").replace(","," ,") for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
+def transcript_to_string(timed_transcript:'list[dict]'):
+    return " ".join(timed_sentence["text"] for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
 
 
 def apply_italian_fixes(data:dict, min_segment_len:int=4):
+    '''
+    Applies italian specific fixes to the text in order to be correctly analized by ItaliaNLP and matched back
+    Furthemore groups short sentences.
+    '''
     timed_sentences = []
     accent_replacements = {
                               "e'": "è", "E'": "È",
                               "o'": "ò", "O'": "Ò",
                               "a'": "à", "A'": "À",
                               "i'": "ì", "I'": "Ì",
-                              "u'": "ù", "U'": "Ù", "po'": "p\u00f2"
+                              "u'": "ù", "U'": "Ù"#, "po'": "p\u00f2"
                           }
     number_regex = r'(-?\d+(?:\.\d*)?)'
     degrees_regex = number_regex[:-1] + r'°)'
@@ -208,11 +211,11 @@ def apply_italian_fixes(data:dict, min_segment_len:int=4):
                     segment["text"] = segment["text"].replace(match_, match_[:-2]+"'")
                     
             # Match "po'" but ignores "anch'" or "dell'" 
-            elif any(re.findall(r"[a-zA-Z]+'", word["word"])) and word["word"].endswith("'") and len(word["word"]) >= 3:
-                match_ = re.findall(r"[a-zA-Z]+'", word["word"])[0]
-                if match_ in accent_replacements.keys():
-                    replacement = accent_replacements[word["word"]]
-                    word["word"] = replacement
+            #elif any(re.findall(r"[a-zA-Z]+'", word["word"])) and word["word"].endswith("'") and len(word["word"]) >= 3:
+            #    match_ = re.findall(r"[a-zA-Z]+'", word["word"])[0]
+            #    if match_ in accent_replacements.keys():
+            #        replacement = accent_replacements[word["word"]]
+            #        word["word"] = replacement
 
 
             # Case "termo" "-idrometrico" -> merged into "termo-idrometrico" for T2K compatibility
@@ -314,6 +317,11 @@ def apply_italian_fixes(data:dict, min_segment_len:int=4):
             timed_sentences.append(segment)
         
     return timed_sentences
+
+
+def extract_terms_frequency(tagged_transcript:'list[dict]'):
+    #TODO
+    pass
 
 
 class TextCleaner:
