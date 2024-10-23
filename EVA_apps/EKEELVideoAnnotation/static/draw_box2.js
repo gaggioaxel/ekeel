@@ -1,8 +1,10 @@
 function deleteBox(conceptType){
     $("#"+conceptType+"Box").remove()
+    box = null
     $("#drawButton").text("Add Box").prop("disabled",false).css("cursor","pointer");
     $("#clearDrawButton").fadeOut("fast");
     $("#insertRelationButton").prop("disabled",false).css("cursor","pointer");
+    $("#canvasBox").remove()
     player.controls(true);
 }
 
@@ -16,6 +18,10 @@ function initDraw(conceptType) {
 
     else if (conceptType=="prerequisite")
         classBox = "rectanglePrerequisite"
+    
+    //se già presente elimino box precedente
+    deleteBox(conceptType)
+    player.controls(false);
 
     let parentDiv = document.getElementById('canvas-wrap');
 
@@ -24,10 +30,6 @@ function initDraw(conceptType) {
     canvas.id = "canvasBox";
 
     parentDiv.prepend(canvas);
-
-    //se già presente elimino box precedente
-    deleteBox(conceptType)
-    player.controls(false);
 
     var mouse = {
         x: 0,
@@ -102,7 +104,7 @@ function initDraw(conceptType) {
 
 function removeCanvas(){
     $("#canvasBox").remove()
-    deleteBox()
+    deleteBox("target")
 }
 
 
@@ -349,6 +351,7 @@ function clearAnnotatorVisualElements(){
     $("#canvasBox").remove()
     if(typeof(box) != "undefined" && box!=null) {
         box.remove()
+        box = null
     }
     $(".visual-effect.active").removeClass("active");
     player.controls(true);
@@ -364,6 +367,7 @@ function toggleBoundingBox(element){
             player.currentTime(prevTime);
             player.controls(true);
             $(element).removeClass("active");
+            box = null
             return
         }
     }
@@ -404,6 +408,7 @@ function toggleBoundingBox(element){
 
     box = document.createElement('div');
     box.className = "rectangleTarget";
+    box.id = "targetBox"
     box.style.display = "none";
     box.style.left = Math.floor(canvasRect.x + canvasRect.w*xywhPercent[0]) + 'px';
     box.style.top = Math.floor(canvasRect.y + canvasRect.h*xywhPercent[1]) + 'px';
