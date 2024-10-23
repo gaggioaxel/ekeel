@@ -51,6 +51,8 @@ $("#transcript-in-relation").on('click', '.concept', function() {
 function getSentenceIDandWordID(time, concept){
 
     let all_subs = $("#transcript-in-relation .sentence-marker");
+    
+    // Search forward
     let after_subtitles = all_subs.filter(function() {
         return parseFloat($(this).attr("data-start")) >= time;
     });
@@ -64,29 +66,31 @@ function getSentenceIDandWordID(time, concept){
                 return {"sentID": this_concept_element.first().attr("sent_id"), 
                         "wordID": this_concept_element.first().attr("word_id")}
         }
+    }
 
-    } else {
-        last_subtitle = all_subs.filter(function() {
-            return parseFloat($(this).attr("data-start")) < time;
-        }).last()
-        let this_concept_element = last_subtitle.find('.concept').filter(function() {
+    // reverse prev subtitles and search backwards
+    let prev_subtitles = $(all_subs.filter(function() {
+        return parseFloat($(this).attr("data-start")) < time;
+    }).get().reverse())
+    for(sub of prev_subtitles) {
+        let this_concept_element = $(sub).find('.concept').filter(function() {
             return $(this).attr('concept').includes(" "+concept+" ");
         });
         if (this_concept_element.length > 0)
             return {"sentID": this_concept_element.first().attr("sent_id"), 
                     "wordID": this_concept_element.first().attr("word_id")}
-        else
-            return {"sentID": last_subtitle.find("[lemma]").last().attr("sent_id"),
-                    "wordID":last_subtitle.find("[lemma]").last().attr("word_id") }
     }
+
+    return {"sentID": all_subs.last().find("[lemma]").last().attr("sent_id"),
+            "wordID":all_subs.last().find("[lemma]").last().attr("word_id") }
 }
 
 function addRelation(replaceIndx){
 
-    let prereq = document.getElementById("prerequisite").value.toLowerCase();
+    let prereq = document.getElementById("prerequisite").value;
     let weight = document.getElementById("weight").value;
-    weight = weight.charAt(0).toUpperCase() + weight.slice(1)
-    let target = document.getElementById("target").value.toLowerCase();
+    weight = weight.charAt(0).toUpperCase() + weight.slice(1);
+    let target = document.getElementById("target").value;
 
     if ((prereq === "") || (target === "")) {
       alert("Concepts must be non-empty!");
@@ -116,7 +120,7 @@ function addRelation(replaceIndx){
         wordID = targetWordID;
     // otherwise find them in the sentences after
     }else{
-      let ids = getSentenceIDandWordID(curr_time, target);
+      let ids = getSentenceIDandWordID(curr_time, target.replaceAll(" ","_"));
       sentID = ids.sentID;
       wordID = ids.wordID;
     }

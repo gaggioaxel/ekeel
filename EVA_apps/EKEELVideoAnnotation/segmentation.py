@@ -744,41 +744,46 @@ class VideoAnalyzer:
     def analyze_transcript(self, async_call=False):
 
         #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
-        if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
+        #if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
+        #    return
+        if "pos" in self.data["transcript_data"]["text"][0]["words"][0].keys():
             return
         
         timed_transcript = self.data["transcript_data"]["text"].copy()
-        if self.identify_language() == "it":
+        language = self.identify_language()
+        if language == "it":
             timed_transcript = apply_italian_fixes(timed_transcript)
         string_transcript = transcript_to_string(timed_transcript)
-        language = self.identify_language()
+        if language == "it":
+            timed_transcript = restore_italian_fixes(timed_transcript)
+        
         api_obj = ItaliaNLAPI()
         doc_id = api_obj.upload_document(string_transcript, language=language, async_call=async_call)
         
         tagged_sentences = api_obj.wait_for_pos_tagging(doc_id)
         
         tagged_transcript = {"full_text":"", "words":[]}
-        start_word_indx = 0
+        #start_word_indx = 0
         for sentence in tagged_sentences:
             tagged_transcript["full_text"] += sentence["sentence"]+" "
             for word in sentence["words"]:
-                if word["pos"] in ["FC","FF","FS"]:
-                    start_word_indx -= 1
-                word = {"word":     word["word"], 
+                #if word["pos"] in ["FC","FF","FS"]:
+                #    start_word_indx -= 1
+                word = {"word":     word["word"] if len(word["word"]) == 1 or (len(word["word"]) > 1 and not word["word"].endswith("-")) else word["word"][:-1], 
                         "lemma":    word["lemma"], 
                         "pos":      word["pos"], 
                         "gen":      word["gen"], 
                         "cpos":     word["cpos"],
-                        "num":      word["num"],
-                        "indx_first_letter":start_word_indx}
-                if word["cpos"] == "V" and word["word"].endswith("-"):
-                    word["word"] = word["word"][:-1]
-                    start_word_indx -= 1
-                start_word_indx += len(word["word"]) + 1
-                if (word["pos"] in ["EA","E"] or word["cpos"] == "R") and word["word"].endswith("'"):
-                    start_word_indx -= 1
+                        "num":      word["num"]}#,
+                        #"indx_first_letter":start_word_indx}
+                #if word["cpos"] == "V" and word["word"].endswith("-"):
+                #    word["word"] = word["word"][:-1]
+                #    start_word_indx -= 1
+                #start_word_indx += len(word["word"]) + 1
+                #if (word["pos"] in ["EA","E"] or word["cpos"] == "R") and word["word"].endswith("'"):
+                #    start_word_indx -= 1
                 tagged_transcript["words"].append(word)
-            assert tagged_transcript["full_text"][tagged_transcript["words"][-1]["indx_first_letter"]] == tagged_transcript["full_text"][-2]
+            #assert tagged_transcript["full_text"][tagged_transcript["words"][-1]["indx_first_letter"]] == tagged_transcript["full_text"][-2]
 
         word_counter = 0
         tagged_transcript_words = tagged_transcript["words"]
@@ -1221,11 +1226,13 @@ if __name__ == '__main__':
     
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=8cwNzffXPT0")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
-    vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=cPzDQ5QY3Lc")
-    #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
-    vid_analyzer.download_video()
-    vid_analyzer.request_transcript()
-    vid_analyzer.analyze_transcript()
+    for video in db_mongo.get_videos(["video_id","title"]):
+        print(video)
+        vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
+        #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
+        vid_analyzer.download_video()
+        vid_analyzer.request_transcript()
+        vid_analyzer.analyze_transcript()
     #lemmatized_concepts = vid_analyzer.lemmatize_terms()
     #vid_analyzer.create_thumbnails()
     #vid_analyzer.analyze_video()

@@ -137,7 +137,7 @@ def transcript_to_string(timed_transcript:'list[dict]'):
     return " ".join(timed_sentence["text"] for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
 
 
-def apply_italian_fixes(data:dict, min_segment_len:int=4):
+def apply_italian_fixes(data:list, min_segment_len:int=4):
     '''
     Applies italian specific fixes to the text in order to be correctly analized by ItaliaNLP and matched back
     Furthemore groups short sentences.
@@ -243,7 +243,7 @@ def apply_italian_fixes(data:dict, min_segment_len:int=4):
             if any(re.findall(degrees_regex, word["word"])):
                 new_word = word.copy()
                 new_word["word"] = "°" 
-                segment["text"] = segment["text"].replace("°"," ° ")
+                #segment["text"] = segment["text"].replace("°"," ° ")
                 segment["words"].insert(j+1, new_word)
                 word["word"] = word["word"][:-1]
             
@@ -273,7 +273,7 @@ def apply_italian_fixes(data:dict, min_segment_len:int=4):
                 segment["words"].insert(j+1, new_word)
             
             if word["word"] == "%":
-                segment["text"] = segment["text"].replace("%"," % ")
+                segment["text"] = segment["text"].replace("%"," %")
             
             # Case "22%" -> "22" "%"
             elif any(re.findall(number_regex+'%', word["word"])):
@@ -317,6 +317,12 @@ def apply_italian_fixes(data:dict, min_segment_len:int=4):
             timed_sentences.append(segment)
         
     return timed_sentences
+
+def restore_italian_fixes(transcript:list):
+    for sentence in transcript:
+        sentence["text"] = re.sub(r'\s+%', '%', sentence["text"])               # replace " %" with "%"
+        sentence["text"] = re.sub(r'%\s([?,.!;:])', r'%\1', sentence["text"])  # replace "% ," with "%,"
+    return transcript
 
 
 def extract_terms_frequency(tagged_transcript:'list[dict]'):
