@@ -199,7 +199,7 @@ $(document).on("click", ".concept-row", function (e) {
 // Add concept manually to the list of concepts (vocabulary)
 function addConcept(){
 
-  let concept = document.getElementById("newConcept").value.toLowerCase()
+  let concept = document.getElementById("newConcept").value
 
   if(concept === "") {
     document.getElementById("errorConcept").innerHTML ="empty field !"

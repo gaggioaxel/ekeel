@@ -296,7 +296,7 @@ function editConceptAnnotation(button, concept, start_time, end_time, descriptio
                                     .addClass("clone")
                                     .text("Save Changes")
                                     .on("click", function(){
-                                        let res = readDefinitionFromDocument()
+                                        let res = readDefinitionElements()
                                         definitions.forEach(element => {
                                             if(element.concept == concept && element.start == start_time && element.end == end_time){
                                                 element.start = secondsToTime(res.start);
