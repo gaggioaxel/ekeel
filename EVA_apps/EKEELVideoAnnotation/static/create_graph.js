@@ -29,21 +29,39 @@ document.getElementById("transcript-in-relation").on('click','.concept',function
 }) */
 
 $("#transcript-in-relation").on('click', '.concept', function() {
+    // if we are in transcript in relation find the associated concepts and select all the words of that concept 
+    $(".selected-concept-text").removeClass("selected-concept-text")
+    let prevSelectedConcept = document.getElementById("target").value;
+    let targetConcepts = $(this).attr("concept")
+                                .split(" ")
+                                .filter(elem => elem.length > 0 )
+                                .map(elem => elem.replaceAll("_"," "))                              
 
-    let concept = $($(this).attr("concept").trim().split(" ")).last().get()[0];
-    if ($("#target").val() == "") {
-      $("#target").val(concept.replaceAll("_", " "));
+    let selectedConcept = targetConcepts[targetConcepts.indexOf(prevSelectedConcept)+1 >= targetConcepts.length ? 0 : targetConcepts.indexOf(prevSelectedConcept)+1]
+    //TODO se vuoto o non presente prendi il primo concetto, altrimenti prendi quello successivo
+
+    this.classList.add("selected-concept-text")
+    $(this).siblings(".concept").get()
+                                .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") )
+                                .forEach( elem => elem.classList.add("selected-concept-text") );
+
+
+    //let concept = $($(this).attr("concept").trim().split(" ")).last().get()[0];
+    //if ($("#target").val() == "") {
+    $("#target").val(selectedConcept.replaceAll("_", " "));
   
-      if (concept.split("_").length > 1) {
-        targetSentID = $(this).closest("[lemma='" + concept.split("_")[0] + "']").attr("sent_id");
-        targetWordID = $(this).closest("[lemma='" + concept.split("_")[0] + "']").attr("word_id");
-      } else {
-        targetSentID = $(this).attr("sent_id");
-        targetWordID = $(this).attr("word_id");
-      }
-  
-    } else
-      $("#prerequisite").val(concept.replaceAll("_", " "));
+    if (selectedConcept.split(" ").length > 1) {
+      targetSentID = $(this).closest("[lemma='" + selectedConcept.split("_")[0] + "']").attr("sent_id");
+      targetWordID = $(this).closest("[lemma='" + selectedConcept.split("_")[0] + "']").attr("word_id");
+      targetTime = parseFloat($(this).find("[start_time]").attr("start_time"))
+    } else {
+      targetSentID = $(this).attr("sent_id");
+      targetWordID = $(this).attr("word_id");
+      targetTime = parseFloat($(this).attr("start_time"))
+    }
+    
+    //} else
+    //  $("#prerequisite").val(concept.replaceAll("_", " "));
   
 });
   
@@ -247,7 +265,7 @@ function editConceptAnnotation(button, concept, start_time, end_time, descriptio
     
         closeDefinitionDiv()
     
-        mainDiv.find("h2").text("Add Definition");
+        mainDiv.find("h2").text("Add Description");
         
         mainDiv.find("#concept-definition-hint").show();
     

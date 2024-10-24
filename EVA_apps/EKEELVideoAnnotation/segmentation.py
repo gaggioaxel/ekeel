@@ -744,10 +744,10 @@ class VideoAnalyzer:
     def analyze_transcript(self, async_call=False):
 
         #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
-        #if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
-        #    return
-        if "pos" in self.data["transcript_data"]["text"][0]["words"][0].keys():
+        if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
             return
+        #if "pos" in self.data["transcript_data"]["text"][0]["words"][0].keys():
+        #    return
         
         timed_transcript = self.data["transcript_data"]["text"].copy()
         language = self.identify_language()
@@ -790,7 +790,8 @@ class VideoAnalyzer:
         is_first_part_of_word = True
         for sentence in timed_transcript:
             for word_indx, word in enumerate(sentence["words"]):
-                if word["word"] == tagged_transcript_words[word_counter]["word"]:
+                if word["word"] == tagged_transcript_words[word_counter]["word"] or \
+                  (word["word"] == "po'" and tagged_transcript_words[word_counter]["word"] == "p\u00f2"):
                     transcript_word = tagged_transcript_words[word_counter]
                     word["gen"] = transcript_word["gen"] if transcript_word["gen"] is not None else ""
                     word["lemma"] = transcript_word["lemma"]
@@ -1230,9 +1231,7 @@ if __name__ == '__main__':
         print(video)
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
         #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
-        vid_analyzer.download_video()
-        vid_analyzer.request_transcript()
-        vid_analyzer.analyze_transcript()
+        vid_analyzer.lemmatize_terms()
     #lemmatized_concepts = vid_analyzer.lemmatize_terms()
     #vid_analyzer.create_thumbnails()
     #vid_analyzer.analyze_video()

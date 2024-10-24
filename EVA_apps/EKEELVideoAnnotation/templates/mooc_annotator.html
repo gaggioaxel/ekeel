@@ -64,7 +64,7 @@
             <button onclick="showDefinitionDiv(true)" 
                     class="btn btn-primary btn-addrelation btn-dodgerblue visual-effect"
                     title="Add concepts' definitions present in the transcript">
-              Add Definition
+              Add Description
             </button>
 
             <button onclick="showRelationDiv()" 
@@ -141,9 +141,9 @@
         </div>
         
         <div style="display:flex">
-          <h2 id="newRelationTitle">Add Relation</h2>
-          <div title="Fields target and prerequise can be filled also by clicking on concepts in the transcript">
-            <!-- Info by C. V. Galli from <a href="https://thenounproject.com/browse/icons/term/info/" target="_blank" title="Info Icons">Noun Project</a> (CC BY 3.0) -->
+          <h2 id="newRelationTitle">Add a Prerequisite relation</h2>
+          <!--<div title="Fields target and prerequise can be filled also by clicking on concepts in the transcript">
+            {#Info by C. V. Galli from <a href="https://thenounproject.com/browse/icons/term/info/" target="_blank" title="Info Icons">Noun Project</a> (CC BY 3.0)#}
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="15 15 75 75" style="cursor: help; width:25px; height:25px; margin-left: 5px;" xml:space="preserve">
               <g>
                 <g>
@@ -157,18 +157,29 @@
                 </g>
               </g>
             </svg>
-          </div>
+          </div>-->
+        </div>
+
+        <div style="margin: 0 1.2em;">
+          <hr>
+          <p>Use this feature to annotate that a target concept, explained at a specific point in the video, requires a prerequisite concept to be understood:</p>
+          <ol>
+              <li>Click on the TARGET concept in the transcript where it requires a prerequisite (do not type but click, because the point where the target occurs needs to be recorded).</li>
+              <li>Click or type in the PREREQUISITE concept.</li>
+          </ol>
+          <p>Note: if the target concept does not occur in the speech/transcript, but only in the visual stream, for step 1, add a BOX and type in the concept name.</p>
+          <hr>
         </div>
 
         <div>
           <label for="target">Target concept:</label>
           <div class="row">
 
-              <div class="col-md-5 autocomplete">
-                <input type="text" class="form-control" autocomplete="off" id="target"  placeholder="Type a concept...">
+              <div class="col-md-6 autocomplete">
+                <input type="text" class="form-control" autocomplete="off" id="target" readonly placeholder="Click on a concept...">
               </div>
 
-              <div class="col-md-7" style="display:flex; column-gap:10px;">
+              <div class="col-md-6" style="display:flex; column-gap:10px;">
                   <button id="drawButton" onclick="initDraw('target')" class="btn btn-primary">Add Box</button>
                   <i  id="helpAddBox" 
                       class="fa-regular fa-circle-question icon-button" 
@@ -184,7 +195,7 @@
           <label for="prerequisite">Prerequisite concept:</label>
           <div class="row">
 
-            <div class="col-md-5 autocomplete" style="width=100px;">
+            <div class="col-md-6 autocomplete" style="width=100px;">
               <input type="text" class="form-control" autocomplete="off" id="prerequisite" placeholder="Type a concept...">
             </div>
 
@@ -222,7 +233,7 @@
             </button>
           </div>
 
-          <h2>Add Definition</h2>
+          <h2>Add Description</h2>
 
             <div class="autocomplete">
               <div style="display:flex;">
@@ -297,7 +308,7 @@
             </select>
           </div>
           <div id="transcript-in-description" class="transcript transcript-in-description"></div>
-          <button id="saveDefinitionButton" onclick="addDefinition()" class="btn btn-primary">Add Definition</button>
+          <button id="saveDefinitionButton" onclick="addDefinition()" class="btn btn-primary">Add Description</button>
         </div>
       </div>
 
@@ -321,7 +332,7 @@
                 <th class="descriptions-sortable-header" scope="col" onclick="sortDescriptions(this)" style="cursor:pointer">Start</th>
                 <th class="descriptions-sortable-header" scope="col" onclick="sortDescriptions(this)" style="cursor:pointer">End</th>
                 <th class="descriptions-sortable-header" scope="col" onclick="sortDescriptions(this)" style="cursor:pointer">Type</th>
-                <th scope="col" style="text-align: center">Play definition</th>
+                <th scope="col" style="text-align: center">Play description</th>
                 <th scope="col"></th>
                 <th scope="col" style="text-align: end">Delete</th>
               </tr>

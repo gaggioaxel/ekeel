@@ -10,8 +10,11 @@ MarkersInit("#transcript.sentence-marker", main_markers);
 MarkersInit("#transcript-in-description.sentence-marker-in-description", in_description_markers);
 MarkersInit("#transcript-in-relation.sentence-marker", in_relation_markers);
 
-$(document).on("click", ".concept", function (e) {
-    
+
+$("#transcript, #transcript-in-description").on("click", ".concept", function (e) {
+
+  //TODO far si che se il parent e' in-relation allora non selezionare tutti i sinonimi ma solo il concetto
+
   let conceptElements = document.getElementsByClassName("concept");
 
   let in_description = e.target.parentElement.classList.contains("sentence-marker-in-description");
@@ -59,6 +62,8 @@ $(document).on("click", ".concept", function (e) {
       }) 
     })
 });
+
+
 
 document.getElementById("transcript-in-description").addEventListener('mouseup', function () {
 

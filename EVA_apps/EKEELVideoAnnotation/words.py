@@ -148,9 +148,10 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
                               "o'": "ò", "O'": "Ò",
                               "a'": "à", "A'": "À",
                               "i'": "ì", "I'": "Ì",
-                              "u'": "ù", "U'": "Ù"#, "po'": "p\u00f2"
+                              "u'": "ù", "U'": "Ù", "po'": "pò"
                           }
     number_regex = r'(-?\d+(?:\.\d*)?)'
+    big_numer_regex = r'(-?)(\d+)(.\d\d\d)+'
     degrees_regex = number_regex[:-1] + r'°)'
     temperature_regex = degrees_regex[:-1] + r'[C|c|F|f|K|k])'
     
@@ -209,14 +210,18 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
                 elif any(re.findall(r"[a-zA-Z]+ '", segment["text"])):
                     match_ = re.findall(r"[a-zA-Z]+ '", segment["text"])[0]
                     segment["text"] = segment["text"].replace(match_, match_[:-2]+"'")
+            
+            # "di raggio R." separated symbol R -> "di raggio R ." for T2K correct pos tag
+            # TODO check with another video that Whisper AI correctly separates the two words in words list 
+            elif any(re.findall(r"\s[a-zA-Z][?,.!;:]", segment["text"])):
+                segment["text"] = re.sub(r"\s([a-zA-Z])([?,.!;:])",r" \1 \2", segment["text"])
                     
             # Match "po'" but ignores "anch'" or "dell'" 
-            #elif any(re.findall(r"[a-zA-Z]+'", word["word"])) and word["word"].endswith("'") and len(word["word"]) >= 3:
-            #    match_ = re.findall(r"[a-zA-Z]+'", word["word"])[0]
-            #    if match_ in accent_replacements.keys():
-            #        replacement = accent_replacements[word["word"]]
-            #        word["word"] = replacement
-
+            elif any(re.findall(r"[a-zA-Z]+'", word["word"])) and word["word"].endswith("'") and len(word["word"]) >= 3:
+                match_ = re.findall(r"[a-zA-Z]+'", word["word"])[0]
+                if match_ in accent_replacements.keys():
+                    replacement = accent_replacements[word["word"]]
+                    word["word"] = replacement
 
             # Case "termo" "-idrometrico" -> merged into "termo-idrometrico" for T2K compatibility
             elif word["word"].startswith("-"):
@@ -253,8 +258,13 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
                 segment["words"].insert(j+1, new_word)
                 word["word"] = "."
             
-            # Sometimes words list don't perfectly match the text: "'attrito della ruota", words: ["attrito","della", "ruota'"]  
-            if word["word"] not in segment["text"]:
+            if any(re.findall(big_numer_regex, segment["text"])):
+                match_ = "".join(re.findall(big_numer_regex, segment["text"])[0])
+                segment["text"] = segment["text"].replace(match_, match_.replace("-"," - ").replace("."," . "))
+            
+            # Sometimes words list don't perfectly match the text: "'attrito della ruota", words: ["attrito","della", "ruota'"]
+            # But "pò" in words and "po'" in text match, TODO Fix with T2K 
+            if word["word"] not in segment["text"] and not (word["word"] == "pò" and "po'" in segment["text"]) :
                 longest_substring = ''
                 text = segment["text"]
                 word_ = word["word"]
@@ -320,8 +330,12 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
 
 def restore_italian_fixes(transcript:list):
     for sentence in transcript:
-        sentence["text"] = re.sub(r'\s+%', '%', sentence["text"])               # replace " %" with "%"
-        sentence["text"] = re.sub(r'%\s([?,.!;:])', r'%\1', sentence["text"])  # replace "% ," with "%,"
+        sentence["text"] = re.sub(r'\s+%', '%', sentence["text"])                           # replace " %" with "%"
+        sentence["text"] = re.sub(r'%\s([?,.!;:])', r'%\1', sentence["text"])               # replace "% ," with "%,"
+        sentence["text"] = re.sub(r"\s([a-zA-Z])\s([?,.!;:])",r" \1\2", sentence["text"])   # replace " A ." with " A."
+        match_ = re.findall(r'(\s-\s)?(\d+)(\s.\s\d{3})+',sentence["text"])                 # find any big number spaced " - 24 . 000" (meno 24 mila)
+        if any(match_):
+            sentence["text"] = sentence["text"].replace("".join(match_[0]), "".join(match_[0]).replace(" ",""))
     return transcript
 
 
