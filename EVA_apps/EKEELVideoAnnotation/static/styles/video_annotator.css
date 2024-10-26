@@ -136,7 +136,6 @@
     box-sizing: content-box;
     background-color: #f8f9fa;
     padding: 1em;
-    padding-bottom: 1em;
     gap:1em;
     position: relative;
     z-index: 1000;
@@ -144,9 +143,9 @@
 }
 
 #relation.add-relation-box{
-    padding-bottom: 1em;
+    padding: 1.4em;
     height: fit-content;
-    width: 500px;
+    width: 550px;
 }
 
 .relation-box-close-btn {

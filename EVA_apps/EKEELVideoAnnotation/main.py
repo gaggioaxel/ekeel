@@ -395,12 +395,17 @@ def prepare_annotated_graph():
     # real download happens on the js side
     return result   
 
-@app.route('/delete_annotation', methods=["GET", "POST"])
-def delete_annotated_graph():
+#@app.route('/delete_annotation', methods=["GET", "POST"])
+#def delete_annotated_graph():
+#    video_id = request.json["video_id"]
+#    #db_mongo.delete_annotation(current_user.mongodb_id, video_id)
+#    return {}
+  
+@app.route('/delete_video', methods=["GET", "POST"])
+def delete_video():
     video_id = request.json["video_id"]
-    #db_mongo.delete_annotation(current_user.mongodb_id, video_id)
-    return {}
-    
+    db_mongo.remove_video(video_id)
+    return {"done":True}
 
 @app.route('/analysis', methods=['GET', 'POST'])
 @login_required

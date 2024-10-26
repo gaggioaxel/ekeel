@@ -453,8 +453,7 @@ def remove_video(video_id):
     ### WARNING!!! NOT FULLY TESTED MAY BREAK THE DB DUE TO DATA ENTANGLEMENT
     '''
     query = {"video_id":video_id}
-    collections = ['videos','graphs','video_text_segmentation','conlls']
-    #collections = ['video_text_segmentation']
+    collections = ['videos','graphs','conlls']
     for coll_name in collections:
         collection = db.get_collection(coll_name)
         if collection.find_one(query):

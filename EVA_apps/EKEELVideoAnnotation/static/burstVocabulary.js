@@ -499,7 +499,7 @@ function refineBurstWithVideoAnalysis() {
   }).done(function(result) {
       console.log(result);
       hideRefinementLoading(prev_text);
-      printDefinitions(result.definitions,true);
+      printDescriptions(result.definitions,true);
       $hasBeenRefined = true;
       document.getElementById("refinement-button").style.display = "none";
       $downloadableGraph = result.downloadable_jsonld_graph
@@ -650,12 +650,12 @@ function showResults(result){
 
 
     document.getElementById("data_summary").innerHTML = resultsToVisualize
-    printDefinitions(result.definitions,false)
+    printDescriptions(result.definitions,false)
 }
 
 
-function printDefinitions(definitions, update){
-  console.log("***** EKEEL - Video Annotation: burstVocabulary.js::printDefinitions() ******");
+function printDescriptions(definitions, update){
+  console.log("***** EKEEL - Video Annotation: burstVocabulary.js::printDescriptions() ******");
     if(update) {
       document.getElementById("defsTable").innerHTML = ""
     }

@@ -1,5 +1,5 @@
 autocomplete(document.getElementById("prerequisite"), $concepts, []);
-autocomplete(document.getElementById("target"), $concepts, []);
+//autocomplete(document.getElementById("targetSelector"), $concepts, []);
 autocomplete(document.getElementById("conceptDefined"), $concepts, []);
 autocomplete(document.getElementById("selectSynonymSet"), $concepts, ["autocomplete-items-custom1"]);
 autocomplete(document.getElementById("synonymWord"), $concepts, ["autocomplete-items-custom2"]);

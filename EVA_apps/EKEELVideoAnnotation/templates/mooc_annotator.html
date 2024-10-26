@@ -164,8 +164,8 @@
           <hr>
           <p>Use this feature to annotate that a target concept, explained at a specific point in the video, requires a prerequisite concept to be understood:</p>
           <ol>
-              <li>Click on the TARGET concept in the transcript where it requires a prerequisite (do not type but click, because the point where the target occurs needs to be recorded).</li>
-              <li>Click or type in the PREREQUISITE concept.</li>
+              <li>Click on the TARGET concept word in the transcript where it requires a prerequisite, and select the intended concept in case of ambiguity. If the field gets green, the field is correctly filled</li>
+              <li>Type in the PREREQUISITE concept.</li>
           </ol>
           <p>Note: if the target concept does not occur in the speech/transcript, but only in the visual stream, for step 1, add a BOX and type in the concept name.</p>
           <hr>
@@ -176,7 +176,10 @@
           <div class="row">
 
               <div class="col-md-6 autocomplete">
-                <input type="text" class="form-control" autocomplete="off" id="target" readonly placeholder="Click on a concept...">
+                <select class="form-control" readonly id="targetSelector" style="cursor:not-allowed">
+                  <option value="" selected disabled hidden style="color:gray;">Click on a concept...</option>
+                </select>
+                <!--<input type="text" class="form-control" autocomplete="on" id="target" readonly placeholder="Click on a concept...">-->
               </div>
 
               <div class="col-md-6" style="display:flex; column-gap:10px;">
@@ -196,7 +199,7 @@
           <div class="row">
 
             <div class="col-md-6 autocomplete" style="width=100px;">
-              <input type="text" class="form-control" autocomplete="off" id="prerequisite" placeholder="Type a concept...">
+              <input type="text" class="form-control" autocomplete="on" id="prerequisite" placeholder="Type a concept...">
             </div>
 
             <!--<div class="col-md-5">
@@ -323,7 +326,7 @@
         <hr style="margin-top:.3rem;">
       </div>
       <div class="row">
-        <div class="col relations" id="definitions">
+        <div class="col relations" id="descriptions">
           <h2>CONCEPTS</h2>
           <table class="table" style="max-height:450px">
             <thead>
@@ -337,7 +340,7 @@
                 <th scope="col" style="text-align: end">Delete</th>
               </tr>
             </thead>
-            <tbody id="definitionsTable"></tbody>
+            <tbody id="descriptionsTable"></tbody>
           </table>
         </div>
           

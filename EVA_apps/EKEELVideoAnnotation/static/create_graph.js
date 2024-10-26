@@ -2,14 +2,14 @@ let targetSentID = null
 let targetWordID = null
 
 printRelations()
-printDefinitions()
+printDescriptions()
 
 /*
 * By clicking on a concept in the box below the video, it will automatically add the concept in the form.
 * 
 document.getElementById("transcript-in-relation").on('click','.concept',function(){
 
-  if( document.getElementById("target").value == ""){
+  if( document.getElementById("targetSelector").value == ""){
 
     let concept = $(this).attr("concept")
 
@@ -29,30 +29,59 @@ document.getElementById("transcript-in-relation").on('click','.concept',function
 }) */
 
 $("#transcript-in-relation").on('click', '.concept', function() {
-    // if we are in transcript in relation find the associated concepts and select all the words of that concept 
     $(".selected-concept-text").removeClass("selected-concept-text")
-    let prevSelectedConcept = document.getElementById("target").value;
+    //let prevSelectedConcept = document.getElementById("target").value;
     let targetConcepts = $(this).attr("concept")
                                 .split(" ")
                                 .filter(elem => elem.length > 0 )
                                 .map(elem => elem.replaceAll("_"," "))                              
 
-    let selectedConcept = targetConcepts[targetConcepts.indexOf(prevSelectedConcept)+1 >= targetConcepts.length ? 0 : targetConcepts.indexOf(prevSelectedConcept)+1]
-    //TODO se vuoto o non presente prendi il primo concetto, altrimenti prendi quello successivo
+    let selectedConcept = targetConcepts[0]
 
-    this.classList.add("selected-concept-text")
-    $(this).siblings(".concept").get()
-                                .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") )
-                                .forEach( elem => elem.classList.add("selected-concept-text") );
+    if(targetConcepts.length == 1) {
+        
+        this.classList.add("selected-concept-text")
+        $(this).siblings(".concept").get()
+                                    .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") )
+                                    .forEach( elem => elem.classList.add("selected-concept-text") );
+        $("#targetSelector").append(new Option(selectedConcept, selectedConcept))
+                            .val(selectedConcept)
+                            .addClass("filled");
+
+    } else {
+        let targetSelector = $("#targetSelector")
+        targetSelector.addClass("focused")
+            .css("cursor","pointer")
+            .attr("readonly",false)
+            .find("option[value='']")
+            .text("-> Select here the concept <-")
+            .css({
+                'text-align': 'center',
+                'text-align-last': 'center' // for Firefox
+            });
+        
+        for(concept of targetConcepts)
+            targetSelector.append(new Option(concept, concept))
+
+        // Aggiungi evento "change" per rilevare quando un'opzione viene selezionata
+        targetSelector.on("change", function() {
+            if ($(this).val() != "")
+                $(this).removeClass("focused").addClass("filled");
+        });
+        
+    }
+
+    //let selectedConcept = targetConcepts[targetConcepts.indexOf(prevSelectedConcept)+1 >= targetConcepts.length ? 0 : targetConcepts.indexOf(prevSelectedConcept)+1]
+    
+    
 
 
     //let concept = $($(this).attr("concept").trim().split(" ")).last().get()[0];
-    //if ($("#target").val() == "") {
-    $("#target").val(selectedConcept.replaceAll("_", " "));
+    //if ($("#targetSelector").val() == "") {
   
     if (selectedConcept.split(" ").length > 1) {
-      targetSentID = $(this).closest("[lemma='" + selectedConcept.split("_")[0] + "']").attr("sent_id");
-      targetWordID = $(this).closest("[lemma='" + selectedConcept.split("_")[0] + "']").attr("word_id");
+      targetSentID = $(this).closest("[lemma='" + selectedConcept.split(" ")[0] + "']").attr("sent_id");
+      targetWordID = $(this).closest("[lemma='" + selectedConcept.split(" ")[0] + "']").attr("word_id");
       targetTime = parseFloat($(this).find("[start_time]").attr("start_time"))
     } else {
       targetSentID = $(this).attr("sent_id");
@@ -108,7 +137,7 @@ function addRelation(replaceIndx){
     let prereq = document.getElementById("prerequisite").value;
     let weight = document.getElementById("weight").value;
     weight = weight.charAt(0).toUpperCase() + weight.slice(1);
-    let target = document.getElementById("target").value;
+    let target = document.getElementById("targetSelector").value;
 
     if ((prereq === "") || (target === "")) {
       alert("Concepts must be non-empty!");
@@ -136,6 +165,7 @@ function addRelation(replaceIndx){
     if(targetSentID != null){
         sentID = targetSentID;
         wordID = targetWordID;
+        curr_time = targetTime;
     // otherwise find them in the sentences after
     }else{
       let ids = getSentenceIDandWordID(curr_time, target.replaceAll(" ","_"));
@@ -185,60 +215,19 @@ function addRelation(replaceIndx){
         relations.push(relToInsert)
     else
         relations[replaceIndx] = relToInsert
-    printRelations();
+    $(".relations-sortable-header.ascending, .relations-sortable-header.descending").each(function (){
+        if(this.classList.contains("ascending"))
+            this.classList.replace("ascending","descending");
+        else
+            this.classList.replace("descending","ascending");
+        sortRelations(this);
+    });
     closeRelationDiv();
 
     targetSentID = null
     targetWordID = null
+    targetTime = null
     uploadManuGraphOnDB()
-}
-
-function deleteRelation(button, target, prereq, weight, time) {
-
-    if(!$(button).hasClass("active")) {
-        $(".icon-button.trash.active").removeClass("active")
-        $(button).addClass("active");
-        setTimeout(function() {
-            $(button).removeClass("active").blur();
-        }, 3000);
-        return
-    }
-
-    $(".icon-button.trash.active").removeClass("active")
-    
-    /* remove row with fade out*/
-    let row = $(button).closest('tr')
-    $(row)
-            .children('td, th')
-            .animate({
-            padding: 0
-        })
-            .wrapInner('<div />')
-            .children()
-            .slideUp(function () {
-            $(row).remove();
-        });
-
-
-    let check = false
-    for(let i=0; i<relations.length; i++){
-
-        if(relations[i].target == target &&
-           relations[i].prerequisite == prereq &&
-           relations[i].weight == weight &&
-           relations[i].time.split(":").filter(elem => elem != "00").join(":") == time){
-            relations.splice(i,1)
-            check = true;
-            break
-        }
-    }
-
-    if(!check)
-        alert("error in removing relation!")
-
-    uploadManuGraphOnDB()
-    //console.log(relations)
-
 }
 
 function pushDefinition(concept, start, end, startSentID, endSentID, description_type){
@@ -325,7 +314,7 @@ function editConceptAnnotation(button, concept, start_time, end_time, descriptio
                                             }
                                         });
                                         uploadManuGraphOnDB();
-                                        printDefinitions();
+                                        printDescriptions();
                                         closeDefinitionDiv();
                                     });
     
@@ -338,44 +327,131 @@ function editConceptAnnotation(button, concept, start_time, end_time, descriptio
 }
 
 function deleteDefinition(button, concept, start, end){
-
-    if(!$(button).hasClass("active")) {
-        $(".icon-button.trash.active").removeClass("active")
-        $(button).addClass("active");
-        setTimeout(function() {
-            $(button).removeClass("active").blur();
-        }, 1500);
-        return
-    }
     $(".icon-button.trash.active").removeClass("active")
+    $(button).addClass("active");
+    confirmDeletion(button, {"concept": concept, "start": start, "end": end})
+    setTimeout(function() {
+        $(button).removeClass("active").blur();
+    }, 1500);
+}
 
-    let toDelete
+function deleteRelation(button, target, prereq, weight, time) {
+    $(".icon-button.trash.active").removeClass("active")
+    $(button).addClass("active");
+    confirmDeletion(button, { "target":target, "prereq":prereq, "weight":weight, "time":time });
+    setTimeout(function() {
+        $(button).removeClass("active").blur();
+    }, 3000);
+}
 
-    for(let i in definitions){
+function confirmDeletion(button, fields){
 
-        if(concept == definitions[i].concept && start == definitions[i].start && end == definitions[i].end){
-            toDelete = i
-            break
-        }
-
+    // Hide the box
+    function closeConfirmBox() {
+        $("#confirmDeleteBox").fadeOut(200, function() {
+            $('body').css('overflow', 'auto'); // Ripristina lo scrolling
+            $(this).remove()
+        }).undim();
     }
-    /* remove row with fade out*/
-    let row = $(button).closest('tr')
-    if(button!=null)
-        $(button).closest('tr')
-                .children('td, th')
-                .animate({
-                    padding: 0
-                })
-                .wrapInner('<div />')
-                .children()
-                .slideUp(function () {
-                    $(row).remove();
-                });
 
-    definitions.splice(toDelete, 1)
-    definedConcepts.splice(toDelete, 1)
-    uploadManuGraphOnDB()
+    $("<div></div>", {
+        class: 'box',
+        id: "confirmDeleteBox",
+        css: {
+            position: 'absolute',
+            top: '50%',
+            left: '105%',
+            width: 'auto',
+            minWidth: '260px',
+            height: 'auto',
+            backgroundColor: 'white',
+            border: '2px solid gray',
+            borderRadius: '10px',
+            transform: 'translate(-50%, -50%)',
+            display: 'none',
+            padding: '1em',
+            textAlign: 'center'
+        }
+    }).appendTo($(button).closest(".table"))
+    const box = $("#confirmDeleteBox")
+  
+    // Add confirmation text
+    let kind = $(button).closest("div").attr("id").slice(0,-1)
+    let title = $(`<div><h5>Confirm ${kind} delete?</h5></div>`).css({
+      color: '#333'
+    }).appendTo(box);
+    $('<hr>').css("margin-bottom","3em").appendTo(title);
+
+    // Create button container for symmetry
+    const buttonsContainer = $("<div></div>").css("margin-top","4em").appendTo(title);
+
+    // Add 'No' button
+    $("<button class='btn btn-primary btn-addrelation btn-dodgerblue'>No</button>").css({
+      position: 'absolute',
+      bottom: '1em',
+      left: '5%'
+    }).on("click", function() {
+        closeConfirmBox() // Restore scroll on close
+    }).appendTo(buttonsContainer);
+
+    // Add 'Yes' button
+    $("<button class='btn btn-primary btn-addrelation delete'>Yes</button>").css({
+      position: 'absolute',
+      bottom: '1em',
+      left: '55%'
+    }).on("click", function() {
+        closeConfirmBox()
+        /* remove row with fade out*/
+        let row = $(button).closest('tr')
+        if(button!=null)
+            $(button).closest('tr')
+                    .children('td, th')
+                    .animate({
+                        padding: 0
+                    })
+                    .wrapInner('<div />')
+                    .children()
+                    .slideUp(function () {
+                        $(row).remove();
+                    });
+        if(kind == "description") {
+            let concept = fields["concept"]
+            let start = fields["start"]
+            let end = fields["end"]
+            let toDelete
+            for(let i in definitions){
+                if(concept == definitions[i].concept && start == definitions[i].start && end == definitions[i].end){
+                    toDelete = i
+                    break
+                }
+            }
+            definitions.splice(toDelete, 1)
+            definedConcepts.splice(toDelete, 1)
+        } else {
+            let target = fields["target"]
+            let prereq = fields["prereq"]
+            let weight = fields["weight"]
+            let time = fields["time"]
+            for(let i=0; i<relations.length; i++){
+            
+                if(relations[i].target == target &&
+                   relations[i].prerequisite == prereq &&
+                   relations[i].weight == weight &&
+                   relations[i].time.split(":").filter(elem => elem != "00").join(":") == time){
+                    relations.splice(i,1)
+                    check = true;
+                    break
+                }
+            }
+        }
+        uploadManuGraphOnDB()
+    }).appendTo(buttonsContainer);
+
+    box.css({opacity: 0, display: 'flex'}).animate({
+      opacity: 1
+    }, 600).dimBackground({ darkness: .7 });
+    //$('body').css('overflow', 'hidden');
+
 }
 
 
@@ -508,9 +584,9 @@ function changeWeight(selectElement, target, prerequisite, time) {
 }
 
 
-function printDefinitions(){
+function printDescriptions(){
 
-    let definitionTable = document.getElementById("definitionsTable")
+    let definitionTable = document.getElementById("descriptionsTable")
 
     definitionTable.innerHTML = ""
 

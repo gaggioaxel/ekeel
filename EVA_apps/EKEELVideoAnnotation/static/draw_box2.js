@@ -446,13 +446,13 @@ function afterAddBoundingBox(element){
     $("#newRelationTitle").text("Edit Relation").get()[0].parentElement.children[1].style.display ="none";
 
     $("#prerequisite").prop("value", relation[1].innerText).prop("readonly",true);
-    $("#target").prop("value", relation[0].innerText).prop("readonly",true);
+    $("#targetSelector").prop("value", relation[0].innerText).prop("readonly",true);
 
     function revertChanges(){
         $("#newRelationTitle").text("Add Relation") // change back title text
                               .get()[0].parentElement.children[1].style.display ="block"; //show again the hint
         $("#prerequisite").prop("readonly",false);
-        $("#target").prop("readonly",false);
+        $("#targetSelector").prop("readonly",false);
         $("button.clone").remove()
         $("#insertRelationButton").show()
         $("#closeRelationButton").show()

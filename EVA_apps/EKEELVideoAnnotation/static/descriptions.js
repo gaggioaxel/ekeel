@@ -144,7 +144,7 @@ function sortDescriptions(element){
     if (element == null) {
         definitions.sort((a,b) => timeToSeconds(a.start) - timeToSeconds(b.start))
         $(".descriptions-sortable-header").get()[1].classList.add("ascending") 
-        printDefinitions()
+        printDescriptions()
         setCookie("sort-pref-descriptions","StartA")
         return
     // the relations have been sorted by cookie
@@ -198,7 +198,7 @@ function sortDescriptions(element){
             break
     }
     definitions.sort(fnc)
-    printDefinitions()
+    printDescriptions()
     setCookie("sort-pref-descriptions",element.innerHTML+(flipped_sorting_order=="ascending" ? "A" : "D"))
 }
 

@@ -112,7 +112,7 @@ function showRelationDiv(){
   $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
 
   document.getElementById("prerequisite").value = ""
-  document.getElementById("target").value = ""
+  document.getElementById("targetSelector").value = ""
 
   player.pause()
   UpdateMarkers(player.currentTime())
@@ -125,6 +125,8 @@ function showRelationDiv(){
   $('#transcript-in-relation').dimBackground();
   $('#transcript-in-relation').show();
   $('#relation').dimBackground();
+  //$("#targetSelector").addClass("focused");
+
   //$('#relationText').dimBackground();
   
   
@@ -134,6 +136,7 @@ function showRelationDiv(){
 
   targetSentID = null
   targetWordID = null
+  targetTime = null
 }
 
 function closeRelationDiv(){
