@@ -115,6 +115,7 @@ function showVocabularyDiv(){
   //$("html, body").animate({ scrollTop: 0 }, "slow");
   $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
   $("#conceptsModal").dimBackground({ darkness: .75, fadeInDuration: 600})
+  $("input[name='askConfirmDeleteConcept']").prop("checked", !(getCookie("pref-skip-confirm-delete-concept") == "true"))
 
   document.getElementById("newConcept").value = ""
   document.getElementById("errorConcept").style.display = "none"
@@ -632,19 +633,10 @@ function confirmConceptDeletion(button, concept){
   let title = $(`<div>
                     <h5>Confirm delete?</h5>
                     <span>Navigate also with arrow keys and select with ENTER</span>
-                    <label style="margin-top: 10px">
-                      Ask every time?
-                        <input type="checkbox" checked="true" style="margin-left: 10px;" id="askConfirmDeleteConcept"> 
-                    </label>
                  </div>`).css({
     color: '#333',
     width: '250px'
   }).appendTo(box);
-
-  // Event listener for checkbox
-  $('#askConfirmDeleteConcept').change(function() {
-    document.cookie = `pref-skip-confirm-delete-concept-confirm=${!this.checked}; path=/annotator;`;
-  })
   
   $('<hr>').css("margin-bottom","3em").appendTo(title);
 
@@ -733,7 +725,7 @@ function deleteConcept(button,concept) {
     if (!$("#cannotDeleteConceptAlert").is(":visible")) {
       $(".custom-modal").css("height","570px")
       $("#cannotDeleteConceptAlert").fadeIn(150).delay(4000).fadeOut(200, function(){
-        $(".custom-modal").css("height","540px")
+        $(".custom-modal").css("height","550px")
       });
     }
     return
@@ -742,7 +734,7 @@ function deleteConcept(button,concept) {
   $(".icon-button.trash.active").removeClass("active")
   $(button).addClass("active");
 
-  if(getCookie("pref-skip-confirm-delete-concept-confirm") == "true"){
+  if(!$("input[name='askConfirmDeleteConcept']").is(":checked")){
     removeConcept(button, concept)
     $(".icon-button.trash.active").removeClass("active")
     return
@@ -840,9 +832,13 @@ function highlightConcept(concept, div_id) {
 
 
 function toggleAnnotationStatus(){
-
   const checkbox = document.querySelector(".switch input");
   isCompleted = checkbox.checked;
   uploadManuGraphOnDB();
 
+}
+
+function toggleAskConfirmConceptDelete(){
+  const wantConfirm = $("input[name='askConfirmDeleteConcept']").is(":checked")
+  document.cookie = `pref-skip-confirm-delete-concept=${!wantConfirm}; path=/annotator;`;
 }

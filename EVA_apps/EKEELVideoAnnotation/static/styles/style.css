@@ -562,8 +562,8 @@ td .btn {
 
 .custom-modal {
   width: 600px;
-  height: 540px;
-  position: absolute;
+  height: 550px;
+  position: relative;
 }
 
 .rectangle-container {

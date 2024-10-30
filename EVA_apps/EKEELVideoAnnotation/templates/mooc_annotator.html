@@ -359,7 +359,7 @@
               </button>
             </div>
             <div class="col switch-container mr-3">
-              <label><strong>Mark as Annotated:</strong></label>
+              <label><strong>Mark as Annotated</strong></label>
               <label class="switch">
                 <input onchange="toggleAnnotationStatus()" type="checkbox">
                 <span class="slider round"></span>
@@ -503,6 +503,13 @@
       </div>
 
       <div class="modal-footer">
+        <div class="col switch-container mr-3" style="justify-content: flex-start; margin-top: 10px">
+          <label>Ask confirm on delete</label>
+          <label class="switch">
+            <input name="askConfirmDeleteConcept" onchange="toggleAskConfirmConceptDelete()" checked="true" type="checkbox">
+            <span class="slider round"></span>
+          </label>
+        </div>
         <button type="button" class="btn btn-secondary" onclick="closeVocabularyDiv()" data-dismiss="modal">Close</button>
       </div>
     </div>
