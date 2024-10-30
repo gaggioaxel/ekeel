@@ -746,8 +746,7 @@ class VideoAnalyzer:
         #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
         if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
             return
-        #if "pos" in self.data["transcript_data"]["text"][0]["words"][0].keys():
-        #    return
+
         
         timed_transcript = self.data["transcript_data"]["text"].copy()
         language = self.identify_language()
@@ -763,27 +762,16 @@ class VideoAnalyzer:
         tagged_sentences = api_obj.wait_for_pos_tagging(doc_id)
         
         tagged_transcript = {"full_text":"", "words":[]}
-        #start_word_indx = 0
         for sentence in tagged_sentences:
             tagged_transcript["full_text"] += sentence["sentence"]+" "
             for word in sentence["words"]:
-                #if word["pos"] in ["FC","FF","FS"]:
-                #    start_word_indx -= 1
                 word = {"word":     word["word"] if len(word["word"]) == 1 or (len(word["word"]) > 1 and not word["word"].endswith("-")) else word["word"][:-1], 
                         "lemma":    word["lemma"], 
                         "pos":      word["pos"], 
                         "gen":      word["gen"], 
                         "cpos":     word["cpos"],
-                        "num":      word["num"]}#,
-                        #"indx_first_letter":start_word_indx}
-                #if word["cpos"] == "V" and word["word"].endswith("-"):
-                #    word["word"] = word["word"][:-1]
-                #    start_word_indx -= 1
-                #start_word_indx += len(word["word"]) + 1
-                #if (word["pos"] in ["EA","E"] or word["cpos"] == "R") and word["word"].endswith("'"):
-                #    start_word_indx -= 1
+                        "num":      word["num"]}
                 tagged_transcript["words"].append(word)
-            #assert tagged_transcript["full_text"][tagged_transcript["words"][-1]["indx_first_letter"]] == tagged_transcript["full_text"][-2]
 
         word_counter = 0
         tagged_transcript_words = tagged_transcript["words"]
@@ -843,12 +831,59 @@ class VideoAnalyzer:
         db_mongo.insert_video_data(self.data)
         return
 
-    def _get_words_lemma(self):
-        all_lemmas = {}
-        for sentence in self.data["transcript_data"]["text"]:
+    def lemmatize_an_italian_term(self, term):
+        nlp = NLPSingleton()
+        transcript = self.data["transcript_data"]["text"]
+        doc = nlp.lemmatize(term["term"],'it')
+        term["lemma"] = term["term"]
+        head = {}
+        for token in doc:
+            if token.dep_ == "ROOT":
+                head["text"] = token.text
+                head["lemma"] = token.lemma_
+                #head["gen"] = token.morph.get("Gender")[0] if len(token.morph.get("Gender")) else ""
+                #head["num"] = token.morph.get("Number")[0] if len(token.morph.get("Number")) else ""
+        words = re.split(r"(?: )|(?='[^ ]+)", term["term"])
+        
+        # if the lemma of the head matches or there is a frequency of 1, use it as it is
+        if head["lemma"] == head["text"] or term["frequency"] == 1:
+            return term
+        
+        lemmas = [token.lemma_ for token in doc]
+        
+        for indx, word in enumerate(words):
+            if word.startswith("'"):
+                words[indx-1] += "'"
+                words[indx] = word[1:]
+        curr_word_indx = 0
+        composed_words = [[]]
+        for sentence in transcript:
             for word in sentence["words"]:
-                all_lemmas[word["word"]] = word["lemma"]
-        return all_lemmas
+                if curr_word_indx == len(lemmas):
+                    composed_words.append([])
+                    curr_word_indx = 0
+                if word["lemma"] == lemmas[curr_word_indx]:
+                    composed_words[-1].append(word["word"])
+                    curr_word_indx += 1
+                elif curr_word_indx > 0 and word["lemma"] != lemmas[curr_word_indx]:
+                    composed_words[-1] = []
+                    curr_word_indx = 0
+        
+        composed_words = [" ".join(occurence) for occurence in composed_words if len(occurence)]
+        # TODO probably a wrong lemmatization and mismatch between spacy and ItaliaNLP
+        # Keep the lemma as the term
+        if len(composed_words) == 0:
+            return term
+        counts = Counter(composed_words).most_common()
+        targetLemma = [counts[0][0],counts[0][1]]
+        for lemma, occurrences in counts:
+            if targetLemma[1] == occurrences:
+                if targetLemma[0] == " ".join(lemmas):
+                    targetLemma = [lemma, occurrences]  
+            else:
+                break
+        term["lemma"] = targetLemma[0]
+        return term
 
     def lemmatize_terms(self):
         terms = self.data["transcript_data"]["terms"]
@@ -857,23 +892,10 @@ class VideoAnalyzer:
             sem_text = SemanticText("", language=lang)
             return [" ".join(sem_text.set_text(term["term"]).lemmatize()).replace(" ’","’") for term in terms]
         else:
-            words_lemmas = self._get_words_lemma()
-            lemmas = set(words_lemmas.values())
-            lemmatized_terms = []
+            # For every term check if the 
             for term in terms:
-                lemmatized_term = ""
-                for term_word in term["term"].split():
-                    if term_word in words_lemmas.keys(): # is text keyword
-                        lemma = words_lemmas[term_word]
-                    elif term_word in lemmas: # is already lemmatized
-                        lemma = term_word
-                    else: 
-                        raise Exception(f"word {term_word} of term {term} not in lemmas neither in transcript")
-                    lemmatized_term += " " + lemma
-
-                lemmatized_terms.append(lemmatized_term.strip())
-            
-            return lemmatized_terms
+                term.update(self.lemmatize_an_italian_term(term))
+            return [term["lemma"] for term in terms]
             
 ####################################
 
@@ -1231,7 +1253,8 @@ if __name__ == '__main__':
         print(video)
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
         #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
-        vid_analyzer.lemmatize_terms()
+        vid_analyzer.analyze_transcript()
+        
     #lemmatized_concepts = vid_analyzer.lemmatize_terms()
     #vid_analyzer.create_thumbnails()
     #vid_analyzer.analyze_video()

@@ -320,10 +320,10 @@ def html_interactable_transcript_word_level(sentences):
                                 f' sent_id="{str(sent_id)}"' +
                                 f' word_id="{str(word_id)}"' +
                                 f' start_time="{word["start"]}"' +
-                                f' cpos="{word["cpos"]}"' +
-                                f' gen="{word["gen"]}"' +
-                                f' num="{word["num"]}"' +
-                                f' pos="{word["pos"]}"' +
+                                #f' cpos="{word["cpos"]}"' +
+                                #f' gen="{word["gen"]}"' +
+                                #f' num="{word["num"]}"' +
+                                #f' pos="{word["pos"]}"' +
                                 f' end_time="{word["end"]}" >' +
                                 f'{word_text}' +
                             '</span>']

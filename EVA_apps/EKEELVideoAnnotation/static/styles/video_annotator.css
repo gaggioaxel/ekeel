@@ -210,7 +210,7 @@
     margin-right: 4px;
 }
 
-.highlighted {
+.highlighted-text {
     text-decoration: underline !important;
     font-weight: 600 !important;
 }

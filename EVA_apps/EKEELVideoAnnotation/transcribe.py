@@ -50,7 +50,7 @@ if __name__ == "__main__":
                     transcribed_data = load(f)
                 
                 os.remove(wav_path)
-                os.remove(json_path)
+                #os.remove(json_path)  # Don't remove json for debug purposes
                 
                 if language == "it":
                     transcribed_data = apply_italian_fixes(transcribed_data["segments"],min_segment_len=4)

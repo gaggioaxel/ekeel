@@ -53,9 +53,9 @@
         <div class="buttons">
 
             <button type="button" 
-                    onclick="showVocabulary($conceptVocabulary)" 
+                    onclick="showVocabularyDiv()" 
                     class="btn btn-primary btn-addrelation btn-dodgerblue" 
-                    data-toggle="modal" 
+                    data-toggle="modal"
                     data-target="#conceptsModal"
                     title="Add or remove concepts of the vocabulary and manage synonyms">
               Concepts & Synonyms
@@ -86,7 +86,7 @@
         <div class="col relations" style="margin-top:0.3%">
           <div style="display:flex">
             <h2>TRANSCRIPT</h2>
-            <div title="Clicking on the transcript text will move the video to that part of speech, concepts are highlighted, if clicked they will be selected">
+            <div title="Clicking on the transcript text will move the video to that part of speech, concepts are highlighted-text, if clicked they will be selected">
               <!-- Info by C. V. Galli from <a href="https://thenounproject.com/browse/icons/term/info/" target="_blank" title="Info Icons">Noun Project</a> (CC BY 3.0) -->
               <svg  xmlns="http://www.w3.org/2000/svg" 
                     xmlns:xlink="http://www.w3.org/1999/xlink" 
@@ -110,13 +110,13 @@
               </svg>
             </div>
           </div>
-          <hr style="margin-bottom:.3rem;">
           <div id="temp-transcript-warning"
                style="display:none; text-align:center; background-color: #edb95e; color: black;"
                title="It will be replaced by one transcribed from a model and annotations will be removed">
-                Warning! This transcript is temporary and will change, annotations will be lost!
+                The definitive transcript is loading and will change, annotations will be lost!
               <br>
           </div>
+          <hr style="margin-bottom:.3rem;">
           <div id="transcript" class="transcript"></div>
           <hr style="margin-top:.3rem;">
         </div>
@@ -391,8 +391,8 @@
 {% include 'graph.html' %}
 
 <!-- Modal concepts -->
-<div style="top:40px; left:-10%;" class="modal fade" id="conceptsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" style="right:100px" role="document">
+<div style="top:0%;" class="modal fade" id="conceptsModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="position: absolute; top:20vh; left:55vw;" role="document">
     <div class="modal-content custom-modal ">
 
       <div class="rectangle-container">
@@ -401,7 +401,7 @@
 
       <!-- Modal Concepts & Synonyms -->
       <div class="modal-body">
-          <button type="button" class="close" onclick="document.getElementById('filter-vocabulary').value = ''" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" onclick="closeVocabularyDiv()" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
 
@@ -495,9 +495,15 @@
           </div>
 
       </div>
+      
+      <div  id="cannotDeleteConceptAlert"
+            style="display:none; text-align:center; background-color: rgba(220, 20, 60, .4); color: black;">
+        Cannot delete an annotated concept.
+        <br>
+      </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="document.getElementById('filter-vocabulary').value = ''" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" onclick="closeVocabularyDiv()" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -613,6 +619,7 @@
       }
 
   </script>
+  <script src="{{ url_for('static', filename='network.js') }}"></script>
   <script src="{{ url_for('static', filename='draw_box2.js') }}"></script>
   <script src="{{ url_for('static', filename='graph_visualization.js') }}"></script>
   <script src="{{ url_for('static', filename='video_range_slider.js') }}"></script>
@@ -621,7 +628,6 @@
   <script src="{{ url_for('static', filename='create_graph.js') }}"></script>
   <script src="{{ url_for('static', filename='descriptions.js') }}"></script>
   <script src="{{ url_for('static', filename='segmentation.js') }}"></script>
-  <script src="{{ url_for('static', filename='download.js') }}"></script>
   <script src="{{ url_for('static', filename='autocomplete.js') }}"></script>
 
 

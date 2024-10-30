@@ -294,7 +294,7 @@ function showVocabularyBurst(inputVocabulary){
           "<a href=\"#"+href+"\" data-toggle=\"collapse\" aria-expanded=\"false\" id='menu_"+c+"' >"
 
       row += "<p id='concept_"+c+"' class=\" m-concept-text\">"+ conceptX +": </p>"
-      row += '<button class="icon-button trash" onclick="deleteConcept(this,'+"'"+c+"'"+')"><i class="fa-solid fa-trash"></i></button>'
+      row += '<button class="icon-button trash " onclick="deleteConcept(this,'+"'"+c+"'"+')"><i class="fa-solid fa-trash"></i></button>'
       if(synonymsX.length > 0)
         row += "<ul id='synonyms_"+c+"' class=\" m-synonym-text\"><li>"+ synonymsX +"</li></ul>"
     
@@ -306,6 +306,14 @@ function showVocabularyBurst(inputVocabulary){
 
 
 function deleteConcept(button,concept) {
+
+  $(".icon-button.trash.active").removeClass("active")
+  $(button).addClass("active");
+  confirmDeletion(button, {});
+  setTimeout(function() {
+      $(button).removeClass("active").blur();
+  }, 3000);
+  return
 
   //rimuovo riga della tabella
   $(button).closest('div').slideUp(function() {
@@ -671,7 +679,7 @@ function printDescriptions(definitions, update){
         let t = definitions[i].description_type
 
         let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s.split(":").filter(elem => elem != "00").join(":") + "</td><td>"+ e.split(":").filter(elem => elem != "00").join(":") +"</td><td>"+ t +"</td>"+
-            "<td><button class=\"icon-button\" " +
+            "<td><button class=\"icon-button \" " +
                 "onclick=\"playDefinition("+hmsToSeconds(s)+")\">" +
             "<i class=\"fa fa-play\"></i></button></td></tr>"
 

@@ -86,7 +86,7 @@
                     <img src="https://img.youtube.com/vi/{{ vid.video_id }}/hqdefault.jpg" video="{{ vid.video_id }}">
                     <div class="status-container">
                       {% if vid.annotation_status == "Completed" %}
-                        <button class="btn-expanding status" disabled>
+                        <button class="btn-expanding status completed" disabled>
                           <span class="checkmark">&#10004;</span>
                           <span class="label">Annotated</span>
                         </button>
@@ -184,27 +184,6 @@
         document.getElementById("breakButton").style.display = "block"
         
     }
-
-    //$("#breakButton").click(function(){
-    //  console.log("Breaking analysis....")
-    //  $.ajax({
-    //    url: '/annotator/stop_segmentation',
-    //    type : 'get',
-    //    success: function(result) {
-    //      console.log("Stopped Execution")
-    //    }
-    //  })
-    //});
-
-    //const checkbox = document.getElementById("waitSegmentationCheckbox");
-
-    //checkbox.addEventListener('change', function() {
-    //  if (this.checked) {
-    //    console.log('Checkbox is checked');
-    //  } else {
-    //    console.log('Checkbox is not checked');
-    //  }
-    //});
 
     $('#addVideoModal').on('shown.bs.modal', function () {
         if (document.getElementById('frontPopupWindowTextContainer').style.display !== 'none') {

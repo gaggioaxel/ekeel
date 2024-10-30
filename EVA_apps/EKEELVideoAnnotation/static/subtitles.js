@@ -13,8 +13,6 @@ MarkersInit("#transcript-in-relation.sentence-marker", in_relation_markers);
 
 $("#transcript, #transcript-in-description").on("click", ".concept", function (e) {
 
-  //TODO far si che se il parent e' in-relation allora non selezionare tutti i sinonimi ma solo il concetto
-
   let conceptElements = document.getElementsByClassName("concept");
 
   let in_description = e.target.parentElement.classList.contains("sentence-marker-in-description");
@@ -49,7 +47,10 @@ $("#transcript, #transcript-in-description").on("click", ".concept", function (e
 
   document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText || "--";
 
-  $("[concept~='" +  selectedConcept + "']")
+  $("#transcript").find("[concept]")
+    .filter(function() {
+      return $(this).attr("concept").includes(" "+selectedConcept+" ");
+    })
     .get()
     .forEach(function(element) { 
       element.classList.add("selected-concept-text") 
@@ -137,6 +138,11 @@ function showRelationDiv(){
   targetSentID = null
   targetWordID = null
   targetTime = null
+
+  $(document).on('keydown', function(event) {
+    if (event.key === 'Escape')
+        closeRelationDiv();
+  });
 }
 
 function closeRelationDiv(){
@@ -155,6 +161,7 @@ function closeRelationDiv(){
 
   removeCanvas()
   state="home"
+  $(document).off('keydown');
 }
 
 function addSubtitles(id){
@@ -301,18 +308,18 @@ function highlightExplanationInTranscript(start, end, parent_id, class_field) {
   // Iterate over each subtitle element to highlight the matching ones
   subtitleElements.forEach((element,index) => {
     element.querySelectorAll('span').forEach(function(word) {
-      word.classList.remove('highlighted');
+      word.classList.remove('highlighted-text');
       wordStart = parseFloat(word.getAttribute('start_time'));
       wordEnd = parseFloat(word.getAttribute('end_time')) 
       if (wordStart >= definition_start & wordEnd <= definition_end)
-        word.classList.add('highlighted');
+        word.classList.add('highlighted-text');
     });
   });
 }
 
 function playExplanation(button, start, end, parent_id, class_field) {
   if ($(button).hasClass("active")){
-    $("highlighted").removeClass("highlighted");
+    $("highlighted-text").removeClass("highlighted-text");
     $(button).removeClass("active");
     player.currentTime(prevTime);
     player.pause();
@@ -334,7 +341,7 @@ function playExplanation(button, start, end, parent_id, class_field) {
       player.pause();
       player.currentTime(prevTime);
       $(".play-definition.active").removeClass("active");
-      $(".highlighted").removeClass("highlighted");
+      $(".highlighted-text").removeClass("highlighted-text");
       player.off("timeupdate")
       player.on("timeupdate", function (){ UpdateMarkers(player.currentTime()) })
     }

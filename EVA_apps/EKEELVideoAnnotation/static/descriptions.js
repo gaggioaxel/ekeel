@@ -25,8 +25,11 @@ function showDefinitionDiv(reset_fields){
     $("#playButton").removeClass("paused")
     state = "desc"
 
-    // Add event listener for Escape key
-    document.addEventListener('keydown', handleKeys);
+    $(document).on('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeDefinitionDiv();
+        }
+    });
 
 }
 
@@ -45,18 +48,10 @@ function closeDefinitionDiv(){
     $("#position_indicator").remove()
     document.getElementById("timeSlider").innerHTML = ""
 
-    // Add event listener for Escape key
-    document.removeEventListener('keydown', handleKeys);
     state = "home"
     highlightExplanationInTranscript(-1, -1, "#transcript-in-description", ".sentence-marker-in-description")
 
-
-}
-
-function handleKeys(event) {
-    if (event.key === 'Escape') {
-        closeDefinitionDiv();
-    }
+    $(document).off('keydown');
 }
 
 function changeColor(){
@@ -145,7 +140,7 @@ function sortDescriptions(element){
         definitions.sort((a,b) => timeToSeconds(a.start) - timeToSeconds(b.start))
         $(".descriptions-sortable-header").get()[1].classList.add("ascending") 
         printDescriptions()
-        setCookie("sort-pref-descriptions","StartA")
+        setCookie("pref-sort-descriptions","StartA")
         return
     // the relations have been sorted by cookie
     } else if(typeof element == "string") {
@@ -199,10 +194,10 @@ function sortDescriptions(element){
     }
     definitions.sort(fnc)
     printDescriptions()
-    setCookie("sort-pref-descriptions",element.innerHTML+(flipped_sorting_order=="ascending" ? "A" : "D"))
+    setCookie("pref-sort-descriptions",element.innerHTML+(flipped_sorting_order=="ascending" ? "A" : "D"))
 }
 
-sortDescriptions(getCookie('sort-pref-descriptions'))
+sortDescriptions(getCookie('pref-sort-descriptions'))
 
 
 function sortRelations(element){
@@ -210,7 +205,7 @@ function sortRelations(element){
         relations.sort((a,b) => timeToSeconds(a.time) - timeToSeconds(b.time))
         $(".relations-sortable-header").get()[3].classList.add("ascending")
         printRelations()
-        setCookie("sort-pref-relations","Start timeA")
+        setCookie("pref-sort-relations","Start timeA")
         return
     // the relations have been sorted by cookie
     } else if(typeof element == "string") {
@@ -265,7 +260,7 @@ function sortRelations(element){
     }
     relations.sort(fnc)
     printRelations()
-    setCookie("sort-pref-relations",element.innerHTML+(flipped_sorting_order=="ascending" ? "A" : "D"))
+    setCookie("pref-sort-relations",element.innerHTML+(flipped_sorting_order=="ascending" ? "A" : "D"))
 }
 
-sortRelations(getCookie('sort-pref-relations'))
+sortRelations(getCookie('pref-sort-relations'))

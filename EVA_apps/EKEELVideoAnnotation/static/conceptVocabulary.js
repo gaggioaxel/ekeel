@@ -71,6 +71,7 @@ function showVocabulary(inputVocabulary) {
   document.getElementById("errorConcept").style.display = "none"
 
   player.pause()
+  UpdateMarkers(player.currentTime())
 
   document.getElementById("conceptVocabularyContent").innerHTML = ""
 
@@ -103,8 +104,110 @@ function showVocabulary(inputVocabulary) {
   
     row += "</div>"
 
-    document.getElementById("conceptVocabularyContent").innerHTML += row
+    document.getElementById("conceptVocabularyContent").innerHTML += row;
   }
+}
+
+function showVocabularyDiv(){
+  
+  state="concepts"
+  clearAnnotatorVisualElements()
+  //$("html, body").animate({ scrollTop: 0 }, "slow");
+  $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
+  $("#conceptsModal").dimBackground({ darkness: .75, fadeInDuration: 600})
+
+  document.getElementById("newConcept").value = ""
+  document.getElementById("errorConcept").style.display = "none"
+
+  player.pause()
+  UpdateMarkers(player.currentTime())
+
+  let vocabulary = sortVocabulary($conceptVocabulary);
+
+  for(let c in vocabulary) {
+
+    c_in_text = c.replaceAll("'","’")
+    let conceptX = c.replaceAll("_"," ")
+    let synonymsX = ""
+
+    for(let i=0; i<vocabulary[c].length; i++) {
+
+      //console.log(vocabulary[c][i])
+      let syn = vocabulary[c][i].replaceAll("_"," ")
+      synonymsX = synonymsX + syn
+      if(i < vocabulary[c].length -1) {
+        synonymsX +=  ", "
+      }
+    }
+
+    let href = "sub" + c_in_text
+    let row ='<div class=\" list-group-item list-group-item-action concept-row toRemove\"> ' +
+        '<a href=\"#'+href+'\" data-toggle=\"collapse\" aria-expanded=\"false\" id="menu_'+c_in_text+'" >'
+
+    row += '<p id="concept_'+c_in_text+'" class=\" m-concept-text\">'+ conceptX +': </p>'
+    row += '<button class="icon-button trash" onclick="deleteConcept(this,'+"'"+c_in_text+"'"+')"><i class="fa-solid fa-trash"></i></button>'
+    if(synonymsX.length > 0)
+      row += '<ul id="synonyms_'+c_in_text+'" class=\" m-synonym-text\"><li>'+ synonymsX +'</li></ul>'
+  
+    row += "</div>"
+
+    document.getElementById("conceptVocabularyContent").innerHTML += row;
+  }
+
+  let transcriptElement = $('#transcript.transcript')
+
+  // Store the original CSS values in an object
+  originalTranscriptCSS = {
+    position: transcriptElement.css('position'),
+    right: transcriptElement.css('right'),
+    top: transcriptElement.css('top'),
+    width: transcriptElement.css('width'),
+    minWidth: transcriptElement.css('min-width'),
+    height: transcriptElement.css('height'),
+    overflow: transcriptElement.css('overflow'),
+    padding: transcriptElement.css('padding'),
+    border: transcriptElement.css('border'),
+    borderRadius: transcriptElement.css('border-radius')
+  };
+
+  // Apply CSS to position the cloned transcript to the right of the modal-content
+  transcriptElement.css({
+      'position': 'absolute',
+      'right': '650px', // Adjust this value to control the distance from the modal
+      'top': '-10vh',
+      'width': '30vw',
+      'min-width': '300px',
+      'height': "70vh",
+      'overflow': 'auto',
+      'padding': '10px 20px 0px',
+      'border': '1px solid rgba(0,0,0,.2)',
+      'border-radius': '.3rem'
+  });
+
+  // Ensure modal-content is positioned relatively
+  $('#conceptsModal').find('.modal-content')
+                     .css('position', 'relative')
+                     .append(transcriptElement.detach());
+
+  $(document).on('keydown.dismiss', function(event) {
+    if (event.key === 'Escape')
+        closeVocabularyDiv();
+  });
+
+}
+
+function closeVocabularyDiv(){
+  $(document).off('keydown.dismiss')
+  state="home"
+  document.getElementById('filter-vocabulary').value = ''
+  document.getElementById("conceptVocabularyContent").innerHTML = ''
+  let detachedTranscript = $('#conceptsModal').find("#transcript.transcript").detach();
+
+  // Re-append to #right-body .col.relations as the third child
+  $('#right-body .col.relations').children().eq(2).after(detachedTranscript);
+  detachedTranscript.css(originalTranscriptCSS)
+
+  $("#conceptsModal").undim({ fadeOutDuration: 600 }).hide()
 }
 
 $(document).on("click", ".concept-row", function (e) {
@@ -149,7 +252,7 @@ $(document).on("click", ".concept-row", function (e) {
   obj = []
   occurrences = []
   for(let occurrence of occurrences_text) {
-    if (occurrence.getAttribute("lemma") == conceptWords[conceptWords.length-1]){
+    if (occurrence.getAttribute("lemma") == conceptWords[conceptWords.length-1] || occurrence.innerText.trim() == conceptWords[conceptWords.length-1]){
       obj.push(occurrence);
       occurrences.push(obj);
       obj = []
@@ -175,6 +278,8 @@ $(document).on("click", ".concept-row", function (e) {
     }
   }
 
+  if (occurrences.length == 0)
+    return
 
   let focusIndex = -1;
   for (let i in occurrences){
@@ -187,10 +292,7 @@ $(document).on("click", ".concept-row", function (e) {
   // Scroll the second nearest element into view
   let scrollToElem = occurrences[(focusIndex+1) % occurrences.length][0]
   
-  scrollToElem.parentNode.scrollTo({
-    top: scrollToElem.offsetTop - scrollToElem.parentNode.offsetTop,
-    behavior: 'smooth'
-  });
+  scrollToElem.scrollIntoView({ behavior: "smooth", block: "center" });
 
 });
 
@@ -431,22 +533,16 @@ function removeSynonym(){
   showMsg("errorRemoveSynonym", "green")
 }
 
-
-function deleteConcept(button,concept) {
-
-  console.log(concept)
-  //concept = concept.replaceAll(" ’ ","'")
-
+function removeConcept(button, concept){
   //rimuovo riga della tabella
   $(button).closest('div').slideUp(function() {
     $(this).remove();
   });
 
-
   let synonymsToDel = $conceptVocabulary[concept];
+  
   //cancello concetto e i sinonimi
   delete $conceptVocabulary[concept];
-  
   for (let word in $conceptVocabulary) {
     if(word !== concept) {
       $conceptVocabulary[word] = $conceptVocabulary[word].filter(item => item !== concept);
@@ -494,7 +590,6 @@ function deleteConcept(button,concept) {
       if (element.getAttribute("concept").trim().length == 0)
         element.classList.remove("concept");
   })
-  
   document.getElementById("transcript-selected-concept").innerHTML = "--";
   document.getElementById("transcript-selected-concept-synonym").innerHTML = "--";
 
@@ -507,19 +602,162 @@ function deleteConcept(button,concept) {
   uploadManuGraphOnDB()
 }
 
-let concepts_spanned = {}
-let max_spans = 10
-for (let i=1; i<= max_spans; i++)
-  concepts_spanned[i] = []
+function confirmConceptDeletion(button, concept){
+
+  $("#confirmDeleteConceptBox").remove()
+
+  $("<div></div>", {
+      class: 'box',
+      id: "confirmDeleteConceptBox",
+      css: {
+          position: 'relative',
+          top: '-50%',
+          left: '130%',
+          width: '260px',
+          height: 'auto',
+          backgroundColor: 'white',
+          border: '2px solid gray',
+          borderRadius: '10px',
+          transform: 'translate(-50%, -50%)',
+          display: 'none',
+          padding: '1em',
+          textAlign: 'center',
+          zIndex: '1'
+      }
+  }).appendTo($(button).closest(".modal-content"))
+  
+  const box = $("#confirmDeleteConceptBox")
+
+  // Add confirmation text
+  let title = $(`<div>
+                    <h5>Confirm delete?</h5>
+                    <span>Navigate also with arrow keys and select with ENTER</span>
+                    <label style="margin-top: 10px">
+                      Ask every time?
+                        <input type="checkbox" checked="true" style="margin-left: 10px;" id="askConfirmDeleteConcept"> 
+                    </label>
+                 </div>`).css({
+    color: '#333',
+    width: '250px'
+  }).appendTo(box);
+
+  // Event listener for checkbox
+  $('#askConfirmDeleteConcept').change(function() {
+    document.cookie = `pref-skip-confirm-delete-concept-confirm=${!this.checked}; path=/annotator;`;
+  })
+  
+  $('<hr>').css("margin-bottom","3em").appendTo(title);
+
+  // Create button container for symmetry
+  const buttonsContainer = $("<div></div>").css("margin-top","4em").appendTo(title);
+
+  // Add 'No' button
+  $("<button class='btn btn-primary btn-addrelation btn-dodgerblue'>No</button>")
+    .css({
+      position: 'absolute',
+      bottom: '1em',
+      left: '5%'
+    })
+    .on("click", function() {
+      $("#confirmDeleteConceptBox").fadeOut(150, function() {
+        $('body').css('overflow', 'auto'); // Ripristina lo scrolling
+        $(this).remove()
+      });
+      $(document).off("keydown.navigate")
+      $(button).removeClass("active").blur();
+    })
+    .appendTo(buttonsContainer);
+
+  // Add 'Yes' button
+  $("<button class='btn btn-primary btn-addrelation delete'>Yes</button>")
+    .css({
+      position: 'absolute',
+      bottom: '1em',
+      left: '55%'
+    })
+    .on("click", function() {
+
+      $("#confirmDeleteConceptBox").fadeOut(150, function() {
+        $('body').css('overflow', 'auto'); // Ripristina lo scrolling
+        $(this).remove()
+      });
+      $(document).off("keydown.navigate")
+      
+      removeConcept(button,concept)
+
+    }).appendTo(buttonsContainer);
+
+  $(document).on('keydown.navigate', function(event) {
+    const yesButton = $(".btn:contains('Yes')");  // Select the button with text "Yes"
+    const noButton = $(".btn:contains('No')");    // Select the button with text "No"
+
+    // Check which key was pressed
+    switch(event.key) {
+      case 'ArrowRight':
+          yesButton.focus();  // Focus the "Yes" button on left arrow
+          break;
+      case 'ArrowLeft':
+          noButton.focus();   // Focus the "No" button on right arrow
+          break;
+      case 'Enter':
+          // If "Yes" is focused, click it; if "No" is focused, click it
+          if (yesButton.is(':focus')) {
+              yesButton.click();
+          } else if (noButton.is(':focus')) {
+              noButton.click();
+          }
+          break;
+    }
+  });
+
+  // Show the box
+  box.css({opacity: 0, display: 'flex'}).animate({
+    opacity: 1
+  }, 200)
+  $(".btn:contains('No')").focus();
+  //$('body').css('overflow', 'hidden');
+
+}
+
+function deleteConcept(button,concept) {
+  // Check if the concept is part of relations or definitions
+  const isInRelations = relations.some(
+    (relation) => relation.prerequisite === concept || relation.target === concept
+  );
+  const isInDefinitions = definitions.some(
+    (definition) => definition.concept === concept
+  );
+
+  // Show alert if concept cannot be deleted
+  if (isInRelations || isInDefinitions) {
+    if (!$("#cannotDeleteConceptAlert").is(":visible")) {
+      $(".custom-modal").css("height","570px")
+      $("#cannotDeleteConceptAlert").fadeIn(150).delay(4000).fadeOut(200, function(){
+        $(".custom-modal").css("height","540px")
+      });
+    }
+    return
+  } 
+
+  $(".icon-button.trash.active").removeClass("active")
+  $(button).addClass("active");
+
+  if(getCookie("pref-skip-confirm-delete-concept-confirm") == "true"){
+    removeConcept(button, concept)
+    $(".icon-button.trash.active").removeClass("active")
+    return
+  }
+  confirmConceptDeletion(button, concept);  
+}
 
 /* highlight a concept in a div with id div_id */
 function highlightConcept(concept, div_id) {
 
   let words = concept.split(" ")
   let foundAny = false; 
-
+  let elements = $("#" + div_id + " [lemma='" + words[0] + "'], #" + div_id + " span[lemma]:contains('" + words[0] + "')")
   if(words.length == 1) {
-      $("#"+div_id+" [lemma='" + words[0]+ "']").each((_,conceptElem) => {
+    elements.each((_,conceptElem) => {
           let currentConcept = conceptElem.getAttribute("concept") || " "; // Get existing concept or a space string
           if (!currentConcept.includes(" " + words[0]+" ")) {
             currentConcept = currentConcept + words[0] + " ";
@@ -530,7 +768,7 @@ function highlightConcept(concept, div_id) {
         });
   } else {
 
-    $("#"+div_id+" [lemma='" + words[0] + "']").each(function () {
+    elements.each(function () {
 
       let allSpan = [this]
       let currentSpan = this
@@ -541,11 +779,12 @@ function highlightConcept(concept, div_id) {
       for(let j=1; j<words.length; j++){
 
         let nextSpan =  $(currentSpan).nextAll('span:first')
-        let nextWord
+        let nextWord = []
 
         if(nextSpan[0] !== undefined){
 
-          nextWord = nextSpan[0].attributes[0].nodeValue
+          nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text().trim()]
+          //nextWord = nextSpan[0].attributes[0].nodeValue
           currentSpan = nextSpan[0]
 
         }else{
@@ -558,15 +797,16 @@ function highlightConcept(concept, div_id) {
             if(nextRow !== undefined){
                 currentSpan = nextRow.find("span")[0]
                 if(currentSpan !== undefined)
-                    nextWord = currentSpan.attributes[0].nodeValue
+                  nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text().trim()]  
+                  //nextWord = currentSpan.attributes[0].nodeValue
             }
         }
-        if (nextWord == words[j]) {
+        if (nextWord.includes(words[j])) {
           allSpan.push(currentSpan)
           num_words_tol = 1
         } else if(num_words_tol > 0) {
           // if a word is part of the concept but not the right one, this is not the same concept
-          if (words.includes(nextWord)) {
+          if (words.includes(nextWord[0]) || words.includes(nextWord[1])) {
             isConcept = false
             break
           }
@@ -594,72 +834,6 @@ function highlightConcept(concept, div_id) {
         });
       }
     })
-
-    
-
-//    $("#"+div_id+" [lemma='" + words[0] + "']").each(function () {
-//
-//      let allSpan = [this]
-//      let currentSpan = this
-//      let isConcept = false
-//      let num_words_tol = max_spans // number of words of tolerance to skip when looking for a concept 
-//      // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
-//      let num_skips = 0
-//
-//      for(let j=1; j<words.length; j++){
-//
-//        let nextSpan =  $(currentSpan).nextAll('span:first')
-//        let nextWord
-//
-//        if(nextSpan[0] !== undefined){
-//
-//          nextWord = nextSpan[0].attributes[0].nodeValue
-//          currentSpan = nextSpan[0]
-//
-//        }else{
-//
-//          //controllo che le altre parole non siano nella riga successiva
-//          //prendo riga successiva
-//          let nextRow =  $(currentSpan).parent().nextAll('p:first')
-//          
-//          //prendo la prima parola
-//            if(nextRow !== undefined){
-//                currentSpan = nextRow.find("span")[0]
-//                if(currentSpan !== undefined)
-//                    nextWord = currentSpan.attributes[0].nodeValue
-//            }
-//        }
-//        if (nextWord == words[j]) {
-//          if(num_words_tol < max_spans) {
-//            isConcept = true
-//            num_skips = num_skips > max_spans-num_words_tol ? num_skips : max_spans-num_words_tol
-//          }
-//          num_words_tol = max_spans
-//        } else if(num_words_tol > 0) {
-//          // if a word is part of the concept but not the right one, this is not the same concept
-//          if (words.includes(nextWord)) {
-//            isConcept = false
-//            break
-//          }
-//          num_words_tol--;
-//          j--;
-//        } else {
-//          isConcept = false
-//          break
-//        }
-//        allSpan.push(currentSpan)
-//      }
-//      if(isConcept && div_id=="transcript") {
-//        concepts_spanned[num_skips].push({
-//          "concept_lemmatized": concept, 
-//          "lemmas_segment":allSpan.map((elem) => elem.getAttribute("lemma")).join(" "),
-//          "words_segment":allSpan.map((elem) => elem.innerText.trim()).join(" ")
-//        })
-//      }
-//      // to copy results call on devtools: JSON.stringify(concepts_spanned,null, 4) and copy its content
-//    })
-//    concepts_spanned["transcript"] = $captions.map(elem => elem.text).join(" ")
-//    concepts_spanned["all_concepts"] = $concepts
   }
   return foundAny;
 }

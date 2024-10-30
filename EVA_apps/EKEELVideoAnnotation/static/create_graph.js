@@ -28,8 +28,27 @@ document.getElementById("transcript-in-relation").on('click','.concept',function
     document.getElementById("prerequisite").value = $(this).attr("lemma").replaceAll("_"," ")
 }) */
 
+function selectSentAndWordID(selectedConcept, clickedElement){
+    if (selectedConcept.split(" ").length > 1) {
+        let firstElem = $(clickedElement).closest("[lemma='" + selectedConcept.split(" ")[0] + "'], :contains('" + selectedConcept.split(" ")[0] + "')")
+        targetSentID = firstElem.attr("sent_id");
+        targetWordID = firstElem.attr("word_id");
+        targetTime = parseFloat(firstElem.find("[start_time]").attr("start_time"))
+    } else {
+        targetSentID = $(clickedElement).attr("sent_id");
+        targetWordID = $(clickedElement).attr("word_id");
+        targetTime = parseFloat($(clickedElement).attr("start_time"))
+    }
+}
+
 $("#transcript-in-relation").on('click', '.concept', function() {
     $(".selected-concept-text").removeClass("selected-concept-text")
+    $("#targetSelector").attr("readonly",true)
+                        .removeClass("filled")
+                        .removeClass("focused")
+                        .val("")
+                        .find("option:not([value=''])")
+                        .remove();
     //let prevSelectedConcept = document.getElementById("target").value;
     let targetConcepts = $(this).attr("concept")
                                 .split(" ")
@@ -37,6 +56,7 @@ $("#transcript-in-relation").on('click', '.concept', function() {
                                 .map(elem => elem.replaceAll("_"," "))                              
 
     let selectedConcept = targetConcepts[0]
+    let clickedElement = this
 
     if(targetConcepts.length == 1) {
         
@@ -47,6 +67,7 @@ $("#transcript-in-relation").on('click', '.concept', function() {
         $("#targetSelector").append(new Option(selectedConcept, selectedConcept))
                             .val(selectedConcept)
                             .addClass("filled");
+        selectSentAndWordID(targetConcepts[0], clickedElement)
 
     } else {
         let targetSelector = $("#targetSelector")
@@ -64,33 +85,25 @@ $("#transcript-in-relation").on('click', '.concept', function() {
             targetSelector.append(new Option(concept, concept))
 
         // Aggiungi evento "change" per rilevare quando un'opzione viene selezionata
+        targetSelector.off("change")
         targetSelector.on("change", function() {
-            if ($(this).val() != "")
+            let selectedConcept = $(this).val()
+            if (selectedConcept != "")
+                $(".selected-concept-text").removeClass("selected-concept-text")
                 $(this).removeClass("focused").addClass("filled");
+                let selectedConceptUnderscore = selectedConcept.replaceAll(" ", "_");
+                let nearElements = $(clickedElement).addClass("selected-concept-text")
+                                          .siblings(".concept")
+                                          .filter(function() {
+                                              return $(this).attr("concept") && $(this).attr("concept").includes(" "+selectedConceptUnderscore+" ");
+                                          });
+                                      
+                // Do something with nearElements, such as adding a class
+                nearElements.addClass("selected-concept-text");
+                selectSentAndWordID(selectedConcept, clickedElement)
         });
         
-    }
-
-    //let selectedConcept = targetConcepts[targetConcepts.indexOf(prevSelectedConcept)+1 >= targetConcepts.length ? 0 : targetConcepts.indexOf(prevSelectedConcept)+1]
-    
-    
-
-
-    //let concept = $($(this).attr("concept").trim().split(" ")).last().get()[0];
-    //if ($("#targetSelector").val() == "") {
-  
-    if (selectedConcept.split(" ").length > 1) {
-      targetSentID = $(this).closest("[lemma='" + selectedConcept.split(" ")[0] + "']").attr("sent_id");
-      targetWordID = $(this).closest("[lemma='" + selectedConcept.split(" ")[0] + "']").attr("word_id");
-      targetTime = parseFloat($(this).find("[start_time]").attr("start_time"))
-    } else {
-      targetSentID = $(this).attr("sent_id");
-      targetWordID = $(this).attr("word_id");
-      targetTime = parseFloat($(this).attr("start_time"))
-    }
-    
-    //} else
-    //  $("#prerequisite").val(concept.replaceAll("_", " "));
+    }    
   
 });
   
@@ -347,7 +360,7 @@ function deleteRelation(button, target, prereq, weight, time) {
 function confirmDeletion(button, fields){
 
     // Hide the box
-    function closeConfirmBox() {
+    function closeConfirmAnnotatorBox() {
         $("#confirmDeleteBox").fadeOut(200, function() {
             $('body').css('overflow', 'auto'); // Ripristina lo scrolling
             $(this).remove()
@@ -373,7 +386,8 @@ function confirmDeletion(button, fields){
             textAlign: 'center'
         }
     }).appendTo($(button).closest(".table"))
-    const box = $("#confirmDeleteBox")
+    
+    let box = $("#confirmDeleteBox")
   
     // Add confirmation text
     let kind = $(button).closest("div").attr("id").slice(0,-1)
@@ -391,7 +405,7 @@ function confirmDeletion(button, fields){
       bottom: '1em',
       left: '5%'
     }).on("click", function() {
-        closeConfirmBox() // Restore scroll on close
+        closeConfirmAnnotatorBox() // Restore scroll on close
     }).appendTo(buttonsContainer);
 
     // Add 'Yes' button
@@ -400,7 +414,7 @@ function confirmDeletion(button, fields){
       bottom: '1em',
       left: '55%'
     }).on("click", function() {
-        closeConfirmBox()
+        closeConfirmAnnotatorBox()
         /* remove row with fade out*/
         let row = $(button).closest('tr')
         if(button!=null)
@@ -456,73 +470,6 @@ function confirmDeletion(button, fields){
 
 
 
-function downloadManuGraphAsJson(){
-
-    //console.log("***** EKEEL - Video Annotation: create_graph.js::downloadManuGraphAsJson(): Inizio *****")
-
-    let annotations = {
-        "id": $video_id,
-        "relations":relations,
-        "definitions": definitions,
-        "annotator": $annotator,
-        "conceptVocabulary": $conceptVocabulary,
-        "language": $language,
-    }
-
-    var js_data = JSON.stringify(annotations);
-
-    $.ajax({
-        url: '/annotator/download_graph',
-        type : 'post',
-        contentType: 'application/json',
-        dataType : 'json',
-        data : js_data
-    }).done(function(result) {
-        //console.log(result)
-        downloadObjectAsJson(result, "graph");
-    })    
-}
-  
-function uploadManuGraphOnDB(){
-
-    let annotations = {
-        "id": $video_id,
-        "relations":relations,
-        "definitions": definitions,
-        "annotator": $annotator,
-        "conceptVocabulary": $conceptVocabulary,
-        "language": $language,
-        "is_completed": isCompleted
-    }
-    //savedText = document.getElementById("saveGraphText")
-    //savedText.style.display = "block"
-    //console.log("uploadGraphOnDB")
-
-    var js_data = JSON.stringify(annotations);
-
-    $.ajax({
-        url: '/annotator/upload_graph',
-        type : 'post',
-        contentType: 'application/json',
-        dataType : 'json',
-        data : js_data
-    }).done(function(result) {
-        //console.log(result)
-        //if(result.done == true) {
-        //    savedText.textContent = "Saved graph successfully!"
-        //    savedText.style.color = "green";
-        //    savedText.style.display = "block";
-        //    setTimeout(function() { 
-        //        savedText.textContent = "Saving graph...";
-        //        savedText.style.color = "black";
-        //        savedText.style.display = "none";
-        //
-        //    } ,2000)
-        //}
-    })
-}
-  
-  
 /* Creation of the table containing the relations*/
 function printRelations() {
     let relationTable = document.getElementById("relationsTable");
@@ -546,7 +493,7 @@ function printRelations() {
             `<td>` +
                 `<div style="display:flex;">` +
                 (bb ? 
-                    `<button style="margin:auto" class="icon-button expand visual-effect" onclick="toggleBoundingBox(this)" title="show this bounding box">` +
+                    `<button style="margin:auto" class="icon-button expand visual-effect " onclick="toggleBoundingBox(this)" title="show this bounding box">` +
                         `<i class="fa-solid fa-expand" aria-hidden="true"></i>` +
                     `</button>` +
                     `<button class="btn btn-primary" onclick="afterEditBoundingBox(this)" title="edit this bounding box">Edit</button>`
@@ -556,10 +503,10 @@ function printRelations() {
                 `</div>` +
             `</td>`+
             `<td><button `+
-                `class="icon-button trash" ` +
+                `class="icon-button trash " ` +
                 `style="font-size:20" `+ 
                 `onclick="deleteRelation(this,'${t}','${p}','${w}','${ti.split(":").filter(elem => elem != "00").join(":")}')"`+
-                `title="double click to delete relation between the two concepts">` +
+                `title="delete relation between the two concepts">` +
             `<i class="fa-solid fa-trash"></i></button></td></tr>`;
 
         relationTable.innerHTML += relToVisualize;
@@ -598,7 +545,7 @@ function printDescriptions(){
         let t = definitions[i].description_type
 
         let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s.split(":").filter(elem => elem != "00").join(":") + "</td><td>"+ e.split(":").filter(elem => elem != "00").join(":") +"</td><td>"+ t +"</td>"+
-            "<td><button index='"+i+"' class=\"icon-button play-definition visual-effect\" " +
+            "<td><button index='"+i+"' class=\"icon-button play-definition visual-effect \" " +
                 "onclick=\"playExplanation(this,'"+s+"','"+e+"','#transcript','.sentence-marker')\" " +
                 "title=\"play this annotation\">" +
             "<i class=\"fa-solid fa-circle-play\" aria-hidden=\"true\"></i></button></td>" +
@@ -608,9 +555,9 @@ function printDescriptions(){
                 "title=\"Edit this annotation\">Edit" +
             "</button></td>" +
             
-            "<td><button class=\"icon-button trash\" " +
+            "<td><button class=\"icon-button trash \" " +
                 "onclick=\"deleteDefinition(this,'"+c+"','"+s+"','"+e+"')\"" +
-                "title=\"double click to delete concept description\">" +
+                "title=\"delete concept description\">" +
             "<i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></button></td></tr>"
 
         definitionTable.innerHTML += relToVisualize

@@ -21,13 +21,14 @@ class ItaliaNLAPI():
                                                 },
                                               "alzetta-conf":
                                                 {
-                                                    'pos_start_term': ['c:S'], #sostantivi
-                                                    'pos_internal_term': ['c:A','c:E','c:S','c:EA','c:SP'], #aggettivi (A), preposizioni (semplici (E) e articolate (EA)), sostantivi (S), nomi propri (SP)
-                                                    'pos_end_term': ['c:A','c:S','c:SP'], #sostantivi, aggettivi, nomi propri
-                                                    'statistical_threshold_single': 35, #quanti termini composti da una sola parola estrae (max)
-                                                    'statistical_threshold_multi': 1000, #quanti termini composti da più parole estrae (max)
-                                                    'statistical_frequency_threshold': 1, #frequenza di occorrenza minima affinche il termine sia estratto (metto soglia a 1 perche testo breve) 
-                                                    'max_length_term': 7 #lunghezza massima dei termini multi-word
+                                                  'pos_start_term': ['c:S'],
+                                                  'pos_internal_term': ['c:A','c:E','c:S','c:EA','c:SP'],
+                                                  'pos_end_term': ['c:A','c:S','c:SP'],
+                                                  'statistical_threshold_single': 30,
+                                                  'statistical_threshold_multi': 10000,
+                                                  'statistical_frequency_threshold': 1,
+                                                  'max_length_term': 5,
+                                                  'apply_contrast': True
                                                 }
                                            }
 
@@ -68,7 +69,7 @@ class ItaliaNLAPI():
 
 
     
-    def execute_term_extraction(self, doc_id, configuration=None,n_try=10) -> DataFrame:
+    def execute_term_extraction(self, doc_id, configuration=None, n_try=60) -> DataFrame:
         if configuration is None:
             configuration = self._term_extraction_configs['alzetta-conf']
         
@@ -83,7 +84,9 @@ class ItaliaNLAPI():
                     raise Exception("With this config ItaliaNLP.term_extraction() has not found anything")
                 else:
                     break
-            time.sleep(5)
+            elif res["status"] == "IN_PROGRESS":
+                print(f"Been waiting term extraction for {(_+1)*10} seconds...")
+            time.sleep(10)
         else:
             raise Exception(f"ItalianNLP API hasn't sent the requested data in {n_try*5} seconds")
         

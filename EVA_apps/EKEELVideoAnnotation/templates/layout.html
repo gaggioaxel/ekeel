@@ -51,9 +51,12 @@
 
 
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href={{ url_for("logout") }}>{{current_user.name}}  {{current_user.surname}}  (Logout)</a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link" style="cursor: pointer" title="refresh the page to see the effect" onclick="clearCustomPrefCookies()">Reset custom preferences</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href={{ url_for("logout") }}>{{current_user.name}}  {{current_user.surname}}  (Logout)</a>
+          </li>
         </ul>
 
 
@@ -79,4 +82,15 @@
   </body>
 </html>
 
-{% block scripts %}{% endblock %}
+{% block scripts %}
+<script>
+  function clearCustomPrefCookies() {
+    document.cookie
+      .split('; ')
+      .filter(c => c.startsWith("pref-"))
+      .forEach(c => {
+        document.cookie = `${c.split('=')[0]}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/annotator;`;
+    });
+  }
+  </script>
+{% endblock %}

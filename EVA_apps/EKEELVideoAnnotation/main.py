@@ -267,7 +267,7 @@ def video_selection():
         
         # If the concept vocabulary is in the DB then initialize concept to the ones of the vocabulary
         if conceptVocabulary is not None:
-            conceptVocabulary = {key.lower():value for key,value in conceptVocabulary.items()}
+            conceptVocabulary = {key:value for key,value in conceptVocabulary.items()}
             lemmatized_concepts = []
             for key in conceptVocabulary:
                 lemmatized_concepts.append(key)
@@ -282,7 +282,7 @@ def video_selection():
             #
             conceptVocabulary = {}
             for concept in lemmatized_concepts :
-                conceptVocabulary[concept.lower()] = []
+                conceptVocabulary[concept] = []
             #-----------------------------------------------------------------
         for rel in relations:
             if rel["prerequisite"] not in lemmatized_concepts:

@@ -65,7 +65,7 @@ class NLPSingleton():
             cls._spacy = { 'en':spacy.load('en_core_web_sm'),'it':spacy.load('it_core_news_sm')}
         return cls._instance
             
-    def _lemmatize(self, text:str, lang:str):
+    def lemmatize(self, text:str, lang:str):
         return NLPSingleton()._spacy[lang](text)            
     
     @staticmethod
@@ -119,7 +119,7 @@ class SemanticText():
 
     def lemmatize(self):
         assert self._text is not None
-        tokens = NLPSingleton()._lemmatize(self._text, self._language)
+        tokens = NLPSingleton().lemmatize(self._text, self._language)
         #print("'",tokens,"'")
         return [token.lemma_ for token in tokens]
 
@@ -282,8 +282,6 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
                 word["word"] = word["word"][:-1]
                 segment["words"].insert(j+1, new_word)
             
-            if word["word"] == "%":
-                segment["text"] = segment["text"].replace("%"," %")
             
             # Case "22%" -> "22" "%"
             elif any(re.findall(number_regex+'%', word["word"])):
@@ -291,6 +289,11 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
                 word["word"] = word["word"][:-1]
                 new_word["word"] = "%"
                 segment["words"].insert(j+1, new_word)
+            
+            if any(re.findall(number_regex+'%', segment["text"])):
+                segment["text"] = re.sub(r"%([?,.!;:])",r"% \1", segment["text"])
+                segment["text"] = re.sub(r"([0-9])%",r"\1 %", segment["text"])
+                
                     
             # Match with "dell'SiO2" -> split into tokens "dell'" and "SiO2"
             if len(word["word"].split("'")) > 1 and len(word["word"].split("'")[1]) > 0:
@@ -516,8 +519,8 @@ class TextSimilarityClassifier:
         
         if ComparisonMethods.LEMMAS_CONTAINED_RATIO in comp_methods:
             lang = self.language
-            lemmas1:list = NLPSingleton()._lemmatize(text1_cleaned,lang)
-            lemmas2:list = NLPSingleton()._lemmatize(text2_cleaned,lang)
+            lemmas1:list = NLPSingleton().lemmatize(text1_cleaned,lang)
+            lemmas2:list = NLPSingleton().lemmatize(text2_cleaned,lang)
             lemmas_diff = [lemma for lemma in lemmas2 if not lemma in lemmas1 or lemmas1.remove(lemma)]
             checks.append(len(lemmas_diff)/len(lemmas1) <= self.extra_lemmas_ratio_thresh)
         

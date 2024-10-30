@@ -59,7 +59,7 @@ function deleteVideo(video_id){
 
   // Hide the box
   function closeConfirmBox() {
-    $("#confirmDeleteBox").fadeOut(400, function() {
+    $("#confirmDeleteVideoBox").fadeOut(400, function() {
         $('body').css('overflow', 'auto'); // Ripristina lo scrolling
         $(this).remove()
     }).undim();
@@ -85,7 +85,7 @@ function deleteVideo(video_id){
     }
   }).appendTo('body');
   
-  const box = $("#confirmDeleteBox")
+  let box = $("#confirmDeleteVideoBox")
   
   // Add confirmation text
   let title = $("<div><h2 style='margin: 1em;'>Are you sure you want to delete this video?</h2></div>").css({
@@ -105,40 +105,46 @@ function deleteVideo(video_id){
   const buttonsContainer = $("<div></div>").appendTo(title);
 
   // Add 'No' button
-  $("<button class='btn btn-primary btn-addrelation btn-dodgerblue'>No</button>").css({
-    position: 'absolute',
-    bottom: '2em',
-    left: '5%'
-  }).on("click", function() {
-    closeConfirmBox() // Restore scroll on close
-  }).appendTo(buttonsContainer);
+  $("<button class='btn btn-primary btn-addrelation btn-dodgerblue'>No</button>")
+    .css({
+      position: 'absolute',
+      bottom: '2em',
+      left: '5%'
+    })
+    .on("click", function() {
+      closeConfirmBox() // Restore scroll on close
+    })
+    .appendTo(buttonsContainer);
 
   // Add 'Yes' button
-  $("<button class='btn btn-primary btn-addrelation delete'>Yes</button>").css({
-    position: 'absolute',
-    bottom: '2em',
-    left: '81%'
-  }).on("click", function() {
-    closeConfirmBox()
-    $.ajax({
-        url: '/annotator/delete_video',
-        type : 'post',
-        contentType: 'application/json',
-        dataType : 'json',
-        data: JSON.stringify({"video_id":video_id})
-      }).done(function(result) {
-        if(result.done) {
-          console.log("removed")
-        }
-      }
-    )
-    $(`label.video_radio[video=${video_id}]`).fadeOut(600, function() { 
-      if ($(this).closest(".creator-group").find("label.video_radio").length == 1) {
-        $(this).closest(".creator-group").remove(); // Remove container if empty
-      } else
-        $(this).remove();
+  $("<button class='btn btn-primary btn-addrelation delete'>Yes</button>")
+    .css({
+      position: 'absolute',
+      bottom: '2em',
+      left: '81%'
     })
-  }).appendTo(buttonsContainer);
+    .on("click", function() {
+      closeConfirmBox()
+      $.ajax({
+          url: '/annotator/delete_video',
+          type : 'post',
+          contentType: 'application/json',
+          dataType : 'json',
+          data: JSON.stringify({"video_id":video_id})
+        }).done(function(result) {
+          if(result.done) {
+            console.log("removed")
+          }
+        }
+      )
+      $(`label.video_radio[video=${video_id}]`).fadeOut(600, function() { 
+        if ($(this).closest(".creator-group").find("label.video_radio").length == 1) {
+          $(this).closest(".creator-group").remove(); // Remove container if empty
+        } else
+          $(this).remove();
+      })
+    })
+    .appendTo(buttonsContainer);
 
 
   $('body').css('overflow', 'hidden');
