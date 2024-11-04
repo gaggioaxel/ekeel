@@ -85,6 +85,7 @@ function initDraw(conceptType) {
             $("#drawButton").text("Redo Box").prop("disabled",false).css("cursor","pointer");
             $("#clearDrawButton").fadeIn("fast");
             $("#insertRelationButton").prop("disabled",false).css("cursor","pointer");
+            targetTime = player.currentTime()
 
         } else {
             //start position
@@ -382,7 +383,7 @@ function toggleBoundingBox(element){
     parentDiv.prepend(canvas);
 
     // Set the canvas dimensions to match the video's size
-    let videoActive = document.getElementById('video-active');
+    const videoActive = document.getElementById('video-active');
     canvas.style.top = videoActive.offsetTop + 'px';
     canvas.style.left = videoActive.offsetLeft + 'px';
     canvas.style.width = videoActive.offsetWidth + 'px';
@@ -400,6 +401,7 @@ function toggleBoundingBox(element){
     //let concept = relation[0].innerText
     //let prerequisite = relation[1].innerText
     let start_time = timeToSeconds(relation[3].innerText);
+
     prevTime = player.currentTime();
     player.play();
     player.pause();
@@ -441,18 +443,34 @@ function afterAddBoundingBox(element){
     // removes the eventual visual elements
     let index = parseInt($(element).parents("tr:first").attr("index"))
     let relation = $(element).parents("tr:first").find("td").get();
+    const targetSelector = $("#targetSelector")
 
     showRelationDiv();
-    $("#newRelationTitle").text("Edit Relation").get()[0].parentElement.children[1].style.display ="none";
+    targetSelector.attr("sent_id", $(relation[0]).attr("sent_id"))
+    targetSelector.attr("word_id", $(relation[0]).attr("word_id"))
 
-    $("#prerequisite").prop("value", relation[1].innerText).prop("readonly",true);
-    $("#targetSelector").prop("value", relation[0].innerText).prop("readonly",true);
+    $("#newRelationTitle").text("Edit Relation")
+                          .parent().parent()
+                          .find("#newRelationFormInfos")
+                          .hide();
+
+    $("#prerequisite").val(relation[1].innerText)
+                      .prop("readonly",true);
+    targetSelector.append(new Option(relation[0].innerText, relation[0].innerText))
+                  .val(relation[0].innerText)
+                  .attr("readonly","true")
+                  .find(`option[value="${relation[0].innerText}"]`)
+                  .prop("hidden",true)
 
     function revertChanges(){
         $("#newRelationTitle").text("Add Relation") // change back title text
-                              .get()[0].parentElement.children[1].style.display ="block"; //show again the hint
+                              .parent().parent()
+                              .find("#newRelationFormInfos")
+                              .show();
         $("#prerequisite").prop("readonly",false);
-        $("#targetSelector").prop("readonly",false);
+        targetSelector.val("")
+                      .find("option:not([value=''])")
+                      .remove();
         $("button.clone").remove()
         $("#insertRelationButton").show()
         $("#closeRelationButton").show()

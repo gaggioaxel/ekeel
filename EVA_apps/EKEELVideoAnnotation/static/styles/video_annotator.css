@@ -50,9 +50,46 @@
     /*text-decoration: underline;*/
 }
 
-.transcript {
+#targetSelector {
+    cursor: not-allowed;
+}
+
+#targetSelector.focused {
+    outline: 2px solid dodgerblue;
+    animation: outlinePulse 1s infinite backwards;
+  }
+  
+  @keyframes outlinePulse {
+    0% {
+      background-color: #f1f1f1;
+      outline-width: 1px;
+    }
+    50% {
+      background-color: rgba(30, 144, 255, .25);
+      outline-width: 4px;
+    }
+    100% {
+      background-color: rgba(30, 144, 255, .1);
+      outline-width: 2px;
+    }
+  }
+
+#targetSelector.focused:not([readonly]) {
+    background-color: #fff;
+    cursor: pointer;
+}
+
+#targetSelector.filled {
+    background-color: rgba(47, 168, 101, .2);
+    cursor: pointer;
+}
+
+#transcript {
     overflow-y: auto;
     height: 500px;
+    width: auto;
+    min-width: 10vw;
+    max-width: 60vw;
     background-color: #f8f9fa;
     /*display: flex;
     flex-direction: column;*/
@@ -62,16 +99,8 @@
     /*width: 370;*/
 }
 
-.transcript.transcript-in-description {
-    padding:0em;
-}
 
-#transcript-in-relation.transcript{
-    padding-left: 1em;
-    padding-right: 0em;
-}
-
-.transcript p {
+#transcript p {
     margin-bottom:5px;
     overflow-y: auto;
 }
@@ -192,7 +221,7 @@
         padding: .5em;
     }
 
-    .transcript {
+    #transcript {
         height: 360px;
     }
 

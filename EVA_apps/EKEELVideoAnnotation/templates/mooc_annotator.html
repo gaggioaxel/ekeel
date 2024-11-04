@@ -23,7 +23,7 @@
 
     <div class="main-grid" id="container">
 
-     <div class="flex-vertical">
+     <div id="videoAndSliderContainer" class="flex-vertical">
 
         <div id="canvas-wrap" class="canvas-wrap">
           <video
@@ -41,11 +41,9 @@
             </p>
           </video>
         </div>
-        <!--<div id="relationText" class="bottomVideo"></div>-->
-        <div id="transcript-in-relation" style="display:none; margin-top:10px;" class="transcript"></div>
         <div id="videoSlider"  class="bottomVideo">
           <div style="text-align: center" class="playButtonDiv">
-            <button id="playButton" class='playButton' onclick="playDefinition(this)"></button>
+            <button id="playButton" class='playButton' onclick="playDescription(this)"></button>
             <span id="timeSlider"></span>
           </div>
         </div>
@@ -61,7 +59,7 @@
               Concepts & Synonyms
             </button>
 
-            <button onclick="showDefinitionDiv(true)" 
+            <button onclick="showDescriptionDiv(true)" 
                     class="btn btn-primary btn-addrelation btn-dodgerblue visual-effect"
                     title="Add concepts' definitions present in the transcript">
               Add Description
@@ -83,7 +81,7 @@
 
      </div>
       <div id="right-body" class="right-body-class">
-        <div class="col relations" style="margin-top:0.3%">
+        <div id="transcriptContainer" class="col relations" style="margin-top:0.3%; max-width:30vw;">
           <div style="display:flex">
             <h2>TRANSCRIPT</h2>
             <div title="Clicking on the transcript text will move the video to that part of speech, concepts are highlighted-text, if clicked they will be selected">
@@ -117,7 +115,7 @@
               <br>
           </div>
           <hr style="margin-bottom:.3rem;">
-          <div id="transcript" class="transcript"></div>
+          <div id="transcript"></div>
           <hr style="margin-top:.3rem;">
         </div>
 
@@ -160,7 +158,7 @@
           </div>-->
         </div>
 
-        <div style="margin: 0 1.2em;">
+        <div id="newRelationFormInfos" style="margin: 0 1.2em;">
           <hr>
           <p>Use this feature to annotate that a target concept, explained at a specific point in the video, requires a prerequisite concept to be understood:</p>
           <ol>
@@ -176,8 +174,8 @@
           <div class="row">
 
               <div class="col-md-6 autocomplete">
-                <select class="form-control" readonly id="targetSelector" style="cursor:not-allowed">
-                  <option value="" selected disabled hidden style="color:gray;">Click on a concept...</option>
+                <select class="form-control" readonly="true" id="targetSelector">
+                  <option value="" style="color:gray;" selected disabled hidden>Click on a concept...</option>
                 </select>
                 <!--<input type="text" class="form-control" autocomplete="on" id="target" readonly placeholder="Click on a concept...">-->
               </div>
@@ -231,7 +229,7 @@
         <div id="add-concept-description" class="add-relation-box">
 
           <div class="relation-box-close-btn">
-            <button type="button" class="close visual-effect" data-dismiss="modal" aria-label="Close" onclick="closeDefinitionDiv();">
+            <button type="button" class="close visual-effect" data-dismiss="modal" aria-label="Close" onclick="closeDescriptionDiv();">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -304,14 +302,14 @@
                 </svg>
               </div>
             </div>
-            <select class="form-control" id="descriptionType" onchange="changeColor()" style="cursor:pointer;" required>
+            <select class="form-control" id="descriptionType" onchange="changeRangeCursorColor()" style="cursor:pointer;" required>
               <option value="" selected disabled hidden style="color:gray;">Select an option...</option>
               <option value="Definition">Definition</option>
-              <option value="Expansion">In depth</option>
+              <option value="Expansion">Expansion</option>
             </select>
           </div>
-          <div id="transcript-in-description" class="transcript transcript-in-description"></div>
-          <button id="saveDefinitionButton" onclick="addDefinition()" class="btn btn-primary">Add Description</button>
+          {#<div id="transcript-in-description" class="transcript transcript-in-description"></div>#}
+          <button id="saveDefinitionButton" onclick="addDescription()" class="btn btn-primary">Add Description</button>
         </div>
       </div>
 
@@ -400,7 +398,7 @@
       </div>
 
       <!-- Modal Concepts & Synonyms -->
-      <div class="modal-body">
+      <div class="modal-body" style="height:auto; overflow-y:hidden;">
           <button type="button" class="close" onclick="closeVocabularyDiv()" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -421,10 +419,7 @@
           <div class="tab-content tab-body" id="myTabContent">
 
             <!-- TAB 1 - Concepts Vocabulary -->
-            <div class="tab-pane fade show active tab-body-1" id="concepts" role="tabpanel" aria-labelledby="concepts-tab" style="max-height:400px;overflow:auto;">
-                <!--<table class="table">
-                  <tbody id="conceptsTable"></tbody>
-                </table>-->
+            <div class="tab-pane fade show active tab-body-1" id="concepts" role="tabpanel" aria-labelledby="concepts-tab" style="overflow-y:scroll;">
                 <div class="list-group list-group-flush" id="conceptsTable">
                   <div class="list-group-item list-group-item-action conceptList">
                     <input type="text" oninput="filterVocabulary(this.value)" class="form-control filter-vocabulary-class" autocomplete="off" id="filter-vocabulary"  placeholder="Search concept...">
@@ -539,6 +534,7 @@
       let $synonymList = [];
       let $lemmatizedSubs = {{ lemmatized_subtitles|tojson }};
       let $allLemmas = [];
+      let bgDarknessOnOverlay = .85;
 
       let $allWordsLemmas = {};
 

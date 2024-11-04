@@ -1,143 +1,97 @@
-let main_markers = []
-let in_description_markers = []
-let in_relation_markers = []
+let markers = []
+
+addSubtitles();
+initializeMarkers();
 
 
-addSubtitles("transcript");
-addSubtitles("transcript-in-description");
-addSubtitles("transcript-in-relation");
-MarkersInit("#transcript.sentence-marker", main_markers);
-MarkersInit("#transcript-in-description.sentence-marker-in-description", in_description_markers);
-MarkersInit("#transcript-in-relation.sentence-marker", in_relation_markers);
-
-
-$("#transcript, #transcript-in-description").on("click", ".concept", function (e) {
-
-  let conceptElements = document.getElementsByClassName("concept");
-
-  let in_description = e.target.parentElement.classList.contains("sentence-marker-in-description");
-  
-  // removes the fields for the elements
-  $(conceptElements).each( function(){
-    $(this).removeClass("selected-concept-text").removeClass("selected-synonym-text")
-  })
-
-  var target = e.currentTarget;
-  var selectedConcept = target.getAttribute("concept")
-    .split(" ")
-    .filter(str => str.length > 0)
-    .sort((a, b) => a.split("_").length - b.split("_").length)
-    .reverse()[0];
-  var selectedConceptText = selectedConcept.replaceAll("_", " ");
-
-  if (document.getElementById("transcript-selected-concept").innerHTML == selectedConceptText) {
-    document.getElementById("transcript-selected-concept").innerHTML = "";
-    document.getElementById("transcript-selected-concept-synonym").innerHTML = "--";
-    if (in_description)
-      document.getElementById("conceptDefined").value = ""
-    return
-  }
-  
-  if (in_description)
-    document.getElementById("conceptDefined").value = selectedConceptText;
-  document.getElementById("transcript-selected-concept").innerHTML = selectedConceptText;
-
-  let syns = $conceptVocabulary[selectedConceptText] || [];
-  let synsText = syns.join(", ");
-
-  document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText || "--";
-
-  $("#transcript").find("[concept]")
-    .filter(function() {
-      return $(this).attr("concept").includes(" "+selectedConcept+" ");
-    })
-    .get()
-    .forEach(function(element) { 
-      element.classList.add("selected-concept-text") 
-    });
-  syns.forEach(function(syn) { 
-    $("[concept~='" + syn.replaceAll(" ","_") + "']")
-      .get()
-      .forEach(function(element) { 
-        element.classList.add("selected-synonym-text")
-      }) 
-    })
-});
-
-
-
-document.getElementById("transcript-in-description").addEventListener('mouseup', function () {
-
-  var selection = window.getSelection()
-
-  if (selection.rangeCount == 0)
-    return
-  
-  var start_container = selection.getRangeAt(0).commonAncestorContainer
-  if(!start_container.classList || 
-      (!start_container.classList.contains("transcript-in-description") && !start_container.classList.contains("sentence-marker-in-description"))) {
-    selection.removeAllRanges()
-    return
-  }
-
-  var start_time = $(selection.getRangeAt(0).startContainer).closest("[start_time]").attr("start_time")
-
-  var endRange = selection.getRangeAt(selection.rangeCount - 1);
-  var end_time = $(endRange.endContainer).closest("[end_time]").attr("end_time");
-
-  selection.removeAllRanges()
-
-  if(!end_time) end_time = document.querySelector('p.sentence-marker-in-description:last-child').getAttribute("data-end");
-
-  if (!start_time || !end_time) return
-    
-  start_time = Math.trunc(parseFloat(start_time)*100)/100
-  end_time = Math.trunc((parseFloat(end_time)+0.01)*100)/100
-
-  // Highlight the selection with the found start and end times
-  highlightExplanationInTranscript(start_time, end_time, "#transcript-in-description", ".sentence-marker-in-description");
-
-  // Update the slider values
-  $("#videoSlider").slider("values", [start_time, end_time]);
-  $("#descriptionRangeInput").val("Start: " + secondsToH_m_s_ms(start_time) + " - End: " + secondsToH_m_s_ms(end_time));
-    
-  // Update the handle labels
-  document.getElementById("handleSinistro").innerHTML = secondsToH_m_s_ms(start_time);
-  document.getElementById("handleDestro").innerHTML = secondsToH_m_s_ms(end_time);
-});
 
 function showRelationDiv(){
   state="rel"
   clearAnnotatorVisualElements()
-  //$("html, body").animate({ scrollTop: 0 }, "slow");
   $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
+  document.body.style.overflow = 'hidden';
 
   document.getElementById("prerequisite").value = ""
-  document.getElementById("targetSelector").value = ""
+  const targetSelector = $(document.getElementById("targetSelector")).val("")
 
   player.pause()
   UpdateMarkers(player.currentTime())
 
-  $('#canvas-wrap').dimBackground();
-  $('#drawButton').dimBackground();
-  $('#relation').show();
-  //$('#relationText').show();
+  const transcript = $(document.getElementById("transcript"))
+
+  transcript.detach();
+  transcript.insertAfter($("#videoAndSliderContainer").children().eq(1));
+  transcript.css({marginTop:"1em", width: "auto"})
+  transcript.find(".selected-concept-text").removeClass("selected-concept-text")
+
+  transcript.off("click")
+  transcript.on('click', '.concept', function() {
+    $(".selected-concept-text").removeClass("selected-concept-text")
+    targetSelector.attr("readonly","true")
+                  .val("")
+                  .find("option:not([value=''])")
+                  .remove();
+    targetSelector.find("option[value='']")
+                  .text("-> Select here the concept <-")
+    targetSelector.get()[0].classList = ["form-control"]
+
+    //let prevSelectedConcept = document.getElementById("target").value;
+    let targetConcepts = $(this).attr("concept")
+                                .split(" ")
+                                .filter(elem => elem.length > 0 )
+                                .map(elem => elem.replaceAll("_"," "))                              
+
+    let selectedConcept = targetConcepts[0]
+    let clickedElement = this
+
+    if(targetConcepts.length == 1) {
+      this.classList.add("selected-concept-text")
+      $(this).siblings(".concept").get()
+                                  .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") )
+                                  .forEach( elem => elem.classList.add("selected-concept-text") );
+      targetSelector.attr("sent_id", $(".selected-concept-text").get()[0].getAttribute("sent_id"))
+                    .attr("word_id", $(".selected-concept-text").get()[0].getAttribute("word_id"))
+                    .removeAttr("readonly")
+                    .append(new Option(selectedConcept, selectedConcept))
+                    .val(selectedConcept)
+                    .addClass("filled");
+
+    } else {
+      targetSelector.addClass("focused")
+                    .removeAttr("readonly")
+                    .find("option[value='']")
+                    .text("-> Select here the concept <-")
+      
+      for(concept of targetConcepts)
+        targetSelector.append(new Option(concept, concept))
+
+      // Aggiungi evento "change" per rilevare quando un'opzione viene selezionata
+      targetSelector.off("change")
+      targetSelector.on("change", function() {
+        let selectedConcept = $(this).val()
+        if (selectedConcept != "")
+          $(".selected-concept-text").removeClass("selected-concept-text")
+        $(this).removeClass("focused")
+               .addClass("filled");
+
+        let selectedConceptUnderscore = selectedConcept.replaceAll(" ", "_");
+        let nearElements = $(clickedElement).addClass("selected-concept-text")
+                                  .siblings(".concept")
+                                  .filter(function() {
+                                      return $(this).attr("concept").includes(" "+selectedConceptUnderscore+" ");
+                                  });
+        nearElements.addClass("selected-concept-text");
+        targetSelector.attr("sent_id", nearElements.get().length 
+                              ? nearElements.get()[0].getAttribute("sent_id") : clickedElement.getAttribute("sent_id"))
+                      .attr("word_id", nearElements.get().length 
+                              ? nearElements.get()[0].getAttribute("word_id") : clickedElement.getAttribute("word_id"))
+      });      
+    }
+  });
+
   $('#right-body').hide();
-  $('#transcript-in-relation').dimBackground();
-  $('#transcript-in-relation').show();
-  $('#relation').dimBackground();
-  //$("#targetSelector").addClass("focused");
-
-  //$('#relationText').dimBackground();
-  
-  
-
-  //getLastRows()
-  //getLastSentence()
-
-  targetSentID = null
-  targetWordID = null
-  targetTime = null
+  $('#relation').show();
+  $('#canvas-wrap, #relation, #transcript').dimBackground({ darkness: bgDarknessOnOverlay })
 
   $(document).on('keydown', function(event) {
     if (event.key === 'Escape')
@@ -145,70 +99,131 @@ function showRelationDiv(){
   });
 }
 
-function closeRelationDiv(){
 
-  $('#canvas-wrap').undim();
-  $('#drawButton').undim();
-  $('#relation').hide();
-  $('#transcript-in-relation').undim();
-  $('#transcript-in-relation').hide();
-  $('#right-body').show();
-  $('#relation').undim();
-  //$('#relationText').hide();
-  //$('#relationText').undim();
-  $('.rectanglePrerequisite').hide();
-  $('.rectangleTarget').hide();
-
-  removeCanvas()
-  state="home"
-  $(document).off('keydown');
+function reattachTranscriptAnnotator(){
+  const transcript = $(document.getElementById("transcript"));
+  transcript.detach();
+  transcript.insertAfter($("#transcriptContainer").children().eq(2));
 }
 
-function addSubtitles(id){
+function closeRelationDiv(){
+  state="home"
+  removeCanvas()
+  const targetSelector = $("#targetSelector")
+  targetSelector.get()[0].classList = ["form-control"]
 
-  let transcriptDiv = document.getElementById(id);
+  targetSelector.val("")
+                .find("option:not([value=''])")
+                .remove();
+  targetSelector.find("option[value='']")
+                .text("Click on a concept...")
+  $('#relation').hide();
+  $('#right-body').show();
+  $(document).off('keydown');
+  document.body.style.overflow = 'auto';
+  const transcript = $(document.getElementById("transcript"))
+  transcript.off("click");
+  transcript.find(".selected-concept-text").removeClass("selected-concept-text")
+  
+  reattachTranscriptAnnotator();
+  attachClickListenerOnConcepts();
+  attachUpdateTimeListenerOnTranscript();
+  transcript.css("margin-top","0")
+  $('#canvas-wrap, #relation, #transcript').undim({ fadeOutDuration: 400 });
+}
+
+
+function attachClickListenerOnConcepts(){
+  $(document.getElementById("transcript")).on("click", ".concept", function (e) {
+
+    let conceptElements = document.getElementsByClassName("concept");
+  
+    // removes the fields for the elements
+    $(conceptElements).each( function(){
+      $(this).removeClass("selected-concept-text").removeClass("selected-synonym-text")
+    })
+  
+    var target = e.currentTarget;
+    var selectedConcept = target.getAttribute("concept")
+      .split(" ")
+      .filter(str => str.length > 0)
+      .sort((a, b) => a.split("_").length - b.split("_").length)
+      .reverse()[0];
+    var selectedConceptText = selectedConcept.replaceAll("_", " ");
+  
+    if (document.getElementById("transcript-selected-concept").innerHTML == selectedConceptText) {
+      document.getElementById("transcript-selected-concept").innerHTML = "";
+      document.getElementById("transcript-selected-concept-synonym").innerHTML = "--";
+      if (state == "desc")
+        document.getElementById("conceptDefined").value = ""
+      return
+    }
+    
+    if (state == "desc")
+      document.getElementById("conceptDefined").value = selectedConceptText;
+    document.getElementById("transcript-selected-concept").innerHTML = selectedConceptText;
+  
+    let syns = $conceptVocabulary[selectedConceptText] || [];
+    let synsText = syns.join(", ");
+  
+    document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText || "--";
+  
+    $("#transcript").find("[concept]")
+      .filter(function() {
+        return $(this).attr("concept").includes(" "+selectedConcept+" ");
+      })
+      .get()
+      .forEach(function(element) { 
+        element.classList.add("selected-concept-text") 
+      });
+    syns.forEach(function(syn) { 
+      $("[concept~='" + syn.replaceAll(" ","_") + "']")
+        .get()
+        .forEach(function(element) { 
+          element.classList.add("selected-synonym-text")
+        }) 
+      })
+  });
+}
+
+
+function addSubtitles(){
+
+  let transcriptDiv = document.getElementById("transcript");
 
   if($isTempTranscript)
     document.getElementById("temp-transcript-warning").style.display = "block";
   
-  if (id == "transcript" || id=="transcript-in-relation") {
-    for (let x in $captions) {
-      transcriptDiv.innerHTML +=
-        '<p class=" sentence-marker " data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
-          '<b class="timestamp"> ' + secondsToHms($captions[x].start) + ": </b>" + $lemmatizedSubs[x].text + '</p>';
-    }
-
-    // Add event listener for click to prevent time change on concept click
-    transcriptDiv.addEventListener('click', function (event) {
-      clearAnnotatorVisualElements();
-      if (event.target.classList.contains("concept"))
-        return;
-
-      // If not a concept, change the time
-      let marker = event.target.closest('[lemma]');
-      if (marker)
-        changeTime(parseFloat(marker.getAttribute('start_time')));
-    });
-  } else if (id == "transcript-in-description") {
-    for (let x in $captions){
-      transcriptDiv.innerHTML +=
-          '<p class=" sentence-marker-in-description " data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
-            '<b class="timestamp"> ' + secondsToHms($captions[x].start) +": </b>" + $lemmatizedSubs[x].text + '</p>';
-    }
+  for (let x in $captions) {
+    transcriptDiv.innerHTML +=
+      '<p class=" sentence-marker " data-start="' + $captions[x].start + '" data-end="' + $captions[x].end + '">' +
+        '<b class="timestamp"> ' + secondsToHms($captions[x].start) + ": </b>" + $lemmatizedSubs[x].text + '</p>';
   }
+  
+  // Add event listener for click to prevent time change on concept click
+  attachUpdateTimeListenerOnTranscript()
   for(let i in $concepts)
-    highlightConcept($concepts[i], id)
+    highlightConcept($concepts[i])
+  
+  attachClickListenerOnConcepts()
+}
+
+function attachUpdateTimeListenerOnTranscript(){
+  $(document.getElementById("transcript")).on('click', function (event) {
+    clearAnnotatorVisualElements();
+    if (event.target.classList.contains("concept"))
+      return;
+
+    // If not a concept, change the time
+    let marker = event.target.closest('[lemma]');
+    if (marker)
+      player.currentTime(parseFloat(marker.getAttribute('start_time')));
+  });
 }
 
 
-function changeTime(time){
-  player.currentTime(time);
-}
-
-
-
-function MarkersInit(html_field, markers) {
-  var elements = $(html_field.split(".")[0]).find("."+html_field.split(".")[1]).get();
+function initializeMarkers() {
+  var elements = $("#transcript .sentence-marker").get();
   Array.prototype.forEach.call(elements, function(el, i) {
     var time_start = el.dataset.start;
     var time_end = el.dataset.end;
@@ -236,18 +251,6 @@ function UpdateMarkers(current_time) {
   player.controlBar.progressControl.seekBar.update({"percent":(player.currentTime() / player.duration()) * 100});
   player.controls(controlsState)
   scrolled = false
-  
-  switch (state) {
-    case "desc":
-      markers = in_description_markers;
-      break;
-    case "rel":
-      markers = in_relation_markers;
-      break;
-    default:
-      markers = main_markers;
-      break;
-  } 
   
   markers[0].forEach(function(marker) {
 
@@ -288,22 +291,12 @@ function UpdateMarkers(current_time) {
 
 }
 
-function highlightExplanationInTranscript(start, end, parent_id, class_field) {
+function highlightExplanationInTranscript(start, end) {
 
-  // We are in the transcript in the annotator page 
-  if (class_field == ".sentence-marker") {
-    definition_start = [hours, minutes, seconds] = start.split(':').map(Number);
-    definition_start = hours * 3600 + minutes * 60 + seconds;
-    definition_end = [hours, minutes, seconds] = end.split(':').map(Number);
-    definition_end = hours * 3600 + minutes * 60 + seconds;
+  let definition_start = typeof(start) == "string" ? timeToSeconds(start) : start
+  let definition_end = typeof(end) == "string" ? timeToSeconds(end) : end
 
-  // otherwise we are in the transcript in description window and values are passed already as float seconds
-  } else {
-    definition_start = start
-    definition_end = end
-  }
-
-  let subtitleElements = $(parent_id+" "+class_field).get()//Array.from(document.querySelectorAll(class_field));
+  let subtitleElements = $("#transcript .sentence-marker").get()//Array.from(document.querySelectorAll(class_field));
   
   // Iterate over each subtitle element to highlight the matching ones
   subtitleElements.forEach((element,index) => {
@@ -317,9 +310,9 @@ function highlightExplanationInTranscript(start, end, parent_id, class_field) {
   });
 }
 
-function playExplanation(button, start, end, parent_id, class_field) {
+function playExplanation(button, start, end) {
   if ($(button).hasClass("active")){
-    $("highlighted-text").removeClass("highlighted-text");
+    $(".highlighted-text").removeClass("highlighted-text");
     $(button).removeClass("active");
     player.currentTime(prevTime);
     player.pause();
@@ -346,7 +339,7 @@ function playExplanation(button, start, end, parent_id, class_field) {
       player.on("timeupdate", function (){ UpdateMarkers(player.currentTime()) })
     }
   });
-  highlightExplanationInTranscript(start,end,parent_id,class_field)
+  highlightExplanationInTranscript(start,end)
 
   player.play();
 }
@@ -369,10 +362,14 @@ function secondsToHms(d) {
     return m + ":" + s;
 }
 
-function secondsToH_m_s_ms(d){
-
+function secondsToTimeCropped(d){
   str = secondsToHms(d)
   return str + "." + Number(d).toFixed(2).split(".")[1] || "0";
+}
+
+function secondsToTimeShorter(d){
+  str = secondsToTimeCropped(d)
+  return str.replace(/^0+:/, '').replace(/^0(\d)/, '$1'); 
 }
 
 function secondsToTime(d) {
@@ -396,134 +393,27 @@ function secondsToTime(d) {
 
 }
 
-function timeToSeconds(time_text){
-  let time = time_text.split(':').map(Number);
-  if(time.length == 2)
-    time = time[0]*60+time[1];
-  else if(time.length == 3)   
-    time = time[0]*3600+time[1]*60+time[2];
-  return time
+
+function timeToSeconds(timeStr){
+  // Regex to match hours:minutes:seconds.millis or minutes:seconds.millis or seconds.millis
+  const HHmmSSms_pattern = /((?<hours>[1-9]|[0-1][1-9]|2[0-3]):)?((?<minutes>[0-9]|[1-5][0-9]):)(?<seconds>[0-9]|[1-5][0-9]).(?<millis>\d+)$/
+  match = timeStr.match(HHmmSSms_pattern)
+  
+  if (!match){
+    const SSms_pattern = /(?<seconds>[0-5]?[0-9]).(?<millis>\d+)$/
+    match = timeStr.match(SSms_pattern)
+    if (!match)
+      return null
+  }
+  
+  const hours = parseInt(match.groups.hours || 0);
+  const minutes = parseInt(match.groups.minutes || 0);
+  const seconds = parseInt(match.groups.seconds || 0);
+  const millis = parseFloat(`0.${match.groups.millis || 0}`);
+  
+  return hours * 3600 + minutes * 60 + seconds + millis;
 }
 
-
-
-//function getLastSentence(){
-//
-//  let timestamp = video.currentTime
-//  let textDiv = document.getElementById("relationText");
-//  textDiv.innerHTML = ""
-//
-//  let sub = getCurrentSubtitle(timestamp)
-//  let sent_id = getSentenceIDfromSub(sub)
-//
-//  $("#transcript [sent_id='" + sent_id+ "']").each(function(){
-//    textDiv.innerHTML += this.outerHTML + " "
-//  })
-//  
-//  if($isTempTranscript) {
-//    to_include = true
-//    let next_sent_id = parseInt(sent_id)+1
-//    while (to_include) {
-//      let elems = $("#transcript [sent_id='" + next_sent_id+ "']")
-//      elems.each(function(){
-//        if (parseFloat($(this).attr("end_time")) > timestamp + included_time_span)
-//          to_include = false
-//        else
-//          textDiv.innerHTML += this.outerHTML + " "
-//      })
-//      if(elems.get().length == 0)
-//        to_include = false
-//      next_sent_id++;
-//    }
-//  } else {
-//    let n_sentences_before_and_after = 2 + (textDiv.innerText.match(/[.,;?!]/g) || [] ).length;
-//
-//    let sentences_added = (textDiv.innerText.match(/[.,;?!]/g) || [] ).length;
-//    let i = 0
-//    while(sentences_added < n_sentences_before_and_after) {
-//      curr_id = parseInt(sent_id)-(i+1)
-//      let elems = $("#transcript [sent_id='" + curr_id+ "']")
-//      if(elems.get().length == 0)
-//        break
-//      let html_to_add = ""
-//      elems.each(function(){
-//        html_to_add += this.outerHTML + " ";
-//      })
-//      textDiv.innerHTML = html_to_add + textDiv.innerHTML;
-//      sentences_added = (textDiv.innerText.match(/[.,;?!]/g) || [] ).length;
-//      i++;
-//    }
-//    n_sentences_before_and_after += sentences_added
-//    i = 0
-//    while(sentences_added < n_sentences_before_and_after) {
-//      curr_id = parseInt(sent_id)+(i+1)
-//      let elems = $("#transcript [sent_id='" + curr_id+ "']")
-//      if(elems.get().length == 0)
-//        break
-//      $("#transcript [sent_id='" + curr_id+ "']").each(function(){
-//        textDiv.innerHTML += this.outerHTML + " "
-//      })
-//      sentences_added = (textDiv.innerText.match(/[.,;?!]/g) || [] ).length;
-//      i++;
-//    }
-//  }
-//
-//  for(let i in $concepts){
-//    highlightConcept($concepts[i], "relationText")
-//  }
-//
-//  $("#relationText [lemma]").each( function() { 
-//    $(this).removeClass("word-current")
-//  })
-//
-//  //rendo cliccabili i concetti sotto al video
-//  $('#relationText .concept').each(function(){
-//    if(!this.parentElement.classList.contains("concept"))
-//      $(this).addClass('clickableConcept')
-//  })
-//
-//}
-
-/**
- * Quando l'utente vuole inserire una relazione, sotto il video vengono mostrati i 3 sottotitoli precedenti al current
- * timestamp, la frase corrente e quella successiva
- *
- * DEPRECATED, ora guarda la frase, non il sottotitolo --> getLastSentence()
- * */
-//function getLastRows() {
-//
-//  let timestamp = video.currentTime
-//
-//
-//  let textDiv = document.getElementById("relationText");
-//  textDiv.innerHTML = ""
-//
-//  let currentSubtitleIndex = getCurrentRow(timestamp)
-//
-//  for(let j=currentSubtitleIndex-3; j<=currentSubtitleIndex+1; j++ )
-//    if(j>=0 && j<$captions.length)
-//      textDiv.innerHTML += /*'<b> ' + secondsToHms($captions[j].start) + ":</b> " +*/ $lemmatizedSubs[j].text ;
-//
-//
-//  for(let i in $concepts){
-//     highlightConcept($concepts[i], "relationText")
-//  }
-//
-//  //rendo cliccabili i concetti sotto al video
-//  $('#relationText .concept').each(function(){
-//
-//    if(!this.parentElement.classList.contains("concept"))
-//      $(this).addClass('clickableConcept')
-//  })
-//
-//
-//
-//  /*$('#relationText > span').each(function () {
-//    let lemma = this.getAttribute("lemma")
-//  })*/
-//
-//
-//}
 
 function getCurrentRow(time){
   let currentSubtitleIndex = 0

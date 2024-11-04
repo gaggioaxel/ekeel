@@ -186,31 +186,6 @@ input[type=text][readonly]:not(#descriptionRangeInput) {
   cursor: not-allowed;
 }
 
-#targetSelector.focused {
-  outline: 2px solid dodgerblue;
-  animation: outlinePulse 1s infinite;
-}
-
-@keyframes outlinePulse {
-  0% {
-    outline-width: 1px;
-  }
-  50% {
-    outline-width: 4px;
-  }
-  100% {
-    outline-width: 2px;
-  }
-}
-
-#targetSelector.focused:not([readonly]) {
-  background-color: #fff;
-}
-
-#targetSelector.filled {
-  background-color: rgba(47, 168, 101, .2);
-}
-
 input[type=text]:not([readonly]):not(#descriptionRangeInput) {
   opacity: 1;
   border: 1px solid #ced4da;
@@ -532,7 +507,7 @@ td .btn {
 }
 
 .tab-body {
-  height: 400px;
+  height: auto;
 }
 
 .tab-body-1, .tab-body-2, .tab-body-3 {
@@ -561,9 +536,12 @@ td .btn {
 }
 
 .custom-modal {
-  width: 600px;
-  height: 550px;
+  width: 20vw;
+  height: 50vh;
   position: relative;
+  max-width: 800px;
+  min-width: 500px;
+  min-height: 550px;
 }
 
 .rectangle-container {
@@ -632,4 +610,8 @@ td .btn {
   margin-right: auto !important;
   margin-left: auto !important;
   width: 95% !important;
+}
+
+.modal-backdrop.show {
+  opacity: 0.85;
 }

@@ -1,15 +1,14 @@
-function showDefinitionDiv(reset_fields){
+function showDescriptionDiv(reset_fields){
+    state = "desc"
     clearAnnotatorVisualElements()
     $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
+    player.pause()
+    player.controls(false)
+    $("#playButton").removeClass("paused")
 
-    $('#canvas-wrap').dimBackground();
-    $('#videoSlider').show();
-    $('#videoSlider').dimBackground();
-    //$('#add-concept-description').show();
-    $('#right-body').hide();
-    $('#right-body-description').show();
-    $('#right-body-description').dimBackground();
-    //$('#add-concept-description').dimBackground();
+    $('#videoSlider, #right-body, #right-body-description').toggle();
+    $('#canvas-wrap, #videoSlider, #transcript, #right-body-description').dimBackground({ darkness: bgDarknessOnOverlay });
+
     if(reset_fields) {
         if (document.getElementById("transcript-selected-concept").innerHTML != "--"){
             document.getElementById("conceptDefined").value = document.getElementById("transcript-selected-concept").innerHTML
@@ -20,41 +19,111 @@ function showDefinitionDiv(reset_fields){
         startVideoSlider(null,null)
     }
 
-    player.pause()
-    player.controls(false)
-    $("#playButton").removeClass("paused")
-    state = "desc"
+    const transcript = $(document.getElementById("transcript"))
+
+    transcript.detach()
+    transcript.appendTo("#right-body-description")
+    transcript.find(".current").removeClass("current")
+    transcript.find(".word-current").removeClass("word-current")
+    transcript.off("click")
+
+    transcript.on("click", ".concept", function (e) {
+
+        // removes the fields for the elements
+        $(".selected-concept-text").each( function(){
+          $(this).removeClass("selected-concept-text")
+        })
+      
+        var target = e.currentTarget;
+        var selectedConcept = target.getAttribute("concept")
+          .split(" ")
+          .filter(str => str.length > 0)
+          .sort((a, b) => a.split("_").length - b.split("_").length)
+          .reverse()[0];
+        var selectedConceptText = selectedConcept.replaceAll("_", " ");
+      
+        // Toggle selection in the conceptDefined field
+        const conceptField = document.getElementById("conceptDefined");
+        if (conceptField.value == selectedConceptText) {
+          conceptField.value = "";
+          return;
+        }
+        conceptField.value = selectedConceptText;
+
+        // Find elements near the target with the same concept attribute
+        $(target).siblings(".concept").addBack().each(function() {
+          if (this.getAttribute("concept") && this.getAttribute("concept").includes(selectedConcept)) {
+            $(this).addClass("selected-concept-text");
+          }
+        });
+        
+    });
+
+    transcript.on('mouseup', function () {
+
+        var selection = window.getSelection()
+      
+        if (selection.rangeCount == 0)
+          return
+        
+        if(selection.getRangeAt(0).commonAncestorContainer.id != "transcript") {
+          selection.removeAllRanges()
+          return
+        }
+      
+        var start_time = $(selection.getRangeAt(0).startContainer).closest("[start_time]").attr("start_time")
+        
+        if (!start_time) return
+      
+        var endRange = selection.getRangeAt(selection.rangeCount - 1);
+        var end_time = $(endRange.endContainer).closest("[end_time]").attr("end_time");
+      
+        selection.removeAllRanges()  
+
+        if(!end_time) end_time = document.querySelector('p.sentence-marker:last-child').getAttribute("data-end");
+          
+        // Highlight the selection with the found start and end times
+        highlightExplanationInTranscript(parseFloat(start_time), parseFloat(end_time));
+      
+        // Update the slider values
+        $("#videoSlider").slider("values", [start_time, end_time]);
+        $("#descriptionRangeInput").val("Start: " + secondsToTimeCropped(start_time) + " - End: " + secondsToTimeCropped(end_time));
+          
+        // Update the handle labels
+        document.getElementById("handleSinistro").innerHTML = secondsToTimeCropped(start_time);
+        document.getElementById("handleDestro").innerHTML = secondsToTimeCropped(end_time);
+    });
 
     $(document).on('keydown', function(event) {
         if (event.key === 'Escape') {
-            closeDefinitionDiv();
+            closeDescriptionDiv();
         }
     });
 
 }
 
-function closeDefinitionDiv(){
-
-    $('#videoSlider').hide();
-    $('#videoSlider').undim();
-    //$('#add-concept-description').hide();
-    $('#right-body').show();
-    $('#right-body-description').hide();
-    $('#right-body-description').undim();
-    //$('#add-concept-description').undim();
-    $('#canvas-wrap').undim();
+function closeDescriptionDiv(){
+    state = "home"
     player.controls(true)
     clearInterval(interval_indicator)
     $("#position_indicator").remove()
     document.getElementById("timeSlider").innerHTML = ""
 
-    state = "home"
-    highlightExplanationInTranscript(-1, -1, "#transcript-in-description", ".sentence-marker-in-description")
+    reattachTranscriptAnnotator()
+    $(document.getElementById("transcript"))
+        .off("click")
+        .off("mouseup")
+    attachClickListenerOnConcepts()
+    attachUpdateTimeListenerOnTranscript()
+    highlightExplanationInTranscript(-1, -1)
+
+    $('#videoSlider, #right-body, #right-body-description').toggle();
+    $('#canvas-wrap, #videoSlider, #transcript, #right-body-description').undim({ fadeOutDuration: 400 });
 
     $(document).off('keydown');
 }
 
-function changeColor(){
+function changeRangeCursorColor(){
     let descriptionType = document.getElementById("descriptionType").value;
 
     if (descriptionType == "Definition"){
@@ -68,16 +137,16 @@ function changeColor(){
 }
 
 function readDefinitionElements(){
-    var start = timeToSeconds(document.getElementById("handleSinistro").innerText);
-    var end = timeToSeconds(document.getElementById("handleDestro").innerText);
+    var start = document.getElementById("handleSinistro").innerText;
+    var end = document.getElementById("handleDestro").innerText;
 
     let descriptionType = document.getElementById("descriptionType").value;
     
     //console.log(concept, start, end, descriptionType)
-    let start_sub = getCurrentSubtitle(start)
+    let start_sub = getCurrentSubtitle(timeToSeconds(start))
     let startSentID = getSentenceIDfromSub(start_sub)
 
-    let end_sub = getCurrentSubtitle(end)
+    let end_sub = getCurrentSubtitle(timeToSeconds(end))
     if(end_sub == undefined)
         end_sub = $(".sentence-marker").last()
     
@@ -85,7 +154,7 @@ function readDefinitionElements(){
     return {"start":start, "end":end, "descriptionType":descriptionType, "startSentID":startSentID, "endSentID":endSentID}
 }
 
-function addDefinition(){
+function addDescription(){
 
     if (!document.getElementById("descriptionType").value){
         alert("Must select description type")
@@ -123,7 +192,7 @@ function addDefinition(){
     res = readDefinitionElements()
     
     //console.log(concept, start, end, startSentID,endSentID)
-    pushDefinition(concept, res.start, res.end, res.startSentID, res.endSentID, res.descriptionType);
+    pushDefinition(concept, timeToSeconds(res.start), timeToSeconds(res.end), res.startSentID, res.endSentID, res.descriptionType);
     $(".descriptions-sortable-header.ascending, .descriptions-sortable-header.descending").each(function (){
         if(this.classList.contains("ascending"))
             this.classList.replace("ascending","descending");
@@ -131,7 +200,7 @@ function addDefinition(){
             this.classList.replace("descending","ascending");
         sortDescriptions(this);
     });
-    closeDefinitionDiv();
+    closeDescriptionDiv();
     
 }
 

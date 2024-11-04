@@ -1,112 +1,5 @@
-let targetSentID = null
-let targetWordID = null
-
 printRelations()
 printDescriptions()
-
-/*
-* By clicking on a concept in the box below the video, it will automatically add the concept in the form.
-* 
-document.getElementById("transcript-in-relation").on('click','.concept',function(){
-
-  if( document.getElementById("targetSelector").value == ""){
-
-    let concept = $(this).attr("concept")
-
-    document.getElementById("target").value = lemma.replaceAll("_"," ")
-
-    if(lemma.split("_").length > 1){
-        targetSentID = $(this).find( "[lemma='" + lemma.split("_")[0]+ "']").attr("sent_id")
-        targetWordID = $(this).find( "[lemma='" + lemma.split("_")[0]+ "']").attr("word_id")
-    }else{
-        targetSentID = $(this).attr("sent_id")
-        targetWordID = $(this).attr("word_id")
-    }
-
-  }
-  else
-    document.getElementById("prerequisite").value = $(this).attr("lemma").replaceAll("_"," ")
-}) */
-
-function selectSentAndWordID(selectedConcept, clickedElement){
-    if (selectedConcept.split(" ").length > 1) {
-        let firstElem = $(clickedElement).closest("[lemma='" + selectedConcept.split(" ")[0] + "'], :contains('" + selectedConcept.split(" ")[0] + "')")
-        targetSentID = firstElem.attr("sent_id");
-        targetWordID = firstElem.attr("word_id");
-        targetTime = parseFloat(firstElem.find("[start_time]").attr("start_time"))
-    } else {
-        targetSentID = $(clickedElement).attr("sent_id");
-        targetWordID = $(clickedElement).attr("word_id");
-        targetTime = parseFloat($(clickedElement).attr("start_time"))
-    }
-}
-
-$("#transcript-in-relation").on('click', '.concept', function() {
-    $(".selected-concept-text").removeClass("selected-concept-text")
-    $("#targetSelector").attr("readonly",true)
-                        .removeClass("filled")
-                        .removeClass("focused")
-                        .val("")
-                        .find("option:not([value=''])")
-                        .remove();
-    //let prevSelectedConcept = document.getElementById("target").value;
-    let targetConcepts = $(this).attr("concept")
-                                .split(" ")
-                                .filter(elem => elem.length > 0 )
-                                .map(elem => elem.replaceAll("_"," "))                              
-
-    let selectedConcept = targetConcepts[0]
-    let clickedElement = this
-
-    if(targetConcepts.length == 1) {
-        
-        this.classList.add("selected-concept-text")
-        $(this).siblings(".concept").get()
-                                    .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") )
-                                    .forEach( elem => elem.classList.add("selected-concept-text") );
-        $("#targetSelector").append(new Option(selectedConcept, selectedConcept))
-                            .val(selectedConcept)
-                            .addClass("filled");
-        selectSentAndWordID(targetConcepts[0], clickedElement)
-
-    } else {
-        let targetSelector = $("#targetSelector")
-        targetSelector.addClass("focused")
-            .css("cursor","pointer")
-            .attr("readonly",false)
-            .find("option[value='']")
-            .text("-> Select here the concept <-")
-            .css({
-                'text-align': 'center',
-                'text-align-last': 'center' // for Firefox
-            });
-        
-        for(concept of targetConcepts)
-            targetSelector.append(new Option(concept, concept))
-
-        // Aggiungi evento "change" per rilevare quando un'opzione viene selezionata
-        targetSelector.off("change")
-        targetSelector.on("change", function() {
-            let selectedConcept = $(this).val()
-            if (selectedConcept != "")
-                $(".selected-concept-text").removeClass("selected-concept-text")
-                $(this).removeClass("focused").addClass("filled");
-                let selectedConceptUnderscore = selectedConcept.replaceAll(" ", "_");
-                let nearElements = $(clickedElement).addClass("selected-concept-text")
-                                          .siblings(".concept")
-                                          .filter(function() {
-                                              return $(this).attr("concept") && $(this).attr("concept").includes(" "+selectedConceptUnderscore+" ");
-                                          });
-                                      
-                // Do something with nearElements, such as adding a class
-                nearElements.addClass("selected-concept-text");
-                selectSentAndWordID(selectedConcept, clickedElement)
-        });
-        
-    }    
-  
-});
-  
 
 function getSentenceIDandWordID(time, concept){
 
@@ -150,7 +43,8 @@ function addRelation(replaceIndx){
     let prereq = document.getElementById("prerequisite").value;
     let weight = document.getElementById("weight").value;
     weight = weight.charAt(0).toUpperCase() + weight.slice(1);
-    let target = document.getElementById("targetSelector").value;
+    let targetElement = document.getElementById("targetSelector");
+    let target = targetElement.value;
 
     if ((prereq === "") || (target === "")) {
       alert("Concepts must be non-empty!");
@@ -170,27 +64,18 @@ function addRelation(replaceIndx){
     }
 
     //sentence ID and word ID in Conll
-    let sentID;
-    let wordID;
-    let curr_time = player.currentTime();
-
-    // if sentID and wordID are set by clicking on them, take them 
-    if(targetSentID != null){
-        sentID = targetSentID;
-        wordID = targetWordID;
-        curr_time = targetTime;
-    // otherwise find them in the sentences after
-    }else{
-      let ids = getSentenceIDandWordID(curr_time, target.replaceAll(" ","_"));
-      sentID = ids.sentID;
-      wordID = ids.wordID;
-    }
+    let sentID = $(targetElement).attr("sent_id");
+    let wordID = $(targetElement).attr("word_id");
 
     console.log(sentID)
 
     // if a box has been added take it based on percentage
     let targetBox = document.getElementById("targetBox")
-    let xywh
+    // if there is a targetBox the time is considered as the one of the bb, otherwise take the start_time of the sent_id,word_id
+    let curr_time = targetBox ? 
+                        player.currentTime() : 
+                        parseFloat($("#transcript").find(`[sent_id=${sentID}][word_id=${wordID}]`).attr("start_time"));
+    let xywh="None"
 
     if(targetBox!= undefined){
         let canvas = document.getElementById('canvas-wrap');
@@ -209,9 +94,7 @@ function addRelation(replaceIndx){
         xywh = "xywh=percent:"+percentX+","+percentY+","+percentW+","+percentH
 
         document.getElementById("targetBox").remove()
-
-    }else
-        xywh = "None"
+    }
 
 
 
@@ -262,10 +145,16 @@ function pushDefinition(concept, start, end, startSentID, endSentID, description
     //console.log(definitions)
 }
 
-function editConceptAnnotation(button, concept, start_time, end_time, description_type){
+function editConceptAnnotation(button){
+    elements = $(button).parents("tr").find("td")
+    concept = elements.get()[0].innerText;
+    start = secondsToTime(timeToSeconds(elements.get()[1].innerText));
+    end = secondsToTime(timeToSeconds(elements.get()[2].innerText));
+    descriptionType = elements.get()[3].innerText;
+
     function revertChanges(mainDiv){
     
-        closeDefinitionDiv()
+        closeDescriptionDiv()
     
         mainDiv.find("h2").text("Add Description");
         
@@ -276,7 +165,7 @@ function editConceptAnnotation(button, concept, start_time, end_time, descriptio
         
         mainDiv.find("#descriptionRangeInput").css("color","dodgerblue");
         
-        mainDiv.find("#descriptionType").val("").change();
+        mainDiv.find("#descriptionType").val("");
         
         mainDiv.find(".clone").remove()
 
@@ -292,13 +181,12 @@ function editConceptAnnotation(button, concept, start_time, end_time, descriptio
     mainDiv.find("#concept-definition-hint").hide();
 
     mainDiv.find("#conceptDefined")
-            .val(concept)
-            .prop("readonly", true)
-            .change();
+           .val(concept)
+           .prop("readonly", true);
     
-    startVideoSlider(timeToSeconds(start_time), timeToSeconds(end_time))
+    startVideoSlider(timeToSeconds(start), timeToSeconds(end))
 
-    mainDiv.find("#descriptionType").val(description_type).change();
+    mainDiv.find("#descriptionType").val(descriptionType);
 
     let closeButtonClone = mainDiv.find(".relation-box-close-btn .close")
                               .clone(false)
@@ -313,30 +201,37 @@ function editConceptAnnotation(button, concept, start_time, end_time, descriptio
     
     let saveChangesButton = mainDiv.find("#saveDefinitionButton")
                                     .clone(false)
+                                    .removeAttr("onClick")
                                     .addClass("clone")
                                     .text("Save Changes")
                                     .on("click", function(){
                                         let res = readDefinitionElements()
                                         definitions.forEach(element => {
-                                            if(element.concept == concept && element.start == start_time && element.end == end_time){
-                                                element.start = secondsToTime(res.start);
-                                                element.end = secondsToTime(res.end);
+                                            if(element.concept == concept && 
+                                              element.start == start && 
+                                              element.end == end &&
+                                              element.description_type == descriptionType){
+
+                                                element.start = secondsToTime(timeToSeconds(res.start));
+                                                element.end = secondsToTime(timeToSeconds(res.end));
                                                 element.start_sent_id = res.startSentID;
                                                 element.end_sent_id = res.endSentID;
                                                 element.description_type = res.descriptionType;
                                             }
                                         });
                                         uploadManuGraphOnDB();
+                                        closeDescriptionDiv();
                                         printDescriptions();
-                                        closeDefinitionDiv();
                                     });
     
     mainDiv.find("#saveDefinitionButton")
-            .hide()
-            .parent()
-            .append(saveChangesButton)
+           .hide()
+           .parent()
+           .append(saveChangesButton)
 
-    showDefinitionDiv(false)
+    showDescriptionDiv(false)
+
+    changeRangeCursorColor()
 }
 
 function deleteDefinition(button, concept, start, end){
@@ -371,9 +266,9 @@ function confirmDeletion(button, fields){
         class: 'box',
         id: "confirmDeleteBox",
         css: {
-            position: 'absolute',
+            position: 'fixed',
             top: '50%',
-            left: '105%',
+            left: '50%',
             width: 'auto',
             minWidth: '260px',
             height: 'auto',
@@ -451,7 +346,7 @@ function confirmDeletion(button, fields){
                 if(relations[i].target == target &&
                    relations[i].prerequisite == prereq &&
                    relations[i].weight == weight &&
-                   relations[i].time.split(":").filter(elem => elem != "00").join(":") == time){
+                   relations[i].time == time){
                     relations.splice(i,1)
                     check = true;
                     break
@@ -463,7 +358,7 @@ function confirmDeletion(button, fields){
 
     box.css({opacity: 0, display: 'flex'}).animate({
       opacity: 1
-    }, 600).dimBackground({ darkness: .7 });
+    }, 600).dimBackground({ darkness: bgDarknessOnOverlay });
     //$('body').css('overflow', 'hidden');
 
 }
@@ -481,6 +376,9 @@ function printRelations() {
         let t = relations[i].target;
         let w = relations[i].weight;
         let ti = relations[i].time;
+        let ti_text = secondsToTimeShorter(timeToSeconds(ti))
+        let sentID = relations[i].sent_id;
+        let wordID = relations[i].word_id;
         let bb = relations[i].xywh != "None";
 
         let selectHTML = `<select onchange="changeWeight(this, '${t}', '${p}', '${ti}')">
@@ -488,8 +386,11 @@ function printRelations() {
                             <option value="Weak" ${w === 'Weak' ? 'selected' : ''}>Weak</option>
                           </select>`;
         
-        let relToVisualize = `<tr index="${i}" ><td>${t}</td><td>${p}</td><td>${selectHTML}</td>` +
-            `<td>${ti.split(":").filter(elem => elem != "00").join(":")}</td>` +
+        let relToVisualize = `<tr index="${i}" >
+                                <td sent_id=\"${sentID}\" word_id=\"${wordID}\" >${t}</td>
+                                <td>${p}</td>
+                                <td>${selectHTML}</td>` +
+            `<td>${ti_text}</td>` +
             `<td>` +
                 `<div style="display:flex;">` +
                 (bb ? 
@@ -505,7 +406,7 @@ function printRelations() {
             `<td><button `+
                 `class="icon-button trash " ` +
                 `style="font-size:20" `+ 
-                `onclick="deleteRelation(this,'${t}','${p}','${w}','${ti.split(":").filter(elem => elem != "00").join(":")}')"`+
+                `onclick="deleteRelation(this,'${t}','${p}','${w}','${ti}')"`+
                 `title="delete relation between the two concepts">` +
             `<i class="fa-solid fa-trash"></i></button></td></tr>`;
 
@@ -519,7 +420,9 @@ function changeWeight(selectElement, target, prerequisite, time) {
 
     // Find the relation in the relations array and update its weight
     for (let i in relations) {
-        if (relations[i].target === target && relations[i].prerequisite === prerequisite && relations[i].time === time) {
+        if (relations[i].target === target && 
+         relations[i].prerequisite === prerequisite && 
+         relations[i].time === time) {
             relations[i].weight = newWeight;
             break;
         }
@@ -541,23 +444,25 @@ function printDescriptions(){
 
         let c = definitions[i].concept
         let s = definitions[i].start
+        let s_text = secondsToTimeShorter(timeToSeconds(s))
         let e = definitions[i].end
+        let e_text = secondsToTimeShorter(timeToSeconds(e))
         let t = definitions[i].description_type
 
-        let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s.split(":").filter(elem => elem != "00").join(":") + "</td><td>"+ e.split(":").filter(elem => elem != "00").join(":") +"</td><td>"+ t +"</td>"+
+        let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s_text + "</td><td>"+ e_text +"</td><td>"+ t +"</td>"+
             "<td><button index='"+i+"' class=\"icon-button play-definition visual-effect \" " +
-                "onclick=\"playExplanation(this,'"+s+"','"+e+"','#transcript','.sentence-marker')\" " +
+                "onclick=\"playExplanation(this,'"+s+"','"+e+"')\" " +
                 "title=\"play this annotation\">" +
             "<i class=\"fa-solid fa-circle-play\" aria-hidden=\"true\"></i></button></td>" +
 
             "<td><button class=\"btn btn-primary btn-addrelation btn-dodgerblue visual-effect\" " +
-                "onclick=\"editConceptAnnotation(this,'"+c+"','"+s+"','"+e+"','"+t+"')\" " +
+                `onclick=\"editConceptAnnotation(this)\" ` +
                 "title=\"Edit this annotation\">Edit" +
             "</button></td>" +
             
             "<td><button class=\"icon-button trash \" " +
-                "onclick=\"deleteDefinition(this,'"+c+"','"+s+"','"+e+"')\"" +
-                "title=\"delete concept description\">" +
+                `onclick=\"deleteDefinition(this,\`${c}\`,\`${s}\`,\`${e}\`)\"` +
+                "title=\"Delete concept description\">" +
             "<i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></button></td></tr>"
 
         definitionTable.innerHTML += relToVisualize

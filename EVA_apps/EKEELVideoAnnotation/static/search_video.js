@@ -150,11 +150,11 @@ function deleteVideo(video_id){
   $('body').css('overflow', 'hidden');
   box.css({opacity: 0, display: 'flex'}).animate({
     opacity: 1
-  }, 1000).dimBackground({ darkness: .9 });
+  }, 1000).dimBackground({ darkness: bgDarknessOnOverlay });
   // Show box and disable scrolling
   //box.fadeIn(200, function() {
   //  $('body').css('overflow', 'hidden'); // Disabilita lo scrolling
-  //}).dimBackground({ darkness: .9 });
+  //}).dimBackground({ darkness: bgDarknessOnOverlay });
 
 }
 

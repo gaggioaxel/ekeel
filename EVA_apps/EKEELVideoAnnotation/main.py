@@ -530,8 +530,8 @@ def burst():
             video.request_transcript()
             subtitles = video.data["transcript_data"]["text"]
             #if video.data["transcript_data"]["is_whisper_transcribed"]:
-            all_lemmas = set(video._get_words_lemma().values())
-            lemmatized_subtitles = html_interactable_transcript_word_level(subtitles, all_lemmas)
+            #all_lemmas = set(video._get_words_lemma().values())
+            lemmatized_subtitles = html_interactable_transcript_word_level(subtitles)
             #else:
             #    lemmatized_subtitles, all_lemmas = html_interactable_transcript_legacy(subtitles,video.data["language"], concepts=keywords)
 

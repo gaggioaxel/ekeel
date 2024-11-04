@@ -9,7 +9,7 @@ function startVideoSlider(start_time, end_time){
     let end = end_time!=null ? end_time : player.currentTime()+10
     if (start < 0) start = 0
     if (end > videoDuration) end = videoDuration
-    highlightExplanationInTranscript(start, end, "#transcript-in-description", ".sentence-marker-in-description")
+    highlightExplanationInTranscript(start, end)
     UpdateMarkers(start)
     //console.log(start,end)
 
@@ -33,7 +33,7 @@ function startVideoSlider(start_time, end_time){
 
 
                 let video_time_clicked = videoDuration * percentage/100
-                changeTime(video_time_clicked)
+                player.currentTime(video_time_clicked)
                 document.getElementById("timeSlider").innerHTML = secondsToHms(video_time_clicked)
 
 
@@ -43,7 +43,7 @@ function startVideoSlider(start_time, end_time){
     };
 
 
-  $( "#descriptionRangeInput" ).val( "Start: " + secondsToH_m_s_ms(start) + " - End: " + secondsToH_m_s_ms(end) );
+  $( "#descriptionRangeInput" ).val( "Start: " + secondsToTimeCropped(start) + " - End: " + secondsToTimeCropped(end) );
 
     $( "#videoSlider" )
         .on('mousedown', sliderMouseDown)
@@ -57,13 +57,13 @@ function startVideoSlider(start_time, end_time){
           slide: function( event, ui ) {
             start = ui.values[0]
             end = ui.values[1]
-            $( "#descriptionRangeInput" ).val( "Start: " + secondsToH_m_s_ms(start) + " - End: " + secondsToH_m_s_ms(end) );
-            document.getElementById("handleSinistro").innerHTML = secondsToH_m_s_ms(start)
-            document.getElementById("handleDestro").innerHTML = secondsToH_m_s_ms(end)
+            $( "#descriptionRangeInput" ).val( "Start: " + secondsToTimeCropped(start) + " - End: " + secondsToTimeCropped(end) );
+            document.getElementById("handleSinistro").innerHTML = secondsToTimeCropped(start)
+            document.getElementById("handleDestro").innerHTML = secondsToTimeCropped(end)
             player.pause()
             $("#playButton").removeClass("paused")
             clearInterval(interval_indicator)
-            highlightExplanationInTranscript(start, end, "#transcript-in-description", ".sentence-marker-in-description")
+            highlightExplanationInTranscript(start, end)
 
           }
     });
@@ -77,8 +77,8 @@ function startVideoSlider(start_time, end_time){
     rightHandle.addClass("rightHandle")
     rightHandle.append('<span class="sidecar" id="handleDestro" ></span>')
 
-    document.getElementById("handleSinistro").innerHTML = secondsToH_m_s_ms(start)
-    document.getElementById("handleDestro").innerHTML = secondsToH_m_s_ms(end)
+    document.getElementById("handleSinistro").innerHTML = secondsToTimeCropped(start)
+    document.getElementById("handleDestro").innerHTML = secondsToTimeCropped(end)
 }
 
 function updateIndicator(end){
@@ -100,7 +100,7 @@ function updateIndicator(end){
 }
 
 
-function playDefinition(btn) {
+function playDescription(btn) {
 
     if (! btn.className.includes("paused")){
         $(btn).addClass("paused")
@@ -111,13 +111,13 @@ function playDefinition(btn) {
 
         if(document.getElementById("position_indicator") == null){
             $('#videoSlider').append($(position_indicator).css({left: start_position}))
-            changeTime(start)
+            player.currentTime(start)
         }
 
         let currentTime = player.currentTime()
 
         if(currentTime < start || currentTime > end){
-            changeTime(start)
+            player.currentTime(start)
             $("#position_indicator").css({left: start_position})
             document.getElementById("timeSlider").innerHTML = secondsToHms(currentTime)
         }

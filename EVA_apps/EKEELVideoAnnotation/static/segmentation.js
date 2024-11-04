@@ -10,7 +10,7 @@ function addTimeline(){
   for (let i in $startTimes){
 
     timelineDiv.innerHTML +=
-    '<div class="item"> <img src="static/' + $imagesPath[i] +'" onclick=changeTime('+$startTimes[i]+')> <p>'+secondsToHms($startTimes[i])+'</p> </div>'
+    '<div class="item"> <img src="static/' + $imagesPath[i] +'" onclick=player.currentTime('+$startTimes[i]+')> <p>'+secondsToHms($startTimes[i])+'</p> </div>'
 
   }
 }

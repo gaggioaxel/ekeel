@@ -39,11 +39,11 @@ function sleep(ms) {
 //});
 
 $(document).on("click", ".concept-row", function (e) {
-  
+
   // ignore clicks on the trash
   if (e.target.classList.contains("fa-trash"))
     return
-  
+
   let conceptElements = $(document.getElementsByClassName("concept"));
 
   conceptElements.each(function() { this.classList = ["concept"]})
@@ -59,7 +59,6 @@ $(document).on("click", ".concept-row", function (e) {
   let synsText = syns.join(", ");
 
   document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText;
-  
 
   conceptElements.each(function() { 
     let concepts = this.getAttribute("concept")
@@ -67,7 +66,7 @@ $(document).on("click", ".concept-row", function (e) {
       this.classList.add("selected-concept-text");
     else {
       for (let syn of syns) 
-        if (concepts.includes(" " + syn.replaceAll(" ","_")+" "))
+        if (concepts.includes(" " + syn.replaceAll(" ","_") + " "))
           this.classList.add("selected-synonym-text") 
     }
   });
@@ -76,12 +75,12 @@ $(document).on("click", ".concept-row", function (e) {
   let occurrences_text = $("#transcript .selected-concept-text").get();
   if (occurrences_text.length == 0)
     return
-
+  
   conceptWords = conceptText.split(" ");
   obj = []
   occurrences = []
   for(let occurrence of occurrences_text) {
-    if (occurrence.getAttribute("lemma") == conceptWords[conceptWords.length-1]){
+    if (occurrence.getAttribute("lemma") == conceptWords[conceptWords.length-1] || occurrence.innerText.trim() == conceptWords[conceptWords.length-1]){
       obj.push(occurrence);
       occurrences.push(obj);
       obj = []
@@ -107,6 +106,8 @@ $(document).on("click", ".concept-row", function (e) {
     }
   }
 
+  if (occurrences.length == 0)
+    return
 
   let focusIndex = -1;
   for (let i in occurrences){
@@ -115,15 +116,12 @@ $(document).on("click", ".concept-row", function (e) {
     $(occurrences[i][0]).attr("onfocus",false)
   }
   $(occurrences[(focusIndex+1) % occurrences.length][0]).attr("onfocus",true)
-
+      
   // Scroll the second nearest element into view
   let scrollToElem = occurrences[(focusIndex+1) % occurrences.length][0]
   
-  scrollToElem.scrollIntoView({ behavior:"smooth", block:"start" })
-  //scrollToElem.parentNode.scrollTo({
-  //  top: scrollToElem.offsetTop - scrollToElem.parentNode.offsetTop,
-  //  behavior: 'smooth'
-  //});
+  scrollToElem.scrollIntoView({ behavior: "smooth", block: "center" });
+
 });
 
 
@@ -154,13 +152,13 @@ async function showMsg(id, color) {
 
 
 /* highlight a concept in a div with id div_id */
-function highlightConcept(concept, div_id) {
+function highlightConcept(concept) {
 
   let words = concept.split(" ")
-  let foundAny = false;
-
+  let foundAny = false; 
+  let elements = $("#transcript" + " [lemma='" + words[0] + "'], #transcript span[lemma]:contains('" + words[0] + "')")
   if(words.length == 1) {
-      $("#"+div_id+" [lemma='" + words[0]+ "']").each((_,conceptElem) => {
+    elements.each((_,conceptElem) => {
           let currentConcept = conceptElem.getAttribute("concept") || " "; // Get existing concept or a space string
           if (!currentConcept.includes(" " + words[0]+" ")) {
             currentConcept = currentConcept + words[0] + " ";
@@ -171,20 +169,23 @@ function highlightConcept(concept, div_id) {
         });
   } else {
 
-    $("#"+div_id+" [lemma='" + words[0] + "']").each(function () {
+    elements.each(function () {
 
       let allSpan = [this]
       let currentSpan = this
       let isConcept = true
+      let num_words_tol = 1 // number of words of tolerance to skip when looking for a concept 
+      // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
 
       for(let j=1; j<words.length; j++){
 
         let nextSpan =  $(currentSpan).nextAll('span:first')
-        let nextWord
+        let nextWord = []
 
         if(nextSpan[0] !== undefined){
 
-          nextWord = nextSpan[0].attributes[0].nodeValue
+          nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text().trim()]
+          //nextWord = nextSpan[0].attributes[0].nodeValue
           currentSpan = nextSpan[0]
 
         }else{
@@ -197,14 +198,25 @@ function highlightConcept(concept, div_id) {
             if(nextRow !== undefined){
                 currentSpan = nextRow.find("span")[0]
                 if(currentSpan !== undefined)
-                    nextWord = currentSpan.attributes[0].nodeValue
+                  nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text().trim()]  
+                  //nextWord = currentSpan.attributes[0].nodeValue
             }
         }
-        if(nextWord !== words[j]){
+        if (nextWord.includes(words[j])) {
+          allSpan.push(currentSpan)
+          num_words_tol = 1
+        } else if(num_words_tol > 0) {
+          // if a word is part of the concept but not the right one, this is not the same concept
+          if (words.includes(nextWord[0]) || words.includes(nextWord[1])) {
             isConcept = false
             break
           }
-        allSpan.push(currentSpan)
+          num_words_tol--;
+          j--;
+        } else {
+          isConcept = false
+          break
+        }
       }
 
       if(isConcept){
@@ -240,7 +252,7 @@ function addSubtitles(){
   }
 
   for(let i in $concepts)
-    highlightConcept($concepts[i], "transcript")
+    highlightConcept($concepts[i])
 }
 
 function filterVocabulary(filterText) {
@@ -294,7 +306,7 @@ function showVocabularyBurst(inputVocabulary){
           "<a href=\"#"+href+"\" data-toggle=\"collapse\" aria-expanded=\"false\" id='menu_"+c+"' >"
 
       row += "<p id='concept_"+c+"' class=\" m-concept-text\">"+ conceptX +": </p>"
-      row += '<button class="icon-button trash " onclick="deleteConcept(this,'+"'"+c+"'"+')"><i class="fa-solid fa-trash"></i></button>'
+      row += `<button class="icon-button trash " onclick="deleteConcept(this,`+c+`)"><i class="fa-solid fa-trash"></i></button>`
       if(synonymsX.length > 0)
         row += "<ul id='synonyms_"+c+"' class=\" m-synonym-text\"><li>"+ synonymsX +"</li></ul>"
     
@@ -386,13 +398,12 @@ function addConcept(){
     showMsg("errorConcept", "orange")
     return
   }
-  foundAny = highlightConcept(conceptLemmas, "transcript");
+  foundAny = highlightConcept(conceptLemmas);
   if(!foundAny){
     document.getElementById("errorConcept").innerHTML ="this sequence of words has not been found in transcript !"
     showMsg("errorConcept", "red")
     return
   }
-  highlightConcept(conceptLemmas, "transcript-in-description");
   $concepts.push(conceptLemmas)
   $conceptVocabulary[conceptLemmas]=[];
   $concepts.sort()
@@ -674,16 +685,18 @@ function printDescriptions(definitions, update){
     for(let i in definitions){
         console.log(definitions[i])
         let c = definitions[i].concept
-        let s = definitions[i].start.split(".")[0]
-        let e = definitions[i].end.split(".")[0]
+        let s = definitions[i].start
+        let s_text = secondsToTimeShorter(timeToSeconds(s))
+        let e = definitions[i].end
+        let e_text = secondsToTimeShorter(timeToSeconds(e))
         let t = definitions[i].description_type
 
-        let relToVisualize = "<tr><td>"+ c +"</td><td>"+ s.split(":").filter(elem => elem != "00").join(":") + "</td><td>"+ e.split(":").filter(elem => elem != "00").join(":") +"</td><td>"+ t +"</td>"+
+        let descToVisualize = "<tr><td>"+ c +"</td><td>"+ s_text + "</td><td>"+ e_text +"</td><td>"+ t +"</td>"+
             "<td><button class=\"icon-button \" " +
-                "onclick=\"playDefinition("+hmsToSeconds(s)+")\">" +
+                "onclick=\"playDescription("+hmsToSeconds(s)+")\">" +
             "<i class=\"fa fa-play\"></i></button></td></tr>"
 
-        definitionTable.innerHTML += relToVisualize
+        definitionTable.innerHTML += descToVisualize
 
     }
 
@@ -739,7 +752,7 @@ function hmsToSeconds(time){
     return Number(hms[0])*60*60 + Number(hms[1])*60 + Number(hms[2])
 }
 
-function playDefinition(start){
+function playDescription(start){
     player.currentTime(start);
     player.play()
 }
