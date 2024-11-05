@@ -29,6 +29,17 @@ class ItaliaNLAPI():
                                                   'statistical_frequency_threshold': 1,
                                                   'max_length_term': 5,
                                                   'apply_contrast': True
+                                                },
+                                              "alzetta-conf-no-contrast":
+                                                {
+                                                  'pos_start_term': ['c:S'],
+                                                  'pos_internal_term': ['c:A','c:E','c:S','c:EA','c:SP'],
+                                                  'pos_end_term': ['c:A','c:S','c:SP'],
+                                                  'statistical_threshold_single': 30,
+                                                  'statistical_threshold_multi': 10000,
+                                                  'statistical_frequency_threshold': 1,
+                                                  'max_length_term': 5,
+                                                  'apply_contrast': False
                                                 }
                                            }
 
@@ -69,9 +80,9 @@ class ItaliaNLAPI():
 
 
     
-    def execute_term_extraction(self, doc_id, configuration=None, n_try=60) -> DataFrame:
+    def execute_term_extraction(self, doc_id, configuration=None, apply_contrast=False, n_try=60) -> DataFrame:
         if configuration is None:
-            configuration = self._term_extraction_configs['alzetta-conf']
+            configuration = self._term_extraction_configs['alzetta-conf'+"-no-contrast"*(not apply_contrast)]
         
         url = self._server_address + '/documents/term_extraction'
         term_extraction_id = requests.post(url=url,

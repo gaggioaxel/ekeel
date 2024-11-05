@@ -817,7 +817,6 @@ class VideoAnalyzer:
         #    json.dump({"transcript": self.data["transcript_data"]["text"], "lemmas": self.data["transcript_data"]["lemmas"]},f,indent=4)
             
         self.data["transcript_data"]["text"] = timed_transcript
-        self.data["transcript_data"].pop("lemmas",None)
         terms = api_obj.execute_term_extraction(doc_id)
 
         try:
@@ -1250,11 +1249,15 @@ if __name__ == '__main__':
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
     for video in db_mongo.get_videos(["video_id","title"]):
         print(video)
-        if video["video_id"] != 'nqCxZvqYG9I':
+        if video["video_id"] != 's7giV2Lz3t8':
             continue
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
         #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
         vid_analyzer.analyze_transcript()
+        import json
+        with open("termsWithoutContrast.json","w") as f:
+            json.dump(vid_analyzer.data["transcript_data"]["terms"],f,indent=4)
+
         
     #lemmatized_concepts = vid_analyzer.lemmatize_terms()
     #vid_analyzer.create_thumbnails()

@@ -20,6 +20,21 @@ if __name__ == "__main__":
             try:
                 videos_metadata:list = get_untranscribed_videos()
             except Exception as e:
+                import sys
+                import os
+                import traceback
+            
+                tb_details = traceback.extract_tb(sys.exc_info()[2])
+        
+                print(f"Exception: {e}")
+                for frame in tb_details:
+                    filename = os.path.basename(frame.filename)
+                    # Read the specific line of code
+                    line_number = frame.lineno
+                    with open(frame.filename, 'r') as f:
+                        lines = f.readlines()
+                        error_line = lines[line_number - 1].strip()
+                    print(f"File: {filename}, Function: {frame.name}, Line: {line_number} | {error_line}")
                 # If there is an error at network level sleep and try again reconnecting
                 sleep(300)
                 from environment import MONGO_CLUSTER_USERNAME, MONGO_CLUSTER_PASSWORD
