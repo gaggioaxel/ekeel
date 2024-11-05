@@ -19,13 +19,14 @@ if __name__ == "__main__":
         while True:
             try:
                 videos_metadata:list = get_untranscribed_videos()
+                print(f"Jobs {videos_metadata}")
             except Exception as e:
                 import sys
                 import os
                 import traceback
-            
+
                 tb_details = traceback.extract_tb(sys.exc_info()[2])
-        
+
                 print(f"Exception: {e}")
                 for frame in tb_details:
                     filename = os.path.basename(frame.filename)
