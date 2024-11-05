@@ -746,7 +746,6 @@ class VideoAnalyzer:
         #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
         if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
             return
-
         
         timed_transcript = self.data["transcript_data"]["text"].copy()
         language = self.identify_language()
@@ -806,7 +805,7 @@ class VideoAnalyzer:
                     else:
                         is_first_part_of_word = True
                 else:
-                    assert False
+                    assert False, "Error in matching tagged and timed transcript, video cannot be loaded!"
                 word.pop("lemma_indx",None)
                 word_counter += 1
 
@@ -1251,6 +1250,8 @@ if __name__ == '__main__':
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
     for video in db_mongo.get_videos(["video_id","title"]):
         print(video)
+        if video["video_id"] != 'nqCxZvqYG9I':
+            continue
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
         #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
         vid_analyzer.analyze_transcript()

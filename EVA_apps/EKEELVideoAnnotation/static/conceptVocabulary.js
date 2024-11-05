@@ -746,7 +746,9 @@ function highlightConcept(concept) {
 
   let words = concept.split(" ")
   let foundAny = false; 
-  let elements = $("#transcript" + " [lemma='" + words[0] + "'], #transcript span[lemma]:contains('" + words[0] + "')")
+  let elements = $("#transcript [lemma='" + words[0] + "']").add($("#transcript span[lemma]").filter(function() {
+                                                              return $(this).text().trim() == words[0];
+                                                            }));
   if(words.length == 1) {
     elements.each((_,conceptElem) => {
           let currentConcept = conceptElem.getAttribute("concept") || " "; // Get existing concept or a space string

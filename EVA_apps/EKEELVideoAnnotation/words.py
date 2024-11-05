@@ -196,8 +196,8 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
                 match_ = re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])[0]
                 if match_ in accent_replacements.keys():
                     replacement = accent_replacements[word["word"]]
-                    word["word"] = replacement
                     segment["text"] = segment["text"].replace(word["word"],replacement)
+                    word["word"] = replacement
                 # TODO there can be a case like "l'altezza di l'(primo) nel..." in text that can break it
                 # but make it work would require to rework the structures and map words as indices of the text string
                 elif any(re.findall(f"{match_}[ .,:?!]",segment["text"])):
