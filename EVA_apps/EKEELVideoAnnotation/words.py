@@ -231,10 +231,10 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
                 to_remove_words.append(j)
                 
             # Sometime happened the shift of the apostrophe ["accetta l", "'ipotesi forte"] 
-            if segment["text"].startswith("'") and not "'" in segment["words"][0] and i > 0:
+            if segment["text"].startswith("'") and not "'" in segment["words"][0] and len(timed_sentences) > 0:
                 segment["text"] = segment["text"][1:]
-                timed_sentences[i-1]["text"] += "'"
-                timed_sentences[i-1]["words"][-1]["word"] += "'"
+                timed_sentences[-1]["text"] += "'"
+                timed_sentences[-1]["words"][-1]["word"] += "'"
             
             # Case "25°C" -> "25°" "celsius"
             if any(re.findall(temperature_regex,word["word"])):

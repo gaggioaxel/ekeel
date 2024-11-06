@@ -3,7 +3,7 @@ if __name__ == "__main__":
     # TODO stable-ts version 2.17.3: passing the language is not working, will be inferenced at cost of small increase in time
     # self._model.transcribe(wav_path.__str__(), decode_options={"language":language}) \
     #             .save_as_json(json_path.__str__())
-    model = stable_whisper.load_model(name='large-v3', cpu_preload=True)
+    model = stable_whisper.load_model(name='large-v3', in_memory=True, cpu_preload=True)
     print("Model loaded")
     
     from pathlib import Path

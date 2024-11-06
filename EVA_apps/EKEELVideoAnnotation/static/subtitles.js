@@ -396,7 +396,8 @@ function secondsToTime(d) {
 
 function timeToSeconds(timeStr){
   // Regex to match hours:minutes:seconds.millis or minutes:seconds.millis or seconds.millis
-  const HHmmSSms_pattern = /((?<hours>[1-9]|[0-1][1-9]|2[0-3]):)?((?<minutes>[0-9]|[1-5][0-9]):)(?<seconds>[0-9]|[1-5][0-9]).(?<millis>\d+)$/
+  // matches all 3.53 and 3:3.53 and 3:03.53
+  const HHmmSSms_pattern = /((?<hours>[1-9]|[0-1][1-9]|2[0-3]):)?((?<minutes>[0-9]|[0-5][0-9]):)(?<seconds>[0-9]|[0-5][0-9]).(?<millis>\d+)$/
   match = timeStr.match(HHmmSSms_pattern)
   
   if (!match){
