@@ -318,61 +318,163 @@ function showVocabularyBurst(inputVocabulary){
     }
 }
 
+function confirmConceptDeleteBurst(button) {
+  $("#confirmDeleteConceptBox").remove()
+
+  $("<div></div>", {
+      class: 'box',
+      id: "confirmDeleteConceptBox",
+      css: {
+          position: 'absolute',
+          top: '50%',
+          left: '130%',
+          width: '260px',
+          height: 'auto',
+          backgroundColor: 'white',
+          border: '2px solid gray',
+          borderRadius: '10px',
+          transform: 'translate(-50%, -50%)',
+          display: 'none',
+          padding: '1em',
+          textAlign: 'center',
+          zIndex: '1'
+      }
+  }).appendTo($(button).closest(".modal-content"))
+  
+  const box = $("#confirmDeleteConceptBox")
+
+  // Add confirmation text
+  let title = $(`<div>
+                    <h5>Confirm delete?</h5>
+                    <span>Navigate also with arrow keys and select with ENTER</span>
+                 </div>`).css({
+    color: '#333',
+    width: '250px'
+  }).appendTo(box);
+  
+  $('<hr>').css("margin-bottom","3em").appendTo(title);
+
+  // Create button container for symmetry
+  const buttonsContainer = $("<div></div>").css("margin-top","4em").appendTo(title);
+
+  // Add 'No' button
+  $("<button class='btn btn-primary btn-addrelation btn-dodgerblue'>No</button>")
+    .css({
+      position: 'absolute',
+      bottom: '1em',
+      left: '5%'
+    })
+    .on("click", function() {
+      $("#confirmDeleteConceptBox").fadeOut(150, function() {
+        $('body').css('overflow', 'auto'); // Ripristina lo scrolling
+        $(this).remove()
+      });
+      $(document).off("keydown.navigate")
+      $(button).removeClass("active").blur();
+    })
+    .appendTo(buttonsContainer);
+
+  // Add 'Yes' button
+  $("<button class='btn btn-primary btn-addrelation delete'>Yes</button>")
+    .css({
+      position: 'absolute',
+      bottom: '1em',
+      left: '55%'
+    })
+    .on("click", function() {
+
+      $("#confirmDeleteConceptBox").fadeOut(150, function() {
+        $('body').css('overflow', 'auto'); // Ripristina lo scrolling
+        $(this).remove()
+      });
+      $(document).off("keydown.navigate")
+      
+      //rimuovo riga della tabella
+      $(button).closest('div').slideUp(function() {
+        $(this).remove();
+      });
+    
+      let synonymsToDel = $conceptVocabulary[concept];
+      //cancello concetto e i sinonimi
+      delete $conceptVocabulary[concept];
+    
+      for (let word in $conceptVocabulary) {
+        if(word !== concept) {
+          $conceptVocabulary[word] = $conceptVocabulary[word].filter(item => item !== concept);
+        }
+      }
+    
+      for(let i in $concepts){
+          if ( $concepts[i] === concept) {
+              $concepts.splice(i, 1);
+              break
+          }
+      }    
+    
+      //se il concetto è composto da più parole
+      //if(concept.split(" ").length > 1){
+      //    concept = concept.replaceAll(" ", "_")
+      //    $("[lemma=" + concept + "]").contents().unwrap()
+      //}
+    
+    
+      let underlinedConcept = concept.replaceAll(" ","_");
+      let elementsToRemove = $("[concept~=" + underlinedConcept + "]");
+      elementsToRemove.removeClass("selected-concept-text");
+      for(let wtd of synonymsToDel) {
+        $("[concept~=" + wtd.replaceAll(" ", "_") + "]").removeClass("selected-synonym-text");
+      }
+      elementsToRemove.each((_, element) => { 
+          element.setAttribute("concept", element.getAttribute("concept").replace(underlinedConcept,""));
+          if (element.getAttribute("concept").trim().length == 0)
+            element.classList.remove("concept");
+      })
+    
+      document.getElementById("transcript-selected-concept").innerHTML = "--";
+      document.getElementById("transcript-selected-concept-synonym").innerHTML = "--";
+      showVocabularyBurst($conceptVocabulary);
+
+    }).appendTo(buttonsContainer);
+
+  $(document).on('keydown.navigate', function(event) {
+    const yesButton = $(".btn:contains('Yes')");  // Select the button with text "Yes"
+    const noButton = $(".btn:contains('No')");    // Select the button with text "No"
+
+    // Check which key was pressed
+    switch(event.key) {
+      case 'ArrowRight':
+          yesButton.focus();  // Focus the "Yes" button on left arrow
+          break;
+      case 'ArrowLeft':
+          noButton.focus();   // Focus the "No" button on right arrow
+          break;
+      case 'Enter':
+          // If "Yes" is focused, click it; if "No" is focused, click it
+          if (yesButton.is(':focus')) {
+              yesButton.click();
+          } else if (noButton.is(':focus')) {
+              noButton.click();
+          }
+          break;
+    }
+  });
+
+  // Show the box
+  box.css({opacity: 0, display: 'flex'}).animate({
+    opacity: 1
+  }, 200)
+  $(".btn:contains('No')").focus();
+  //$('body').css('overflow', 'hidden');
+}
 
 function deleteConcept(button,concept) {
 
   $(".icon-button.trash.active").removeClass("active")
   $(button).addClass("active");
-  confirmDeletion(button, {});
+  confirmConceptDeleteBurst(button);
   setTimeout(function() {
       $(button).removeClass("active").blur();
   }, 3000);
-  return
-
-  //rimuovo riga della tabella
-  $(button).closest('div').slideUp(function() {
-      $(this).remove();
-  });
-
-  let synonymsToDel = $conceptVocabulary[concept];
-  //cancello concetto e i sinonimi
-  delete $conceptVocabulary[concept];
-  
-  for (let word in $conceptVocabulary) {
-    if(word !== concept) {
-      $conceptVocabulary[word] = $conceptVocabulary[word].filter(item => item !== concept);
-    }
-  }
-  
-  for(let i in $concepts){
-      if ( $concepts[i] === concept) {
-          $concepts.splice(i, 1);
-          break
-      }
-  }    
-
-  //se il concetto è composto da più parole
-  //if(concept.split(" ").length > 1){
-  //    concept = concept.replaceAll(" ", "_")
-  //    $("[lemma=" + concept + "]").contents().unwrap()
-  //}
-
-
-  let underlinedConcept = concept.replaceAll(" ","_");
-  let elementsToRemove = $("[concept~=" + underlinedConcept + "]");
-  elementsToRemove.removeClass("selected-concept-text");
-  for(let wtd of synonymsToDel) {
-    $("[concept~=" + wtd.replaceAll(" ", "_") + "]").removeClass("selected-synonym-text");
-  }
-  elementsToRemove.each((_, element) => { 
-      element.setAttribute("concept", element.getAttribute("concept").replace(underlinedConcept,""));
-      if (element.getAttribute("concept").trim().length == 0)
-        element.classList.remove("concept");
-  })
-
-  document.getElementById("transcript-selected-concept").innerHTML = "--";
-  document.getElementById("transcript-selected-concept-synonym").innerHTML = "--";
-  showVocabularyBurst($conceptVocabulary);
 }
 
 

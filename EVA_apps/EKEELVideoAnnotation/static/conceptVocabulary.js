@@ -605,7 +605,7 @@ function removeConcept(button, concept){
   uploadManuGraphOnDB()
 }
 
-function confirmConceptDeletion(button, concept){
+function confirmConceptDelete(button, concept){
 
   $("#confirmDeleteConceptBox").remove()
 
@@ -738,7 +738,7 @@ function deleteConcept(button,concept) {
     $(".icon-button.trash.active").removeClass("active")
     return
   }
-  confirmConceptDeletion(button, concept);  
+  confirmConceptDelete(button, concept);  
 }
 
 /* highlight a concept in a div with id div_id */

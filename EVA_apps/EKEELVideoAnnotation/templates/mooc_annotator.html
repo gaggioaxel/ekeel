@@ -48,7 +48,7 @@
           </div>
         </div>
 
-        <div class="buttons">
+        <div id="mainButtonsContainer" class="buttons">
 
             <button type="button" 
                     onclick="showVocabularyDiv()" 
@@ -238,7 +238,7 @@
 
             <div class="autocomplete">
               <div style="display:flex;">
-                <label for="conceptDefined">Concept:</label>
+                <label for="conceptDescribed">Concept:</label>
                 <div id="concept-definition-hint" title="Select a concept in the transcript or insert it manually">
                   <!-- Info by C. V. Galli from <a href="https://thenounproject.com/browse/icons/term/info/" target="_blank" title="Info Icons">Noun Project</a> (CC BY 3.0) -->
                   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="15 15 75 75" style="cursor: help; width:25px; height:25px; margin-left: 7px;" xml:space="preserve">
@@ -256,7 +256,7 @@
                   </svg>
                 </div>
               </div>
-                <input type="text" class="form-control" autocomplete="off" id="conceptDefined" placeholder="Type a concept...">
+                <input type="text" class="form-control" autocomplete="off" id="conceptDescribed" placeholder="Type a concept...">
             </div>
 
             <div>
@@ -302,14 +302,14 @@
                 </svg>
               </div>
             </div>
-            <select class="form-control" id="descriptionType" onchange="changeRangeCursorColor()" style="cursor:pointer;" required>
+            <select class="form-control" id="descriptionType" onchange="setRangeCursorColor()" style="cursor:pointer;" required>
               <option value="" selected disabled hidden style="color:gray;">Select an option...</option>
               <option value="Definition">Definition</option>
               <option value="Expansion">Expansion</option>
             </select>
           </div>
           {#<div id="transcript-in-description" class="transcript transcript-in-description"></div>#}
-          <button id="saveDefinitionButton" onclick="addDescription()" class="btn btn-primary">Add Description</button>
+          <button id="saveDescriptionButton" onclick="addDescription()" class="btn btn-primary">Add Description</button>
         </div>
       </div>
 
@@ -317,7 +317,7 @@
     </div>
 
     <div id="bottomdiv">
-      <div class="col relations" style="margin-top:0.3%">
+      <div id="slidesContainer" class="col relations" style="margin-top:0.3%">
         <h2>SLIDES</h2>
         <hr style="margin-bottom:.3rem;">
         <div class="timeline" id="timeline"></div>
@@ -534,7 +534,7 @@
       let $synonymList = [];
       let $lemmatizedSubs = {{ lemmatized_subtitles|tojson }};
       let $allLemmas = [];
-      let bgDarknessOnOverlay = .85;
+      let bgDarknessOnOverlay = .6;
 
       let $allWordsLemmas = {};
 

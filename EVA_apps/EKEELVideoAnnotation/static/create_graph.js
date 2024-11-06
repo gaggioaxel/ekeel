@@ -160,31 +160,30 @@ function editConceptAnnotation(button){
         
         mainDiv.find("#concept-definition-hint").show();
     
-        mainDiv.find("#conceptDefined")
+        mainDiv.find("#conceptDescribed")
                 .prop("readonly", false)
-        
-        mainDiv.find("#descriptionRangeInput").css("color","dodgerblue");
         
         mainDiv.find("#descriptionType").val("");
         
         mainDiv.find(".clone").remove()
 
         mainDiv.find(".relation-box-close-btn .close").show()
-        mainDiv.find("#saveDefinitionButton").show()
+        mainDiv.find("#saveDescriptionButton").show()
 
     }
 
     const mainDiv = $("#add-concept-description")
 
-    mainDiv.find("h2").text("Edit Definition");
+    mainDiv.find("h2").text("Edit Description");
 
     mainDiv.find("#concept-definition-hint").hide();
 
-    mainDiv.find("#conceptDefined")
+    mainDiv.find("#conceptDescribed")
            .val(concept)
            .prop("readonly", true);
     
     startVideoSlider(timeToSeconds(start), timeToSeconds(end))
+    setRangeCursorColor()
 
     mainDiv.find("#descriptionType").val(descriptionType);
 
@@ -199,7 +198,7 @@ function editConceptAnnotation(button){
             .parent()
             .append(closeButtonClone)
     
-    let saveChangesButton = mainDiv.find("#saveDefinitionButton")
+    let saveChangesButton = mainDiv.find("#saveDescriptionButton")
                                     .clone(false)
                                     .removeAttr("onClick")
                                     .addClass("clone")
@@ -220,24 +219,22 @@ function editConceptAnnotation(button){
                                             }
                                         });
                                         uploadManuGraphOnDB();
-                                        closeDescriptionDiv();
+                                        revertChanges()
                                         printDescriptions();
                                     });
     
-    mainDiv.find("#saveDefinitionButton")
+    mainDiv.find("#saveDescriptionButton")
            .hide()
            .parent()
            .append(saveChangesButton)
 
     showDescriptionDiv(false)
-
-    changeRangeCursorColor()
 }
 
 function deleteDefinition(button, concept, start, end){
     $(".icon-button.trash.active").removeClass("active")
     $(button).addClass("active");
-    confirmDeletion(button, {"concept": concept, "start": start, "end": end})
+    confirmAnnotationDelete(button, {"concept": concept, "start": start, "end": end})
     setTimeout(function() {
         $(button).removeClass("active").blur();
     }, 1500);
@@ -246,13 +243,13 @@ function deleteDefinition(button, concept, start, end){
 function deleteRelation(button, target, prereq, weight, time) {
     $(".icon-button.trash.active").removeClass("active")
     $(button).addClass("active");
-    confirmDeletion(button, { "target":target, "prereq":prereq, "weight":weight, "time":time });
+    confirmAnnotationDelete(button, { "target":target, "prereq":prereq, "weight":weight, "time":time });
     setTimeout(function() {
         $(button).removeClass("active").blur();
     }, 3000);
 }
 
-function confirmDeletion(button, fields){
+function confirmAnnotationDelete(button, fields){
 
     // Hide the box
     function closeConfirmAnnotatorBox() {
@@ -358,7 +355,7 @@ function confirmDeletion(button, fields){
 
     box.css({opacity: 0, display: 'flex'}).animate({
       opacity: 1
-    }, 600).dimBackground({ darkness: bgDarknessOnOverlay });
+    }, 300).dimBackground({ darkness: bgDarknessOnOverlay });
     //$('body').css('overflow', 'hidden');
 
 }

@@ -6,18 +6,22 @@ function showDescriptionDiv(reset_fields){
     player.controls(false)
     $("#playButton").removeClass("paused")
 
+    $("#slidesContainer, #mainButtonsContainer").hide()
+    $("#descriptionsTable, #relationsTable").css("overflow", "visible")
     $('#videoSlider, #right-body, #right-body-description').toggle();
     $('#canvas-wrap, #videoSlider, #transcript, #right-body-description').dimBackground({ darkness: bgDarknessOnOverlay });
 
     if(reset_fields) {
         if (document.getElementById("transcript-selected-concept").innerHTML != "--"){
-            document.getElementById("conceptDefined").value = document.getElementById("transcript-selected-concept").innerHTML
+            document.getElementById("conceptDescribed").value = document.getElementById("transcript-selected-concept").innerHTML
         } else {
-            document.getElementById("conceptDefined").value = ""
+            document.getElementById("conceptDescribed").value = ""
         }
         document.getElementById("descriptionType").value = ""
         startVideoSlider(null,null)
-    }
+    }  
+
+    setRangeCursorColor()
 
     const transcript = $(document.getElementById("transcript"))
 
@@ -42,8 +46,8 @@ function showDescriptionDiv(reset_fields){
           .reverse()[0];
         var selectedConceptText = selectedConcept.replaceAll("_", " ");
       
-        // Toggle selection in the conceptDefined field
-        const conceptField = document.getElementById("conceptDefined");
+        // Toggle selection in the conceptDescribed field
+        const conceptField = document.getElementById("conceptDescribed");
         if (conceptField.value == selectedConceptText) {
           conceptField.value = "";
           return;
@@ -117,19 +121,21 @@ function closeDescriptionDiv(){
     attachUpdateTimeListenerOnTranscript()
     highlightExplanationInTranscript(-1, -1)
 
+    $("#slidesContainer, #mainButtonsContainer").fadeIn("fast")
+    $("#descriptionsTable, #relationsTable").css("overflow", "hidden auto")
     $('#videoSlider, #right-body, #right-body-description').toggle();
-    $('#canvas-wrap, #videoSlider, #transcript, #right-body-description').undim({ fadeOutDuration: 400 });
+    $('#canvas-wrap, #videoSlider, #transcript, #right-body-description').undim({ fadeOutDuration: 300 });
 
     $(document).off('keydown');
 }
 
-function changeRangeCursorColor(){
+function setRangeCursorColor(){
     let descriptionType = document.getElementById("descriptionType").value;
 
     if (descriptionType == "Definition"){
         document.getElementsByClassName("ui-slider-range")[0].style.background="#ffc107";
         document.getElementById("descriptionRangeInput").style.color = "#ffc107"
-    }else if(descriptionType == "Expansion"){
+    }else {
         document.getElementsByClassName("ui-slider-range")[0].style.background="dodgerblue";
         document.getElementById("descriptionRangeInput").style.color = "dodgerblue"
     }
@@ -160,7 +166,7 @@ function addDescription(){
         alert("Must select description type")
         return
     }
-    let concept = document.getElementById("conceptDefined").value;
+    let concept = document.getElementById("conceptDescribed").value;
     if(concept.length == 0){
         alert("Concept cannot be empty")
         return

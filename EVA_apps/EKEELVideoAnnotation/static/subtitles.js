@@ -9,7 +9,9 @@ function showRelationDiv(){
   state="rel"
   clearAnnotatorVisualElements()
   $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
-  document.body.style.overflow = 'hidden';
+  $("#slidesContainer, #mainButtonsContainer").hide()
+  $("#descriptionsTable, #relationsTable").css("overflow", "visible")
+
 
   document.getElementById("prerequisite").value = ""
   const targetSelector = $(document.getElementById("targetSelector")).val("")
@@ -75,12 +77,15 @@ function showRelationDiv(){
                .addClass("filled");
 
         let selectedConceptUnderscore = selectedConcept.replaceAll(" ", "_");
+        // TODO currently takes only siblings (same row words and not other rows for performances but may break some annotations)
         let nearElements = $(clickedElement).addClass("selected-concept-text")
                                   .siblings(".concept")
                                   .filter(function() {
                                       return $(this).attr("concept").includes(" "+selectedConceptUnderscore+" ");
                                   });
-        nearElements.addClass("selected-concept-text");
+        for(let words_counter in selectedConcept.split(" ").slice(1))
+          $(nearElements[words_counter]).addClass("selected-concept-text");
+        nearElements.filter(function() { $(this).hasClass("selected-concept-text") })
         targetSelector.attr("sent_id", nearElements.get().length 
                               ? nearElements.get()[0].getAttribute("sent_id") : clickedElement.getAttribute("sent_id"))
                       .attr("word_id", nearElements.get().length 
@@ -109,6 +114,9 @@ function reattachTranscriptAnnotator(){
 function closeRelationDiv(){
   state="home"
   removeCanvas()
+  $("#slidesContainer, #mainButtonsContainer").fadeIn("fast")
+  $("#descriptionsTable, #relationsTable").css("overflow", "hidden auto")
+
   const targetSelector = $("#targetSelector")
   targetSelector.get()[0].classList = ["form-control"]
 
@@ -155,12 +163,12 @@ function attachClickListenerOnConcepts(){
       document.getElementById("transcript-selected-concept").innerHTML = "";
       document.getElementById("transcript-selected-concept-synonym").innerHTML = "--";
       if (state == "desc")
-        document.getElementById("conceptDefined").value = ""
+        document.getElementById("conceptDescribed").value = ""
       return
     }
     
     if (state == "desc")
-      document.getElementById("conceptDefined").value = selectedConceptText;
+      document.getElementById("conceptDescribed").value = selectedConceptText;
     document.getElementById("transcript-selected-concept").innerHTML = selectedConceptText;
   
     let syns = $conceptVocabulary[selectedConceptText] || [];
