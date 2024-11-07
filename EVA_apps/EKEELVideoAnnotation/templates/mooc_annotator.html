@@ -452,17 +452,15 @@
 
                 <!-- Synonym set selected -->
                 <div class="row selected-synset-show">
-                  <p class="spaced-text same-line">Selected Synonym Set: </p><p class="synonym-set-class same-line" id="synonymSet"></p>
+                  <p class="spaced-text same-line">Selected Synonym Set: </p>
+                  <input type="text" id="synonymSet" class="synonym-set-class" placeholder="--" readonly style="text-align: center;">
                 </div>
 
                 <!-- Synonym set selection -->
                 <div id="synset-selection" class="spaced-text synset-selection-class row">
                   <div class="row">
                     <label for="selectSynonymSet">Word of Synonym Set:</label>
-                    <input type="text" class="form-control" autocomplete="off" id="selectSynonymSet"  placeholder="Select one of the synonym set word">
-                  </div>
-                  <div class="row button-center">
-                      <button onclick="selectSynonymSet()" class="btn btn-primary button-select-synset">Select Synonym Set</button>
+                    <input type="text" class="form-control" autocomplete="off" id="selectSynonymSet"  placeholder="Enter and select one of the synonym set">
                   </div>
                   <div class="row tab-error" id="errorSynonymSet" style="display:none"></div>
                 </div>
@@ -499,7 +497,7 @@
 
       <div class="modal-footer">
         <div class="col switch-container mr-3" style="justify-content: flex-start; margin-top: 10px">
-          <label>Ask confirm on delete</label>
+          <label>Ask confirm on concepts removal</label>
           <label class="switch">
             <input name="askConfirmDeleteConcept" onchange="toggleAskConfirmConceptDelete()" checked="true" type="checkbox">
             <span class="slider round"></span>
@@ -513,8 +511,8 @@
 
 
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
   <!-- <link href="//vjs.zencdn.net/8.17.3/video-js.min.css" rel="stylesheet">
   <script src="//vjs.zencdn.net/8.17.3/video.min.js" defer></script> -->
   <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet">

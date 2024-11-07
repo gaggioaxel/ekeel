@@ -85,7 +85,7 @@
                 <div class="tab-content tab-body" id="myTabContent">
 
                   <!-- TAB 1 - Concepts Vocabulary -->
-                  <div class="tab-pane fade show active tab-body-1" id="concepts" role="tabpanel" aria-labelledby="concepts-tab" style="max-height:400px;overflow:auto;border:3px solid rgba(200,200,200,0.5);">
+                  <div class="tab-pane fade show active tab-body-1" id="concepts" role="tabpanel" aria-labelledby="vocabulary-tab" style="max-height:400px;overflow:auto;border:3px solid rgba(200,200,200,0.5);">
                       <!--<table class="table">
                         <tbody id="conceptsTable"></tbody>
                       </table>-->
@@ -121,7 +121,8 @@
 
                       <!-- Synonym set selected -->
                       <div class="row selected-synset-show">
-                        <p class="spaced-text same-line">Selected Synonym Set: </p><p class="synonym-set-class same-line" id="synonymSet"></p>
+                        <p class="spaced-text same-line">Selected Synonym Set: </p>
+                        <input type="text" id="synonymSet" class="synonym-set-class" placeholder="--" readonly style="text-align: center;">
                       </div>
 
                       <!-- Synonym set selection -->
@@ -129,9 +130,6 @@
                         <div class="row">
                           <label for="selectSynonymSet">Word of Synonym Set:</label>
                           <input type="text" class="form-control" autocomplete="on" id="selectSynonymSet"  placeholder="Select one of the synonym set word">
-                        </div>
-                        <div class="row button-center">
-                            <button onclick="selectSynonymSet()" class="btn btn-primary button-select-synset">Select Synonym Set</button>
                         </div>
                         <div class="row tab-error" id="errorSynonymSet" style="display:none"></div>
                       </div>

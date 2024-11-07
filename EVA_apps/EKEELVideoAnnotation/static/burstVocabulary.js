@@ -419,10 +419,10 @@ function confirmConceptDeleteBurst(button) {
     
     
       let underlinedConcept = concept.replaceAll(" ","_");
-      let elementsToRemove = $("[concept~=" + underlinedConcept + "]");
+      let elementsToRemove = $("[concept~=" + $.escapeSelector(underlinedConcept) + "]");
       elementsToRemove.removeClass("selected-concept-text");
       for(let wtd of synonymsToDel) {
-        $("[concept~=" + wtd.replaceAll(" ", "_") + "]").removeClass("selected-synonym-text");
+        $("[concept~=" + $.escapeSelector(wtd.replaceAll(" ", "_")) + "]").removeClass("selected-synonym-text");
       }
       elementsToRemove.each((_, element) => { 
           element.setAttribute("concept", element.getAttribute("concept").replace(underlinedConcept,""));
@@ -862,8 +862,18 @@ function playDescription(start){
 }
 
 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    var target = $(e.target).attr("href")
-    console.log(target)
+    //var target = $(e.target).attr("href")
+    //console.log(e.target)
+    if(e.target.getAttribute("href") == "#add-concept")
+      document.getElementById("newConcept").value = ""
+    else if(e.target.getAttribute("href") == "#add-synonyms") {
+      document.getElementById("synonymSet").value = ""
+      document.getElementById("errorNewSynonym").style.display = "none"
+      document.getElementById("errorRemoveSynonym").style.display = "none"
+    } else if(e.target.getAttribute("href") == "#concepts") {
+      document.getElementById("filter-vocabulary").value = ""
+      filterVocabulary("")
+    }
 });
 
 
@@ -879,13 +889,13 @@ function selectSynonymSet(){
 
     if(wordOfSynonymSet === "") {
       document.getElementById("errorSynonymSet").innerHTML ="empty field !"
-      document.getElementById("synonymSet").style.display = "none"
+      document.getElementById("synonymSet").value = ""
       showMsg("errorSynonymSet", "red")
       return 
     }
 
     document.getElementById("errorSynonymSet").style.display = "none"
-    document.getElementById("synonymSet").innerHTML = "";
+    document.getElementById("synonymSet").value = "";
     let conceptWords = wordOfSynonymSet.split(" ")
     let lemmas = []
     conceptWords.forEach(word => lemmas.push($allWordsLemmas[word]))
@@ -901,14 +911,13 @@ function selectSynonymSet(){
       for (let i=0; i<listOfSynonymsOfLemma.length; i++) {
         $synonymList.push(listOfSynonymsOfLemma[i]);
       }
-      document.getElementById("synonymSet").style.display = "block"
-      document.getElementById("synonymSet").innerHTML = synonymSetText;
+      document.getElementById("synonymSet").value = synonymSetText;
       document.getElementById("selectSynonymSet").value = "";
       return
     }
 
     document.getElementById("errorSynonymSet").innerHTML ="the word is not a concept !"
-    document.getElementById("synonymSet").style.display = "none"
+    document.getElementById("synonymSet").value = ""
     showMsg("errorSynonymSet", "red")
     $synonymList = [];
   }
@@ -977,8 +986,7 @@ function selectSynonymSet(){
     //console.log("synonyms")
     //console.log($synonyms);
     $synonymList = [];
-    document.getElementById("synonymSet").innerHTML = "";
-    document.getElementById("synonymSet").style.display = "none"
+    document.getElementById("synonymSet").value = "";
     document.getElementById("selectSynonymSet").value = "";
     document.getElementById("synonymWord").value = "";
     document.getElementById("errorNewSynonym").innerHTML = "word successfully added to the synonyms set"
@@ -1038,8 +1046,7 @@ function selectSynonymSet(){
     //console.log("synonyms")
     //console.log($synonyms);
     $synonymList = [];
-    document.getElementById("synonymSet").innerHTML = "";
-    document.getElementById("synonymSet").style.display = "none"
+    document.getElementById("synonymSet").value = "";
     document.getElementById("selectSynonymSet").value = "";
     document.getElementById("synonymWord").value = "";
     document.getElementById("errorRemoveSynonym").innerHTML = "word successfully removed from the synonyms set"

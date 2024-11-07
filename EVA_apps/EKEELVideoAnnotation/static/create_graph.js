@@ -146,11 +146,11 @@ function pushDefinition(concept, start, end, startSentID, endSentID, description
 }
 
 function editConceptAnnotation(button){
-    elements = $(button).parents("tr").find("td")
-    concept = elements.get()[0].innerText;
-    start = secondsToTime(timeToSeconds(elements.get()[1].innerText));
-    end = secondsToTime(timeToSeconds(elements.get()[2].innerText));
-    descriptionType = elements.get()[3].innerText;
+    let elements = $(button).parents("tr").find("td")
+    let concept = elements.get()[0].innerText;
+    let prevConceptStart = secondsToTime(timeToSeconds(elements.get()[1].innerText));
+    let prevConceptEnd = secondsToTime(timeToSeconds(elements.get()[2].innerText));
+    let prevDescriptionType = elements.get()[3].innerText;
 
     function revertChanges(mainDiv){
     
@@ -182,10 +182,10 @@ function editConceptAnnotation(button){
            .val(concept)
            .prop("readonly", true);
     
-    startVideoSlider(timeToSeconds(start), timeToSeconds(end))
+    startVideoSlider(timeToSeconds(prevConceptStart), timeToSeconds(prevConceptEnd))
     setRangeCursorColor()
 
-    mainDiv.find("#descriptionType").val(descriptionType);
+    mainDiv.find("#descriptionType").val(prevDescriptionType);
 
     let closeButtonClone = mainDiv.find(".relation-box-close-btn .close")
                               .clone(false)
@@ -207,9 +207,9 @@ function editConceptAnnotation(button){
                                         let res = readDefinitionElements()
                                         definitions.forEach(element => {
                                             if(element.concept == concept && 
-                                              element.start == start && 
-                                              element.end == end &&
-                                              element.description_type == descriptionType){
+                                              element.start == prevConceptStart && 
+                                              element.end == prevConceptEnd &&
+                                              element.description_type == prevDescriptionType){
 
                                                 element.start = secondsToTime(timeToSeconds(res.start));
                                                 element.end = secondsToTime(timeToSeconds(res.end));
@@ -219,7 +219,7 @@ function editConceptAnnotation(button){
                                             }
                                         });
                                         uploadManuGraphOnDB();
-                                        revertChanges()
+                                        revertChanges(mainDiv);
                                         printDescriptions();
                                     });
     

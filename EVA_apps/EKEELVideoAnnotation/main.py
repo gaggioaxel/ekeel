@@ -677,6 +677,20 @@ def video_segmentation_refinement():
 
     return {"definitions":definitions,
             "downloadable_jsonld_graph":downloadable_jsonld_graph}
+    
+@app.route('/lemmatize_term', methods=["GET", "POST"])
+def lemmatize_term():
+    language = request.json["lang"]
+    term = request.json["term"]
+    video_id = request.json["video_id"]
+    if language == "en":
+        sem_text = SemanticText("", language=language)
+        return {"lemmatized_term": " ".join(sem_text.set_text(word).lemmatize() for word in term["text"].split(" "))}
+    elif language == "it":
+        VideoAnalyzer("https://www.youtube.com/watch?v="+video_id).lemmatize_an_italian_term(term)
+        return {"lemmatized_term": term["lemma"]}
+    return
+    
 
 DEBUG = False
 
