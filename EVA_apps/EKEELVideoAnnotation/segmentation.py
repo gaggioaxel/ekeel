@@ -741,7 +741,7 @@ class VideoAnalyzer:
             raise Exception(f"Language is not between supported ones: {locale.get_supported_languages()}")
         return self.data['language'] if format =='pt1' else locale.get_full_from_pt1(self.data['language'])
 
-    def analyze_transcript(self, async_call=False):
+    def analyze_transcript(self, async_call:bool=False, _disable_term_extraction:bool=True):
 
         #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
         if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
@@ -817,7 +817,11 @@ class VideoAnalyzer:
         #    json.dump({"transcript": self.data["transcript_data"]["text"], "lemmas": self.data["transcript_data"]["lemmas"]},f,indent=4)
             
         self.data["transcript_data"]["text"] = timed_transcript
-        terms = api_obj.execute_term_extraction(doc_id)
+        if _disable_term_extraction:
+            from pandas import DataFrame
+            terms = DataFrame()
+        else:
+            terms = api_obj.execute_term_extraction(doc_id)
 
         try:
             self.data["transcript_data"].update({ "ItaliaNLP_doc_id":   doc_id, 
@@ -831,7 +835,6 @@ class VideoAnalyzer:
 
     def lemmatize_an_italian_term(self, term):
         nlp = NLPSingleton()
-        transcript = self.data["transcript_data"]["text"]
         doc = nlp.lemmatize(term["term"],'it')
         term["lemma"] = term["term"]
         head = {}
@@ -841,7 +844,6 @@ class VideoAnalyzer:
                 head["lemma"] = token.lemma_
                 #head["gen"] = token.morph.get("Gender")[0] if len(token.morph.get("Gender")) else ""
                 #head["num"] = token.morph.get("Number")[0] if len(token.morph.get("Number")) else ""
-        words = re.split(r"(?: )|(?='[^ ]+)", term["term"])
         
         # if the lemma of the head matches or there is a frequency of 1, use it as it is
         if head["lemma"] == head["text"] or term["frequency"] == 1:
@@ -849,37 +851,62 @@ class VideoAnalyzer:
         
         lemmas = [token.lemma_ for token in doc]
         
+        words = re.split(r"(?: )|(?='[^ ]+)", term["term"])
         for indx, word in enumerate(words):
             if word.startswith("'"):
                 words[indx-1] += "'"
                 words[indx] = word[1:]
+
+        # Counting term occurrences
         curr_word_indx = 0
-        composed_words = [[]]
-        for sentence in transcript:
-            for word in sentence["words"]:
-                if curr_word_indx == len(lemmas):
-                    composed_words.append([])
-                    curr_word_indx = 0
-                if word["lemma"] == lemmas[curr_word_indx]:
-                    composed_words[-1].append(word["word"])
-                    curr_word_indx += 1
-                elif curr_word_indx > 0 and word["lemma"] != lemmas[curr_word_indx]:
-                    composed_words[-1] = []
-                    curr_word_indx = 0
+        term_variants = [[]]
+        if not "variants" in term.keys():
+            for sentence in self.data["transcript_data"]["text"]:
+                for word in sentence["words"]:
+                    if curr_word_indx == len(lemmas):
+                        term_variants.append([])
+                        curr_word_indx = 0
+                    if word["lemma"] == lemmas[curr_word_indx]:
+                        term_variants[-1].append(word["word"])
+                        curr_word_indx += 1
+                    elif curr_word_indx > 0 and word["lemma"] != lemmas[curr_word_indx]:
+                        term_variants[-1] = []
+                        curr_word_indx = 0
+            term_variants = [" ".join(occurence) for occurence in term_variants if len(occurence)]
+        else:
+            term_variants = term["variants"]
         
-        composed_words = [" ".join(occurence) for occurence in composed_words if len(occurence)]
         # TODO probably a wrong lemmatization and mismatch between spacy and ItaliaNLP
         # Keep the lemma as the term
-        if len(composed_words) == 0:
+        if len(term_variants) == 0:
             return term
-        counts = Counter(composed_words).most_common()
-        targetLemma = [counts[0][0],counts[0][1]]
-        for lemma, occurrences in counts:
-            if targetLemma[1] == occurrences:
-                if targetLemma[0] == " ".join(lemmas):
-                    targetLemma = [lemma, occurrences]  
-            else:
-                break
+        
+        # If i have a verb as single lemma and all it's variants are identified as VERB 
+        # (minimize risk of context errors of spacy like "accusa" in a text like "l'accusa decise di" that becomes "accusare")
+        # TODO but may still happen in case of few occurrences
+        if len(lemmas) == 1 and doc[0].pos_ == "VERB" and len(term_variants) > 0:
+            is_verb = True
+            for variant in term_variants:
+                doc = nlp.lemmatize(variant,'it')
+                if len(doc) != 1 or doc[0].pos_ != "VERB":
+                    is_verb = False
+                    break
+            if is_verb:
+                term["lemma"] = lemmas[0]
+                return term            
+        
+        # Taking the most recurrent version and the lemmatized version if tie
+        counts = Counter(term_variants).most_common()
+        print(counts, lemmas)
+        targetLemma = (counts[0][0],counts[0][1])
+        
+        # Look for all the occurrences, if it's present an occurence equal to the lemmatized version, take that
+        for curr_lemma, curr_occurrences in counts:
+            if curr_lemma == " ".join(lemmas):
+                term["lemma"] = curr_lemma
+                return term
+                    
+
         term["lemma"] = targetLemma[0]
         return term
 
@@ -1249,11 +1276,13 @@ if __name__ == '__main__':
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
     for video in db_mongo.get_videos(["video_id","title"]):
         print(video)
-        if video["video_id"] != 'Ja2NFTFqxJ8':
-            continue
+        
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
+        #vid_analyzer.data["transcript_data"]["terms"] = []
+        #db_mongo.insert_video_data(vid_analyzer.data)
+        
         #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
-        vid_analyzer.analyze_transcript()
+        #vid_analyzer.analyze_transcript()
         #import json
         #with open("termsWithoutContrast.json","w") as f:
         #    json.dump(vid_analyzer.data["transcript_data"]["terms"],f,indent=4)

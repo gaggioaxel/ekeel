@@ -681,15 +681,18 @@ def video_segmentation_refinement():
 @app.route('/lemmatize_term', methods=["GET", "POST"])
 def lemmatize_term():
     language = request.json["lang"]
-    term = request.json["term"]
+    term = request.json["concept"]
     video_id = request.json["video_id"]
     if language == "en":
         sem_text = SemanticText("", language=language)
         return {"lemmatized_term": " ".join(sem_text.set_text(word).lemmatize() for word in term["text"].split(" "))}
     elif language == "it":
-        VideoAnalyzer("https://www.youtube.com/watch?v="+video_id).lemmatize_an_italian_term(term)
+        VideoAnalyzer(url= "https://www.youtube.com/watch?v="+video_id, \
+                      request_fields_from_db=["video_id"]) \
+                    .lemmatize_an_italian_term(term)
+        print(f"chosen: {term['lemma']}")
         return {"lemmatized_term": term["lemma"]}
-    return
+    return {"lemmatized_term": ""}
     
 
 DEBUG = False

@@ -98,9 +98,26 @@ function showDescriptionDiv(reset_fields){
         document.getElementById("handleDestro").innerHTML = secondsToTimeCropped(end_time);
     });
 
+    $(document).off("keydown")
     $(document).on('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeDescriptionDiv();
+        event.preventDefault(); // Prevent default scrolling
+
+        switch (event.keyCode) {
+            case 32: // Space key
+                playDescription($("#playButton").get()[0]);
+                break;
+    
+            case 37: // Left Arrow key
+                player.currentTime(Math.max(0, player.currentTime() - skipSeconds)); 
+                break;
+    
+            case 39: // Right Arrow key
+                player.currentTime(Math.min(videoDuration, player.currentTime() + skipSeconds)); 
+                break;
+            
+            case 27:
+                closeDescriptionDiv();
+                break;
         }
     });
 
@@ -117,16 +134,16 @@ function closeDescriptionDiv(){
     $(document.getElementById("transcript"))
         .off("click")
         .off("mouseup")
+    $(document).off('keydown');
     attachClickListenerOnConcepts()
     attachUpdateTimeListenerOnTranscript()
     highlightExplanationInTranscript(-1, -1)
+    attachPlayerKeyEvents()
 
     $("#slidesContainer, #mainButtonsContainer").fadeIn("fast")
     $("#descriptionsTable, #relationsTable").css("overflow", "hidden auto")
     $('#videoSlider, #right-body, #right-body-description').toggle();
     $('#canvas-wrap, #videoSlider, #transcript, #right-body-description').undim({ fadeOutDuration: 300 });
-
-    $(document).off('keydown');
 }
 
 function setRangeCursorColor(){

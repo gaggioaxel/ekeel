@@ -109,8 +109,8 @@ function showVocabulary(inputVocabulary) {
 }
 
 function showVocabularyDiv(){
-  
   state="concepts"
+  $(document).off("keydown")
   clearAnnotatorVisualElements()
   //$("html, body").animate({ scrollTop: 0 }, "slow");
   $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
@@ -194,7 +194,7 @@ function showVocabularyDiv(){
                      .css('position', 'relative')
                      .append(transcriptElement.detach());
 
-  $(document).on('keydown.dismiss', function(event) {
+  $(document).on('keydown', function(event) {
     if (event.key === 'Escape')
         closeVocabularyDiv();
   });
@@ -202,7 +202,7 @@ function showVocabularyDiv(){
 }
 
 function closeVocabularyDiv(){
-  $(document).off('keydown.dismiss')
+  $(document).off('keydown')
   state="home"
   document.body.style.overflow = 'auto';
   document.getElementById('filter-vocabulary').value = ''
@@ -213,6 +213,7 @@ function closeVocabularyDiv(){
   transcript.css(originalTranscriptCSS);
   attachUpdateTimeListenerOnTranscript()
   attachClickListenerOnConcepts()
+  attachPlayerKeyEvents()
 }
 
 $(document).on("click", ".concept-row", function (e) {
@@ -257,7 +258,7 @@ $(document).on("click", ".concept-row", function (e) {
   obj = []
   occurrences = []
   for(let occurrence of occurrences_text) {
-    if (occurrence.getAttribute("lemma") == conceptWords[conceptWords.length-1] || occurrence.innerText.trim() == conceptWords[conceptWords.length-1]){
+    if (occurrence.getAttribute("lemma") == conceptWords[conceptWords.length-1] || occurrence.innerText == conceptWords[conceptWords.length-1]){
       obj.push(occurrence);
       occurrences.push(obj);
       obj = []
@@ -338,17 +339,42 @@ function addConcept(){
     showMsg("errorConcept", "red")
     return
   }
-  $concepts.push(conceptLemmas)
-  $conceptVocabulary[conceptLemmas]=[];
-  $concepts.sort()
-  showVocabulary($conceptVocabulary)
-  //console.log($concepts)
-  //console.log("--------------------")
-  // $('#conceptsModal').modal('hide')
-  document.getElementById("newConcept").value = ""
-  document.getElementById("errorConcept").innerHTML = "word successfully added to the concepts"
-  showMsg("errorConcept", "green")
-  uploadManuGraphOnDB()
+
+  let js_data = {
+    "lang": $language,
+    "video_id": $video_id,
+    "concept": {
+      "term": concept,
+      "variants": foundOccurences,
+      "frequency": foundOccurences.length,
+    }
+  }
+
+  $.ajax({
+      url: '/annotator/lemmatize_term',
+      type : 'post',
+      contentType: 'application/json',
+      dataType : 'json',
+      data : JSON.stringify(js_data)
+  }).done(function(result) {
+    let conceptLemma = result.lemmatized_term
+    if(conceptLemma == ""){
+      document.getElementById("errorConcept").innerHTML ="error in backend lemmatization process !"
+      showMsg("errorConcept", "red")
+      return
+    }
+    $concepts.push(conceptLemma)
+    $conceptVocabulary[conceptLemma]=[];
+    $concepts.sort()
+    showVocabulary($conceptVocabulary)
+    //console.log($concepts)
+    //console.log("--------------------")
+    // $('#conceptsModal').modal('hide')
+    document.getElementById("newConcept").value = ""
+    document.getElementById("errorConcept").innerHTML = "word successfully added to the concepts"
+    showMsg("errorConcept", "green")
+    uploadManuGraphOnDB()
+  })
 }
 
 
@@ -733,7 +759,7 @@ function highlightConcept(concept) {
   let words = concept.split(" ")
   let conceptOccurencesText = []; 
   let elements = $("#transcript [lemma='" + words[0] + "']").add($("#transcript span[lemma]").filter(function() {
-                                                              return $(this).text().trim() == words[0];
+                                                              return $(this).text() == words[0];
                                                             }));
   if(words.length == 1) {
     elements.each((_,conceptElem) => {
@@ -762,7 +788,7 @@ function highlightConcept(concept) {
 
         if(nextSpan[0] !== undefined){
 
-          nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text().trim()]
+          nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text()]
           //nextWord = nextSpan[0].attributes[0].nodeValue
           currentSpan = nextSpan[0]
 
@@ -776,7 +802,7 @@ function highlightConcept(concept) {
             if(nextRow !== undefined){
                 currentSpan = nextRow.find("span")[0]
                 if(currentSpan !== undefined)
-                  nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text().trim()]  
+                  nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text()]  
                   //nextWord = currentSpan.attributes[0].nodeValue
             }
         }
@@ -810,9 +836,9 @@ function highlightConcept(concept) {
             span.setAttribute("concept", updatedConcept); // Update concept attribute
           }
           span.classList.add("concept");
-          occurrence += span.innerText.trim() + " "
+          occurrence += span.innerText + " "
         });
-        conceptOccurencesText.push(occurrence);
+        conceptOccurencesText.push(occurrence.trim());
       }
     })
   }
@@ -828,6 +854,5 @@ function toggleAnnotationStatus(){
 }
 
 function toggleAskConfirmConceptDelete(){
-  const wantConfirm = $("input[name='askConfirmDeleteConcept']").is(":checked")
-  document.cookie = `pref-skip-confirm-delete-concept=${!wantConfirm}; path=/annotator;`;
+  setCookie("pref-skip-confirm-delete-concept", !$("input[name='askConfirmDeleteConcept']").is(":checked"))
 }

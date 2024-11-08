@@ -84,7 +84,7 @@
         <div id="transcriptContainer" class="col relations" style="margin-top:0.3%; max-width:30vw;">
           <div style="display:flex">
             <h2>TRANSCRIPT</h2>
-            <div title="Clicking on the transcript text will move the video to that part of speech, concepts are highlighted-text, if clicked they will be selected">
+            <div title="The transcript is interactive at word level, concepts are highlighted text portions, if clicked all the concept occurrences and synonyms will be selected">
               <!-- Info by C. V. Galli from <a href="https://thenounproject.com/browse/icons/term/info/" target="_blank" title="Info Icons">Noun Project</a> (CC BY 3.0) -->
               <svg  xmlns="http://www.w3.org/2000/svg" 
                     xmlns:xlink="http://www.w3.org/1999/xlink" 
@@ -107,6 +107,12 @@
                 </g>
               </svg>
             </div>
+            <button onclick="downloadTranscript()" 
+                    class="btn btn-primary btn-addrelation btn-dodgerblue"
+                    title="Download the enriched JSON transcript"
+                    style="margin: auto 3em auto auto">
+              JSON Transcript
+            </button>
           </div>
           <div id="temp-transcript-warning"
                style="display:none; text-align:center; background-color: #edb95e; color: black;"
@@ -187,7 +193,7 @@
                       style="font-size:30; padding: 4px 3px 4px 3px; cursor:pointer;" 
                       onclick="showDrawTutorial()"
                       title="show how to add a box"></i>
-                  <button id="clearDrawButton" style="display:none" onclick="deleteBox('target')" class="btn btn-primary delete">Remove Box</button>
+                  <button id="clearDrawButton" style="display:none" onclick="deleteBox('target'); attachRelationKeyEvents();" class="btn btn-primary delete">Remove Box</button>
               </div>
           </div>
         </div>
@@ -582,23 +588,7 @@
           definedConcepts.push(definitions[i].concept)
       }
       let player;
-      console.log(definitions)
-
-      document.addEventListener("DOMContentLoaded", function() {
-        player = videojs('video-active', {
-                                          controls: true,
-                                          autoplay: false,
-                                          fluid: true,
-                                          playbackRates: [1.0, 1.1, 1.25, 1.5, 2], // Add playback rate options
-                                          preload: 'auto'
-                                         }, 
-                          function onPlayerReady() {
-                            this.on('timeupdate', function() {
-                              UpdateMarkers(this.currentTime());
-                            });
-          });
-      });
-
+      
       function getCookie(cname) {
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
@@ -614,10 +604,36 @@
     
       function setCookie(cname, cvalue, exdays) {
         const d = new Date();
-        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        d.setTime(d.getTime() + ((exdays ? exdays : 365) * 24 * 60 * 60 * 1000));
         let expires = "expires="+d.toUTCString();
         document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/annotator";
       }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        player = videojs('video-active', {
+                                          controls: true,
+                                          autoplay: false,
+                                          fluid: true,
+                                          playbackRates: [1.0, 1.1, 1.25, 1.5, 2], // Add playback rate options
+                                          preload: 'auto'
+                                         }, 
+                          function onPlayerReady() {
+                            this.on('timeupdate', function() {
+                              UpdateMarkers(this.currentTime());
+                            });
+                            const skipTimeButton = player.controlBar.addChild('button', {}, player.controlBar.children_.length - 1).el();
+                            skipSeconds = parseInt(getCookie("pref-player-skip-seconds") || 10);
+                            skipTimeButton.innerHTML = `<span id='skip-seconds' title='second to skip when used arrow keys' style='font-size:small'>${skipSeconds}s</span>`
+                            skipTimeButton.onclick = function(){
+                              let skipTimes = [1, 2, 5, 10, 20, 30]
+                              const skipTextElement = $("#skip-seconds")
+                              skipSeconds = skipTimes[(skipTimes.indexOf(parseInt(skipTextElement.text().replace("s",""))) + 1) % skipTimes.length]
+                              skipTextElement.text(skipSeconds+"s")
+                              setCookie("pref-player-skip-seconds",skipSeconds);
+                            }
+                          }
+        )
+      });
 
   </script>
   <script src="{{ url_for('static', filename='network.js') }}"></script>

@@ -108,7 +108,22 @@ def get_video_data(video_id:str, fields:list | None= None):
         if metadata is not None:
             metadata.pop('_id')
     else:
-        projection = {field: True for field in fields}
+        
+        def build_projection(fields:"dict|list"):
+            projection = {}
+
+            for field in fields:
+                if isinstance(field, dict):
+                    # Handle nested fields
+                    for outer_key, inner_keys in field.items():
+                        projection[outer_key] = {key: True for key in inner_keys}
+                else:
+                    # For top-level fields
+                    projection[field] = True
+
+            return projection
+        
+        projection = build_projection(fields)
         metadata = list(collection.find({"video_id":video_id}, projection))
         if len(metadata):
             metadata = metadata[0]

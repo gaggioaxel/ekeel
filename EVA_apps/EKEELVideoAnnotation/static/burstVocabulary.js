@@ -80,7 +80,7 @@ $(document).on("click", ".concept-row", function (e) {
   obj = []
   occurrences = []
   for(let occurrence of occurrences_text) {
-    if (occurrence.getAttribute("lemma") == conceptWords[conceptWords.length-1] || occurrence.innerText.trim() == conceptWords[conceptWords.length-1]){
+    if (occurrence.getAttribute("lemma") == conceptWords[conceptWords.length-1] || occurrence.innerText == conceptWords[conceptWords.length-1]){
       obj.push(occurrence);
       occurrences.push(obj);
       obj = []
@@ -157,7 +157,7 @@ function highlightConcept(concept) {
   let words = concept.split(" ")
   let foundAny = false; 
   let elements = $("#transcript [lemma='" + words[0] + "']").add($("#transcript span[lemma]").filter(function() {
-                                                              return $(this).text().trim() === words[0];
+                                                              return $(this).text() === words[0];
                                                             }));
   if(words.length == 1) {
     elements.each((_,conceptElem) => {
@@ -186,7 +186,7 @@ function highlightConcept(concept) {
 
         if(nextSpan[0] !== undefined){
 
-          nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text().trim()]
+          nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text()]
           //nextWord = nextSpan[0].attributes[0].nodeValue
           currentSpan = nextSpan[0]
 
@@ -200,7 +200,7 @@ function highlightConcept(concept) {
             if(nextRow !== undefined){
                 currentSpan = nextRow.find("span")[0]
                 if(currentSpan !== undefined)
-                  nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text().trim()]  
+                  nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text()]  
                   //nextWord = currentSpan.attributes[0].nodeValue
             }
         }

@@ -307,7 +307,18 @@ def html_interactable_transcript_word_level(sentences):
     for sent_id, sentence in enumerate(sentences):
         html_sent = []
         for word_id, word in enumerate(sentence["words"]):
-            word_text = word["word"] + " "
+            word_text = word["word"]
+            html_sent += [f'<span lemma="{word["lemma"]}"' +
+                                f' sent_id="{str(sent_id)}"' +
+                                f' word_id="{str(word_id)}"' +
+                                f' start_time="{word["start"]}"' +
+                                f' end_time="{word["end"]}"' +
+                                f' cpos="{word["cpos"]}"' +
+                                f' pos="{word["pos"]}"' +
+                                f' gen="{word["gen"]}"' +
+                                f' num="{word["num"]}" >' +
+                                f'{word_text}' +
+                            '</span>', " "]
             # if articulated preposition with apostrophe eg. "dell'" 
             # or verb with after a cyclic pronoun eg. "specchiar-si" 
             # or word that has a punctutation mark after
@@ -315,18 +326,7 @@ def html_interactable_transcript_word_level(sentences):
             if ((word["pos"] in ["EA","E"] or word["cpos"] == "R") and word["word"].endswith("'")) or \
                 (word["cpos"] == "V" and word_id + 1 < len(sentence["words"]) and sentence["words"][word_id+1]["pos"] == "PC") or \
                 (word_id + 1 < len(sentence["words"]) and sentence["words"][word_id+1]["pos"] in ["FC","FF","FS"]) :
-               word_text = word_text[:-1]
-            html_sent += [f'<span lemma="{word["lemma"]}"' +
-                                f' sent_id="{str(sent_id)}"' +
-                                f' word_id="{str(word_id)}"' +
-                                f' start_time="{word["start"]}"' +
-                                #f' cpos="{word["cpos"]}"' +
-                                #f' gen="{word["gen"]}"' +
-                                #f' num="{word["num"]}"' +
-                                #f' pos="{word["pos"]}"' +
-                                f' end_time="{word["end"]}" >' +
-                                f'{word_text}' +
-                            '</span>']
+               html_sent.pop()
         html_lemmatized_sents.append({"text": "".join(html_sent)})
     return html_lemmatized_sents
 

@@ -11,6 +11,7 @@ function deleteBox(conceptType){
 function initDraw(conceptType) {
 
     $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
+    $(document).off("keydown")
 
     let classBox 
     if(conceptType=="target")
@@ -112,6 +113,7 @@ function removeCanvas(){
 function showDrawTutorial(){
     $("#helpAddBox").addClass("active")
     removeCanvas();
+    $(document).off("keydown")
     $("#drawButton").text("Add Box").prop("disabled",false).css("cursor","pointer");
     $("#clearDrawButton").fadeOut("fast");
     $("#insertRelationButton").prop("disabled",false).css("cursor","pointer");
@@ -278,6 +280,7 @@ function showDrawTutorial(){
                         removeCanvas();
                         player.controls(true);
                         $("#helpAddBox").removeClass("active");
+                        attachRelationKeyEvents()
                     }, 1500);
                 }
 

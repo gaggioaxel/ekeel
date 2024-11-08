@@ -2,8 +2,56 @@ let markers = []
 
 addSubtitles();
 initializeMarkers();
+attachPlayerKeyEvents();
 
+function attachPlayerKeyEvents(){
+  $(document).on("keydown", function(event) {
 
+    event.preventDefault(); // Prevent default scrolling
+    clearAnnotatorVisualElements();
+    player.userActive(true);
+
+    switch (event.keyCode) {
+        case 32: // Space key
+          player.paused() ? player.play() : player.pause();
+          break;
+
+        case 37: // Left Arrow key
+          player.currentTime(Math.max(0, player.currentTime() - skipSeconds)); // Go back 10 seconds
+          break;
+
+        case 39: // Right Arrow key
+          player.currentTime(Math.min(videoDuration, player.currentTime() + skipSeconds)); // Go forward 10 seconds
+          break;
+    }
+  });
+}
+
+function attachRelationKeyEvents(){
+  $(document).off("keydown")
+  $(document).on('keydown', function(event) {
+    event.preventDefault(); // Prevent default scrolling
+    player.userActive(true);
+
+    switch (event.keyCode) {
+        case 32: // Space key
+            player.paused() ? player.play() : player.pause();
+            break;
+
+        case 37: // Left Arrow key
+            player.currentTime(Math.max(0, player.currentTime() - skipSeconds)); // Go back 10 seconds
+            break;
+
+        case 39: // Right Arrow key
+            player.currentTime(Math.min(videoDuration, player.currentTime() + skipSeconds)); // Go forward 10 seconds
+            break;
+        
+        case 27:
+            closeRelationDiv();
+            break;
+    }
+  });
+}
 
 function showRelationDiv(){
   state="rel"
@@ -97,11 +145,7 @@ function showRelationDiv(){
   $('#right-body').hide();
   $('#relation').show();
   $('#canvas-wrap, #relation, #transcript').dimBackground({ darkness: bgDarknessOnOverlay })
-
-  $(document).on('keydown', function(event) {
-    if (event.key === 'Escape')
-        closeRelationDiv();
-  });
+  attachRelationKeyEvents()
 }
 
 
@@ -136,6 +180,7 @@ function closeRelationDiv(){
   reattachTranscriptAnnotator();
   attachClickListenerOnConcepts();
   attachUpdateTimeListenerOnTranscript();
+  attachPlayerKeyEvents();
   transcript.css("margin-top","0")
   $('#canvas-wrap, #relation, #transcript').undim({ fadeOutDuration: 400 });
 }
