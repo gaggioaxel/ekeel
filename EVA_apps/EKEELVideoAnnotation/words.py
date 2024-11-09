@@ -147,10 +147,12 @@ def apply_italian_fixes(timed_sentences:list, min_segment_len:int=4, min_segment
     for i, sentence in reversed(list(enumerate(timed_sentences))): 
         # if i=4 and sent3 = "Ebbene," sent4 = "nulla si puo' dire perche' tutto e' stato detto." => merge into "Ebbene, nulla si puo' dire perche' tutto e' stato detto."
         # if sent3 = "quindi otteniamo cio' che ci aspettiamo," and sent4 = "cioe' niente." => merge into sent3 = "quindi otteniamo cio' che ci aspettiamo, cioe' niente." and pop sent4
-        if i > 0 and \
+        if i > 0 and not timed_sentences[i-1]["text"].endswith(".") and \
           (len(sentence["text"].strip().split()) < min_segment_len or 
            len(timed_sentences[i-1]["text"].strip().split()) < min_segment_len or 
-           sentence["end"] - sentence["start"] < min_segment_duration):
+           sentence["end"] - sentence["start"] < min_segment_duration or 
+           timed_sentences[i-1]["text"].endswith("'") or 
+           sentence["text"].startswith("'")):
             prev_segment = timed_sentences[i-1]
             prev_segment["text"] += sentence["text"] # sentence always contains trailing initial space
             for word in sentence["words"]:
@@ -247,10 +249,11 @@ def apply_italian_fixes(timed_sentences:list, min_segment_len:int=4, min_segment
                 to_remove_words.append(j)
                 
             # Sometime happened the shift of the apostrophe ["accetta l", "'ipotesi forte"] 
-            if segment["text"].startswith("'") and not "'" in segment["words"][0] and i > 0:
-                segment["text"] = segment["text"][1:]
-                timed_sentences[i-1]["text"] += "'"
-                timed_sentences[i-1]["words"][-1]["word"] += "'"
+            # Should not happen due to prior merge
+            #if segment["text"].startswith("'") and not "'" in segment["words"][0] and i > 0:
+            #    segment["text"] = segment["text"][1:]
+            #    timed_sentences[i-1]["text"] += "'"
+            #    timed_sentences[i-1]["words"][-1]["word"] += "'"
             
             # Case "25°C" -> "25°" "celsius"
             if any(re.findall(temperature_regex,word["word"])):

@@ -774,6 +774,7 @@ class VideoAnalyzer:
         word_counter = 0
         tagged_transcript_words = tagged_transcript["words"]
         is_first_part_of_word = True
+        is_misaligned = False
         for sentence in timed_transcript:
             for word_indx, word in enumerate(sentence["words"]):
                 if word["word"] == tagged_transcript_words[word_counter]["word"] or \
@@ -803,9 +804,15 @@ class VideoAnalyzer:
                         is_first_part_of_word = False
                     else:
                         is_first_part_of_word = True
-                else:
-                    assert False, "Error in matching tagged and timed transcript, video cannot be loaded!"
-                word.pop("lemma_indx",None)
+                # match is partial so it's wrong, print a message on backend but continue
+                elif word["word"] in tagged_transcript_words[word_counter]["word"] and \
+                  ((len(sentence["words"]) > word_indx+1 and sentence["words"][word_indx+1]["word"] in tagged_transcript_words[word_counter]["word"]) or \
+                  is_misaligned) :
+                    word["gen"] = ""; word["lemma"] = ""; word["pos"] = ""; word["cpos"] = ""; word["num"] = ""
+                    is_misaligned = not is_misaligned
+                    if is_misaligned:
+                        word_counter -= 1
+                    print(f"Error in matching tagged and timed transcript, for video: {self.data['video_id']}!")
                 word_counter += 1
 
         #import json
@@ -1275,7 +1282,7 @@ if __name__ == '__main__':
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
     for video in db_mongo.get_videos(["video_id","title"]):
         print(video)
-        if video["video_id"] != "8vzg5i6xk8Y":
+        if video["video_id"] != "E5IWY4SeFR8":
             continue
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
         vid_analyzer.analyze_transcript()

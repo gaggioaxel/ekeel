@@ -22,6 +22,7 @@ function initDraw(conceptType) {
     
     //se già presente elimino box precedente
     deleteBox(conceptType)
+    player.pause();
     player.controls(false);
 
     let parentDiv = document.getElementById('canvas-wrap');
@@ -117,6 +118,7 @@ function showDrawTutorial(){
     $("#drawButton").text("Add Box").prop("disabled",false).css("cursor","pointer");
     $("#clearDrawButton").fadeOut("fast");
     $("#insertRelationButton").prop("disabled",false).css("cursor","pointer");
+    player.pause();
     player.controls(false);
     let parentDiv = document.getElementById('canvas-wrap');
     let canvas = document.createElement("canvas");
