@@ -30,6 +30,12 @@ function attachPlayerKeyEvents(){
 function attachRelationKeyEvents(){
   $(document).off("keydown")
   $(document).on('keydown', function(event) {
+    
+    // If an input field or textarea is focused, return early
+    if ($(document.activeElement).is('input, textarea')) {
+      return;
+    }
+
     event.preventDefault(); // Prevent default scrolling
     player.userActive(true);
 
@@ -308,15 +314,15 @@ function UpdateMarkers(current_time) {
   markers[0].forEach(function(marker) {
 
     if (parseFloat(marker.time_start)-1 < current_time & current_time < parseFloat(marker.time_end)+1) {
-      marker.dom.classList.add("current");
+      marker.dom.classList.add("current-marker");
 
       // Cycle through child spans
       marker.dom.querySelectorAll('span').forEach(function(span) {
-        span.classList.remove("word-current");
+        span.classList.remove("current-marker");
         let spanStart = parseFloat(span.getAttribute('start_time'));
         let spanEnd = parseFloat(span.getAttribute('end_time'));
         if (spanStart-0.4 < current_time & current_time < spanEnd+0.4) {
-          span.classList.add("word-current");
+          span.classList.add("current-marker");
         }
       });
 
@@ -332,12 +338,12 @@ function UpdateMarkers(current_time) {
       }
 
     } else {
-      if (marker.dom.classList.contains("current"))
-        marker.dom.classList.remove("current");
+      if (marker.dom.classList.contains("current-marker"))
+        marker.dom.classList.remove("current-marker");
       marker.dom.querySelectorAll('span').forEach(function(span) {
         var classList = span.classList;
-        if (classList.contains("word-current"))
-          classList.remove("word-current");
+        if (classList.contains("current-marker"))
+          classList.remove("current-marker");
       })
     }
   });

@@ -111,7 +111,9 @@ function showVocabulary(inputVocabulary) {
 function showVocabularyDiv(){
   state="concepts"
   $(document).off("keydown")
+  player.pause()
   clearAnnotatorVisualElements()
+  player.controls(false)
   //$("html, body").animate({ scrollTop: 0 }, "slow");
   $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
   document.body.style.overflow = 'hidden';
@@ -119,9 +121,6 @@ function showVocabularyDiv(){
 
   document.getElementById("newConcept").value = ""
   document.getElementById("errorConcept").style.display = "none"
-
-  player.pause()
-  UpdateMarkers(player.currentTime())
 
   let vocabulary = sortVocabulary($conceptVocabulary);
 
@@ -155,7 +154,10 @@ function showVocabularyDiv(){
     document.getElementById("conceptVocabularyContent").innerHTML += row;
   }
 
-  const transcriptElement = $('#transcript')
+  let transcriptElement = $(document.getElementById("transcript"));
+
+  $(".current-marker").removeClass("current-marker")
+  transcriptElement.off("click")
 
   // Store the original CSS values in an object
   originalTranscriptCSS = {
@@ -171,28 +173,24 @@ function showVocabularyDiv(){
     borderRadius: transcriptElement.css('border-radius')
   };
 
+  // Attach transcript to correct position
+  transcriptElement.detach()
+                   .appendTo($('#conceptsModal').find('.modal-content')
+                                                .css('position', 'relative'))
+
   // Apply CSS to position the cloned transcript to the right of the modal-content
   transcriptElement.css({
-      'position': 'absolute',
-      'right': '650px', // Adjust this value to control the distance from the modal
-      'top': '-10vh',
-      'width': '30vw',
-      'min-width': '300px',
-      'height': "70vh",
-      'overflow': 'auto',
-      'padding': '10px 20px 0px',
-      'border': '1px solid rgba(0,0,0,.2)',
-      'border-radius': '.3rem'
+    'position': 'absolute',
+    'right': '650px', // Adjust this value to control the distance from the modal
+    'top': '-10vh',
+    'width': '30vw',
+    'min-width': '300px',
+    'height': "70vh",
+    'overflow': 'auto',
+    'padding': '10px 20px 0px',
+    'border': '1px solid rgba(0,0,0,.2)',
+    'border-radius': '.3rem'
   });
-
-  transcriptElement.find(".word-current").removeClass("word-current");
-  transcriptElement.find(".current").removeClass("current");
-  transcriptElement.off("click")
-
-  // Ensure modal-content is positioned relatively
-  $('#conceptsModal').find('.modal-content')
-                     .css('position', 'relative')
-                     .append(transcriptElement.detach());
 
   $(document).on('keydown', function(event) {
     if (event.key === 'Escape')
@@ -211,6 +209,7 @@ function closeVocabularyDiv(){
   const transcript = $('#conceptsModal').find("#transcript").detach();
   $('#right-body .col.relations').children().eq(2).after(transcript);
   transcript.css(originalTranscriptCSS);
+  player.controls(true)
   attachUpdateTimeListenerOnTranscript()
   attachClickListenerOnConcepts()
   attachPlayerKeyEvents()

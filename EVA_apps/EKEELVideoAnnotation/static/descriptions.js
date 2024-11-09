@@ -27,8 +27,7 @@ function showDescriptionDiv(reset_fields){
 
     transcript.detach()
     transcript.appendTo("#right-body-description")
-    transcript.find(".current").removeClass("current")
-    transcript.find(".word-current").removeClass("word-current")
+    transcript.find(".current-marker").removeClass("current-marker")
     transcript.off("click")
 
     transcript.on("click", ".concept", function (e) {
@@ -100,6 +99,11 @@ function showDescriptionDiv(reset_fields){
 
     $(document).off("keydown")
     $(document).on('keydown', function(event) {
+        // If an input field or textarea is focused, return early
+        if ($(document.activeElement).is('input, textarea')) {
+            return;
+        }
+
         event.preventDefault(); // Prevent default scrolling
 
         switch (event.keyCode) {
