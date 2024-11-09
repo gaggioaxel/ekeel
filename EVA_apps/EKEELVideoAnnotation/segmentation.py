@@ -136,14 +136,13 @@ class VideoAnalyzer:
 
     def download_video(self):
         '''
-        Downloads the video from the url provided (YouTube video)\n
+        Downloads the video (expected YouTube video)\n
         If the video has been removed from youtube, it attempts to remove the folder from both the drive and the database, then raises an Exception\n
 
         --------------
-        # Warning
-        NOTE: there are problems very often with (maybe) YouTube APIs that lead both
-        pytube and pafy not to work. Take this into account and maybe try downloading videos on your own.\n
-        Then in the code allow skipping video informations retrival because those raise Exceptions.
+        # NOTE
+        There are problems very often with YouTube, which breaks yt_dlp library.\n 
+        In case of errors try to update the library
         '''
         url = self.url
         #video_link = url.split('&')[0]
@@ -1276,8 +1275,10 @@ if __name__ == '__main__':
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
     for video in db_mongo.get_videos(["video_id","title"]):
         print(video)
-        
+        if video["video_id"] != "8vzg5i6xk8Y":
+            continue
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
+        vid_analyzer.analyze_transcript()
         #vid_analyzer.data["transcript_data"]["terms"] = []
         #db_mongo.insert_video_data(vid_analyzer.data)
         

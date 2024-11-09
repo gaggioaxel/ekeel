@@ -137,12 +137,28 @@ def transcript_to_string(timed_transcript:'list[dict]'):
     return " ".join(timed_sentence["text"] for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
 
 
-def apply_italian_fixes(data:list, min_segment_len:int=4):
+def apply_italian_fixes(timed_sentences:list, min_segment_len:int=4, min_segment_duration:float=3):
     '''
     Applies italian specific fixes to the text in order to be correctly analized by ItaliaNLP and matched back
     Furthemore groups short sentences.
     '''
-    timed_sentences = []
+    # Step 1 
+    # Group short sentences
+    for i, sentence in reversed(list(enumerate(timed_sentences))): 
+        # if i=4 and sent3 = "Ebbene," sent4 = "nulla si puo' dire perche' tutto e' stato detto." => merge into "Ebbene, nulla si puo' dire perche' tutto e' stato detto."
+        # if sent3 = "quindi otteniamo cio' che ci aspettiamo," and sent4 = "cioe' niente." => merge into sent3 = "quindi otteniamo cio' che ci aspettiamo, cioe' niente." and pop sent4
+        if i > 0 and \
+          (len(sentence["text"].strip().split()) < min_segment_len or 
+           len(timed_sentences[i-1]["text"].strip().split()) < min_segment_len or 
+           sentence["end"] - sentence["start"] < min_segment_duration):
+            prev_segment = timed_sentences[i-1]
+            prev_segment["text"] += sentence["text"] # sentence always contains trailing initial space
+            for word in sentence["words"]:
+                prev_segment["words"].append(word)
+            prev_segment["end"] = sentence["end"]
+            timed_sentences.pop(i)
+            
+    out_sentences = []    
     accent_replacements = {
                               "e'": "è", "E'": "È",
                               "o'": "ò", "O'": "Ò",
@@ -155,7 +171,7 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
     degrees_regex = number_regex[:-1] + r'°)'
     temperature_regex = degrees_regex[:-1] + r'[C|c|F|f|K|k])'
     
-    for i, segment in enumerate(data):
+    for i, segment in enumerate(timed_sentences):
         segment = {"text": segment["text"].lstrip(),
                    "words": segment["words"],
                    "start": segment["start"], 
@@ -231,10 +247,10 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
                 to_remove_words.append(j)
                 
             # Sometime happened the shift of the apostrophe ["accetta l", "'ipotesi forte"] 
-            if segment["text"].startswith("'") and not "'" in segment["words"][0] and len(timed_sentences) > 0:
+            if segment["text"].startswith("'") and not "'" in segment["words"][0] and i > 0:
                 segment["text"] = segment["text"][1:]
-                timed_sentences[-1]["text"] += "'"
-                timed_sentences[-1]["words"][-1]["word"] += "'"
+                timed_sentences[i-1]["text"] += "'"
+                timed_sentences[i-1]["words"][-1]["word"] += "'"
             
             # Case "25°C" -> "25°" "celsius"
             if any(re.findall(temperature_regex,word["word"])):
@@ -307,29 +323,9 @@ def apply_italian_fixes(data:list, min_segment_len:int=4):
             del segment["words"][indx]
         
         segment["text"] = segment["text"].replace("  ", " ")
+        out_sentences.append(segment)
         
-        # Grouping short sentences
-        if len(segment["text"].split()) < min_segment_len:
-            if segment["text"][-1] in [".",","] and len(timed_sentences) > 0:
-                prev_segment = timed_sentences[-1]
-                for word in segment["words"]:
-                    prev_segment["words"].append(word)
-                prev_segment["end"] = segment["end"]
-                prev_segment["text"] += (" "+segment["text"])
-            elif len(timed_sentences) == 0:
-                timed_sentences.append(segment)
-            elif i+1 < len(data):  
-                next_segment = data[i+1]
-                for word in reversed(segment["words"]):
-                    next_segment["words"].insert(0, word)
-                next_segment["start"] = segment["start"]
-                next_segment["text"] = (segment["text"] + " "+ next_segment["text"]).replace("  "," ")
-            else:
-                timed_sentences.append(segment)
-        else:
-            timed_sentences.append(segment)
-        
-    return timed_sentences
+    return out_sentences
 
 def restore_italian_fixes(transcript:list):
     for sentence in transcript:

@@ -21,7 +21,8 @@ def convert_mp4_to_wav(video_path:str, video_id:str) -> Path:
                        check=True, 
                        stdout=subprocess.PIPE, 
                        stderr=subprocess.PIPE)
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
+        print(e)
         raise Exception("ERROR SUBPROCESS FFMPEG")
     return output_file_path
 

@@ -13,6 +13,7 @@ if __name__ == "__main__":
     from time import sleep, time
     from json import load
     from audio import convert_mp4_to_wav
+    from segmentation import VideoAnalyzer
     #from words import apply_italian_fixes
     import os
     
@@ -20,7 +21,7 @@ if __name__ == "__main__":
         while True:
             try:
                 videos_metadata:list = get_untranscribed_videos()
-                print(f"Jobs {videos_metadata}")
+                print(f"Jobs: {videos_metadata}")
             except Exception as e:
                 import sys
                 import os
@@ -53,11 +54,11 @@ if __name__ == "__main__":
                 start_time = time()
                 video_folder_path = base_folder.joinpath(video_id)
                 try:
+                    VideoAnalyzer("https://www.youtube.com/watch?v="+video_id, request_fields_from_db=["video_id"]).download_video()
                     convert_mp4_to_wav(video_folder_path, video_id)
                 except Exception as e:
-                    sleep(30)
-                    print("Error in conversion")
                     print(e)
+                    sleep(300)
                     continue
 
                 wav_path = video_folder_path.joinpath(video_id+".wav")
@@ -84,7 +85,7 @@ if __name__ == "__main__":
                 insert_video_data(video_data,update=False)
                 remove_annotations_data(video_id)
                 print(f"Done job: {video_id} in {round(time()-start_time,1)} seconds")
-            sleep(30)
+            sleep(60)
     except Exception as e:
         import sys
         import os
