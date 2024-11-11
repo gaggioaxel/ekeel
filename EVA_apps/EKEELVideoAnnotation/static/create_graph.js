@@ -256,7 +256,7 @@ function confirmAnnotationDelete(button, fields){
         $("#confirmDeleteBox").fadeOut(200, function() {
             $('body').css('overflow', 'auto'); // Ripristina lo scrolling
             $(this).remove()
-        }).undim();
+        }).undim({ fadeOutDuration: 200 });
     }
 
     $("<div></div>", {

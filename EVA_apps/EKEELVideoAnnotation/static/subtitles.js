@@ -188,7 +188,7 @@ function closeRelationDiv(){
   attachUpdateTimeListenerOnTranscript();
   attachPlayerKeyEvents();
   transcript.css("margin-top","0")
-  $('#canvas-wrap, #relation, #transcript').undim({ fadeOutDuration: 400 });
+  $('#canvas-wrap, #relation, #transcript').undim({ fadeOutDuration: 300 });
 }
 
 

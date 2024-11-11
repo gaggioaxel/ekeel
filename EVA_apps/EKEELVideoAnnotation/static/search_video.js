@@ -59,10 +59,10 @@ function deleteVideo(video_id){
 
   // Hide the box
   function closeConfirmBox() {
-    $("#confirmDeleteVideoBox").fadeOut(400, function() {
+    $("#confirmDeleteVideoBox").fadeOut(200, function() {
         $('body').css('overflow', 'auto'); // Ripristina lo scrolling
         $(this).remove()
-    }).undim();
+    }).undim({ fadeOutDuration: 200 });
   }
 
   // Ceate confirm box
@@ -150,7 +150,7 @@ function deleteVideo(video_id){
   $('body').css('overflow', 'hidden');
   box.css({opacity: 0, display: 'flex'}).animate({
     opacity: 1
-  }, 1000).dimBackground({ darkness: bgDarknessOnOverlay });
+  }, 500).dimBackground({ darkness: bgDarknessOnOverlay });
   // Show box and disable scrolling
   //box.fadeIn(200, function() {
   //  $('body').css('overflow', 'hidden'); // Disabilita lo scrolling
