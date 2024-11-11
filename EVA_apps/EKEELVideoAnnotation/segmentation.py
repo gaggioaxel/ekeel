@@ -747,10 +747,7 @@ class VideoAnalyzer:
         Recognizes the video language (currently implemented ita and eng so it raises exception if not one of these)
         '''
         if not 'language' in self.data.keys():
-            try:
-                self.data['language'] = list(YTTranscriptApi.list_transcripts(self.video_id)._generated_transcripts.keys())[0] 
-            except:
-                # Cannot use transcripts method, using a different one
+            self.data['language'] = list(YTTranscriptApi.list_transcripts(self.video_id)._generated_transcripts.keys())[0] 
                         
         locale = Locale()
         if not locale.is_language_supported(self.data['language']):
