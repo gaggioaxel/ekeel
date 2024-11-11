@@ -37,11 +37,11 @@ function sortVocabulary(dictionary) {
   return orderedDict;
 }
 
-async function showMsg(id, color) {
+async function showMsg(id, color, timeout) {
   document.getElementById(id).style.color = color;
   document.getElementById(id).style.borderColor = color;
   document.getElementById(id).style.display = "block"
-  sleep(2000).then(() => {
+  sleep(timeout || 2000).then(() => {
     document.getElementById(id).style.display = "none"
   });
 }
@@ -332,12 +332,17 @@ function addConcept(){
     showMsg("errorConcept", "orange")
     return
   }
-  let foundOccurences = highlightConcept(conceptLemmas);
+  let foundOccurences = highlightConcept(concept, conceptLemmas);
   if(!foundOccurences.length){
     document.getElementById("errorConcept").innerHTML ="this sequence of words has not been found in transcript !"
     showMsg("errorConcept", "red")
     return
   }
+  let dots = ""
+  let sendingLemmaNotification = setInterval(function() {
+    dots = dots.length < 5 ? dots+"." : '';
+    $("#errorConcept").css({color: "dodgerblue", borderColor:"dodgerblue", display:"block"}).text("Validating lemma"+dots)
+  }, 200)
 
   let js_data = {
     "lang": $language,
@@ -356,6 +361,7 @@ function addConcept(){
       dataType : 'json',
       data : JSON.stringify(js_data)
   }).done(function(result) {
+    clearInterval(sendingLemmaNotification)
     let conceptLemma = result.lemmatized_term
     if(conceptLemma == ""){
       document.getElementById("errorConcept").innerHTML ="error in backend lemmatization process !"
@@ -365,13 +371,18 @@ function addConcept(){
     $concepts.push(conceptLemma)
     $conceptVocabulary[conceptLemma]=[];
     $concepts.sort()
+    // If lemma has changed 
+    if (conceptLemma != concept)
+      $(`.concept[concept~='${$.escapeSelector(concept.replaceAll(" ","_"))}']`).each(function (){
+        this.setAttribute("concept", this.getAttribute("concept").replace(" "+concept.replaceAll(" ","_")+" ", " "+conceptLemma.replaceAll(" ","_")+" "))
+      })
     showVocabulary($conceptVocabulary)
     //console.log($concepts)
     //console.log("--------------------")
     // $('#conceptsModal').modal('hide')
     document.getElementById("newConcept").value = ""
     document.getElementById("errorConcept").innerHTML = "word successfully added to the concepts"
-    showMsg("errorConcept", "green")
+    showMsg("errorConcept", "green", 4000)
     uploadManuGraphOnDB()
   })
 }
@@ -753,13 +764,16 @@ function deleteConcept(button,concept) {
 }
 
 /* highlight a concept in a div with id div_id */
-function highlightConcept(concept) {
-
-  let words = concept.split(" ")
-  let conceptOccurencesText = []; 
-  let elements = $("#transcript [lemma='" + words[0] + "']").add($("#transcript span[lemma]").filter(function() {
-                                                              return $(this).text() == words[0];
-                                                            }));
+function highlightConcept(conceptWords, conceptLemmas) {
+  
+  let words = conceptWords.split(" ")
+  let firstWord = words[0];
+  let firstLemma = conceptLemmas.split(" ")[0]
+  let conceptOccurencesText = [];
+  let elements = $("#transcript span[lemma]").filter(function() {
+    let this_query = $(this)
+    return this_query.text() == firstWord || this_query.text() == firstLemma || this_query.attr("lemma") == firstWord || this_query.attr("lemma")==firstLemma;
+  })
   if(words.length == 1) {
     elements.each((_,conceptElem) => {
           let currentConcept = conceptElem.getAttribute("concept") || " "; // Get existing concept or a space string

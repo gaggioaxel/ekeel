@@ -262,7 +262,8 @@ function addSubtitles(){
   // Add event listener for click to prevent time change on concept click
   attachUpdateTimeListenerOnTranscript()
   for(let i in $concepts)
-    highlightConcept($concepts[i])
+    // Highlighting words
+    highlightConcept($concepts[i],"")
   
   attachClickListenerOnConcepts()
 }

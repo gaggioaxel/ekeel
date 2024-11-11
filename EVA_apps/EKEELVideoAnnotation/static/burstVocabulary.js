@@ -152,13 +152,16 @@ async function showMsg(id, color) {
 
 
 /* highlight a concept in a div with id div_id */
-function highlightConcept(concept) {
-
-  let words = concept.split(" ")
-  let foundAny = false; 
-  let elements = $("#transcript [lemma='" + words[0] + "']").add($("#transcript span[lemma]").filter(function() {
-                                                              return $(this).text() === words[0];
-                                                            }));
+function highlightConcept(conceptWords, conceptLemmas) {
+  
+  let words = conceptWords.split(" ")
+  let firstWord = words[0];
+  let firstLemma = conceptLemmas.split(" ")[0]
+  let conceptOccurencesText = [];
+  let elements = $("#transcript span[lemma]").filter(function() {
+    let this_query = $(this)
+    return this_query.text() == firstWord || this_query.text() == firstLemma || this_query.attr("lemma") == firstWord || this_query.attr("lemma")==firstLemma;
+  })
   if(words.length == 1) {
     elements.each((_,conceptElem) => {
           let currentConcept = conceptElem.getAttribute("concept") || " "; // Get existing concept or a space string
@@ -167,7 +170,7 @@ function highlightConcept(concept) {
             conceptElem.setAttribute("concept", currentConcept); // Update concept attribute
           }
           conceptElem.classList.add("concept");
-          foundAny = true
+          conceptOccurencesText.push(conceptElem.innerText)
         });
   } else {
 
@@ -226,6 +229,7 @@ function highlightConcept(concept) {
         //  allSpan[i].classList.replace("concept","sub-concept");
         
         //$(allSpan).each((_,span) => span.classList.add("concept"))
+        occurrence = ""
         $(allSpan).each((_, span) => {
           let currentConcept = span.getAttribute("concept") || " "; // Get existing concept or empty string
           if (!currentConcept.includes(" " + words.join("_") + " ")) {
@@ -233,14 +237,14 @@ function highlightConcept(concept) {
             span.setAttribute("concept", updatedConcept); // Update concept attribute
           }
           span.classList.add("concept");
-          foundAny = true
+          occurrence += span.innerText + " "
         });
+        conceptOccurencesText.push(occurrence.trim());
       }
     })
   }
-  return foundAny;
+  return conceptOccurencesText;
 }
-
 
 function addSubtitles(){
 
@@ -254,7 +258,7 @@ function addSubtitles(){
   }
 
   for(let i in $concepts)
-    highlightConcept($concepts[i])
+    highlightConcept($concepts[i],"")
 }
 
 function filterVocabulary(filterText) {
@@ -502,8 +506,8 @@ function addConcept(){
     showMsg("errorConcept", "orange")
     return
   }
-  foundAny = highlightConcept(conceptLemmas);
-  if(!foundAny){
+  let conceptOccurences = highlightConcept(conceptLemmas);
+  if(!conceptOccurences.length){
     document.getElementById("errorConcept").innerHTML ="this sequence of words has not been found in transcript !"
     showMsg("errorConcept", "red")
     return
