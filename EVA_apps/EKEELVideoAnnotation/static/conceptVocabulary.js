@@ -37,12 +37,29 @@ function sortVocabulary(dictionary) {
   return orderedDict;
 }
 
-async function showMsg(id, color, timeout) {
-  document.getElementById(id).style.color = color;
-  document.getElementById(id).style.borderColor = color;
-  document.getElementById(id).style.display = "block"
-  sleep(timeout || 2000).then(() => {
-    document.getElementById(id).style.display = "none"
+async function showMsg(id, color, timer) {
+  let element = document.getElementById(id)
+  let bgColor = "#0000001a"
+  switch (color) {
+    case "red":
+      bgColor = "#FF00001a"
+      break
+    case "orange":
+      bgColor = "#FFA5001a"
+      break
+    case "dodgerblue":
+      bgColor = "#1E90FF1a"
+      break
+    case "green":
+      bgColor = "#0080001a"
+    default:
+      break
+  }
+  element.parentElement.style.backgroundColor = bgColor;
+  element.style.color = color;
+  element.style.borderColor = color;
+  sleep(timer || 2000).then(() => {
+    $(element).parent().fadeOut("slow")
   });
 }
 
@@ -68,7 +85,6 @@ function filterVocabulary(filterText) {
 function showVocabulary(inputVocabulary) {
 
   document.getElementById("newConcept").value = ""
-  document.getElementById("errorConcept").style.display = "none"
 
   player.pause()
   UpdateMarkers(player.currentTime())
@@ -120,7 +136,6 @@ function showVocabularyDiv(){
   $("input[name='askConfirmDeleteConcept']").prop("checked", !(getCookie("pref-skip-confirm-delete-concept") == "true"))
 
   document.getElementById("newConcept").value = ""
-  document.getElementById("errorConcept").style.display = "none"
 
   let vocabulary = sortVocabulary($conceptVocabulary);
 
@@ -213,6 +228,7 @@ function closeVocabularyDiv(){
   attachUpdateTimeListenerOnTranscript()
   attachClickListenerOnConcepts()
   attachPlayerKeyEvents()
+  setConceptSelectionElements("--")
 }
 
 $(document).on("click", ".concept-row", function (e) {
@@ -330,7 +346,7 @@ function addConcept(){
   
   let foundOccurrences = [];
   conceptLemmas[0].forEach(function(firstLemma) {
-    foundOccurrences = [...foundOccurrences, ...highlightConcept(concept, firstLemma)];
+    foundOccurrences = [...foundOccurrences, ...selectConcept(concept, firstLemma)];
   });
   if(!foundOccurrences.length){
     document.getElementById("errorConcept").innerHTML ="this sequence of words has not been found in transcript !"
@@ -340,7 +356,11 @@ function addConcept(){
   let dots = ""
   let sendingLemmaNotification = setInterval(function() {
     dots = dots.length < 5 ? dots+"." : '';
-    $("#errorConcept").css({color: "dodgerblue", borderColor:"dodgerblue", display:"block"}).text("Validating lemma"+dots)
+    $("#errorConcept").css({color: "dodgerblue", borderColor:"dodgerblue"})
+                      .text("Validating lemma"+dots)
+                      .parent()
+                      .css("background-color","#1E90FF1a")
+                      .show()              
   }, 200)
 
   let js_data = {
@@ -404,16 +424,12 @@ function selectSynonymSet(){
   //console.log("synonymSetString")
   //console.log(synonymSetString)
 
-  document.getElementById("errorNewSynonym").style.display = "none"
-  document.getElementById("errorRemoveSynonym").style.display = "none"
-
   if(wordOfSynonymSet === "") {
     document.getElementById("errorSynonymSet").innerHTML ="empty field !"
     document.getElementById("synonymSet").value = ""
     showMsg("errorSynonymSet", "red")
     return
   }
-  document.getElementById("errorSynonymSet").style.display = "none"
   document.getElementById("synonymSet").value = "";
   let lemma = wordOfSynonymSet;
   if(!$concepts.includes(lemma)) {
@@ -442,8 +458,6 @@ function addSynonym(){
 
   let newSynonym = document.getElementById("synonymWord").value
   
-  document.getElementById("errorNewSynonym").style.display = "none"
-  document.getElementById("errorRemoveSynonym").style.display = "none"
 
   if (newSynonym === "") {
     document.getElementById("errorNewSynonym").innerHTML ="empty field !"
@@ -504,8 +518,6 @@ function removeSynonym(){
 
   let synonymToRemove = document.getElementById("synonymWord").value
   
-  document.getElementById("errorNewSynonym").style.display = "none"
-  document.getElementById("errorRemoveSynonym").style.display = "none"
 
   if (synonymToRemove === "") {
     document.getElementById("errorRemoveSynonym").innerHTML ="empty field !"
@@ -531,8 +543,7 @@ function removeSynonym(){
     return
   }
 
-  document.getElementById("errorRemoveSynonym").style.display = "none"
-  
+
   $conceptVocabulary[lemma] = []; 
 
   for (let word of $synonymList) {
@@ -759,7 +770,7 @@ function deleteConcept(button,concept) {
 }
 
 /* highlight a concept in a div with id div_id */
-function highlightConcept(conceptWords, firstWordLemma) {
+function selectConcept(conceptWords, firstWordLemma) {
   
   let words = conceptWords.split(" ")
   let firstWord = words[0]
@@ -785,7 +796,8 @@ function highlightConcept(conceptWords, firstWordLemma) {
       let allSpan = [this]
       let currentSpan = this
       let isConcept = true
-      let num_words_tol = 1 // number of words of tolerance to skip when looking for a concept 
+      let num_words_tol = 6 // number of words of tolerance to skip when looking for a concept 
+      // constrain: terms must have concordance on genre and number
       // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
 
       for(let j=1; j<words.length; j++){
@@ -815,7 +827,6 @@ function highlightConcept(conceptWords, firstWordLemma) {
         }
         if (nextWord.includes(words[j])) {
           allSpan.push(currentSpan)
-          num_words_tol = 1
         } else if(num_words_tol > 0) {
           // if a word is part of the concept but not the right one, this is not the same concept
           if (words.includes(nextWord[0]) || words.includes(nextWord[1])) {

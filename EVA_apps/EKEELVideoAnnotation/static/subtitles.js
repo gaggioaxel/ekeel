@@ -188,6 +188,8 @@ function closeRelationDiv(){
   attachClickListenerOnConcepts();
   attachUpdateTimeListenerOnTranscript();
   attachPlayerKeyEvents();
+  setConceptSelectionElements("--")
+
   transcript.css("margin-top","0")
   $('#canvas-wrap, #relation, #transcript').undim({ fadeOutDuration: 300 });
 }
@@ -202,6 +204,7 @@ function setConceptSelectionElements(selectedConcept){
 
   $("#transcript").find("[concept]")
     .filter(function() {
+      $(this).removeClass("selected-concept-text").removeClass("selected-synonym-text")
       return $(this).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ");
     })
     .get()
@@ -266,7 +269,7 @@ function addSubtitles(){
   attachUpdateTimeListenerOnTranscript()
   for(let i in $concepts)
     // Highlighting words
-    highlightConcept($concepts[i],"")
+    selectConcept($concepts[i],"")
   
   attachClickListenerOnConcepts()
 }

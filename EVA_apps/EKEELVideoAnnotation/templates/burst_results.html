@@ -110,7 +110,8 @@
                           <button  onclick="addConcept()" class="btn btn-primary">Add new concept</button>
                       </div>
                         <br>
-                      <div class="row tab-error" id="errorConcept" style="display:none">
+                      <div style="display:none">
+                        <div class="row tab-error" id="errorConcept"></div>
                       </div>
                     </div>
                   </div>
@@ -131,8 +132,9 @@
                           <label for="selectSynonymSet">Word of Synonym Set:</label>
                           <input type="text" class="form-control" autocomplete="on" id="selectSynonymSet"  placeholder="Select one of the synonym set word">
                         </div>
-                        <div class="row tab-error" id="errorSynonymSet" style="display:none"></div>
-                      </div>
+                        <div style="display:none">
+                          <div class="row tab-error" id="errorSynonymSet"></div>
+                        </div>
 
                       <!-- Add new synonym -->
                       <div id="add-syn-selection" class="spaced-text add-syn-selection-class row">
@@ -148,8 +150,10 @@
                             <button  onclick="removeSynonym()" class="btn btn-primary button-rem-syn">Remove Synonym</button>
                           </div>
                         </div>
-                        <div class="row tab-error" id="errorNewSynonym" style="display:none"></div>
-                        <div class="row tab-error" id="errorRemoveSynonym" style="display:none"></div>
+                        <div style="display:none">
+                          <div class="row tab-error" id="errorNewSynonym"></div>
+                          <div class="row tab-error" id="errorRemoveSynonym"></div>
+                        </div>
                       </div>
                     </div>
                   </div>

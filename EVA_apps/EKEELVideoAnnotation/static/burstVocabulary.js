@@ -141,26 +141,42 @@ function sortVocabulary(dictionary) {
   return orderedDict;
 }
 
-async function showMsg(id, color) {
-  document.getElementById(id).style.color = color;
-  document.getElementById(id).style.borderColor = color;
-  document.getElementById(id).style.display = "block"
-  sleep(2000).then(() => {
-    document.getElementById(id).style.display = "none"
+async function showMsg(id, color, timer) {
+  let element = document.getElementById(id)
+  let bgColor = "#0000001a"
+  switch (color) {
+    case "red":
+      bgColor = "#FF00001a"
+      break
+    case "orange":
+      bgColor = "#FFA5001a"
+      break
+    case "dodgerblue":
+      bgColor = "#1E90FF1a"
+      break
+    case "green":
+      bgColor = "#0080001a"
+    default:
+      break
+  }
+  element.parentElement.style.backgroundColor = bgColor;
+  element.style.color = color;
+  element.style.borderColor = color;
+  sleep(timer || 2000).then(() => {
+    $(element).parent().fadeOut("slow")
   });
 }
 
 
 /* highlight a concept in a div with id div_id */
-function highlightConcept(conceptWords, conceptLemmas) {
+function selectConcept(conceptWords, firstWordLemma) {
   
   let words = conceptWords.split(" ")
-  let firstWord = words[0];
-  let firstLemma = conceptLemmas.split(" ")[0]
+  let firstWord = words[0]
   let conceptOccurencesText = [];
   let elements = $("#transcript span[lemma]").filter(function() {
     let this_query = $(this)
-    return this_query.text() == firstWord || this_query.text() == firstLemma || this_query.attr("lemma") == firstWord || this_query.attr("lemma")==firstLemma;
+    return this_query.text() == firstWord || this_query.text() == firstWordLemma || this_query.attr("lemma") == firstWord || this_query.attr("lemma") == firstWordLemma;
   })
   if(words.length == 1) {
     elements.each((_,conceptElem) => {
@@ -179,7 +195,8 @@ function highlightConcept(conceptWords, conceptLemmas) {
       let allSpan = [this]
       let currentSpan = this
       let isConcept = true
-      let num_words_tol = 1 // number of words of tolerance to skip when looking for a concept 
+      let num_words_tol = 6 // number of words of tolerance to skip when looking for a concept 
+      // constrain: terms must have concordance on genre and number
       // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
 
       for(let j=1; j<words.length; j++){
@@ -203,7 +220,7 @@ function highlightConcept(conceptWords, conceptLemmas) {
             if(nextRow !== undefined){
                 currentSpan = nextRow.find("span")[0]
                 if(currentSpan !== undefined)
-                  nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text()]  
+                  nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text()]  
                   //nextWord = currentSpan.attributes[0].nodeValue
             }
         }
@@ -246,6 +263,7 @@ function highlightConcept(conceptWords, conceptLemmas) {
   return conceptOccurencesText;
 }
 
+
 function addSubtitles(){
 
   let transcriptDiv = document.getElementById("transcript");
@@ -258,7 +276,7 @@ function addSubtitles(){
   }
 
   for(let i in $concepts)
-    highlightConcept($concepts[i],"")
+    selectConcept($concepts[i],"")
 }
 
 function filterVocabulary(filterText) {
@@ -285,7 +303,6 @@ function filterVocabulary(filterText) {
 function showVocabularyBurst(inputVocabulary){
 
     document.getElementById("newConcept").value = ""
-    document.getElementById("errorConcept").style.display = "none"
     document.getElementById("conceptVocabularyContentBurst").innerHTML = ""
 
     //let synonyms = [["run","go"],["orbit","eye socket"]];
@@ -507,7 +524,7 @@ function addConcept(){
   
   let foundOccurrences = [];
   conceptLemmas[0].forEach(function(firstLemma) {
-    foundOccurrences = [...foundOccurrences, ...highlightConcept(concept, firstLemma)];
+    foundOccurrences = [...foundOccurrences, ...selectConcept(concept, firstLemma)];
   });
   if(!foundOccurrences.length){
     document.getElementById("errorConcept").innerHTML ="this sequence of words has not been found in transcript !"
@@ -517,7 +534,11 @@ function addConcept(){
   let dots = ""
   let sendingLemmaNotification = setInterval(function() {
     dots = dots.length < 5 ? dots+"." : '';
-    $("#errorConcept").css({color: "dodgerblue", borderColor:"dodgerblue", display:"block"}).text("Validating lemma"+dots)
+    $("#errorConcept").css({color: "dodgerblue", borderColor:"dodgerblue"})
+                      .text("Validating lemma"+dots)
+                      .parent()
+                      .css("background-color","#1E90FF1a")
+                      .show()              
   }, 200)
 
   let js_data = {
@@ -916,8 +937,6 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
       document.getElementById("newConcept").value = ""
     else if(e.target.getAttribute("href") == "#add-synonyms") {
       document.getElementById("synonymSet").value = ""
-      document.getElementById("errorNewSynonym").style.display = "none"
-      document.getElementById("errorRemoveSynonym").style.display = "none"
     } else if(e.target.getAttribute("href") == "#concepts") {
       document.getElementById("filter-vocabulary").value = ""
       filterVocabulary("")
@@ -932,9 +951,6 @@ function selectSynonymSet(){
 
     let wordOfSynonymSet = document.getElementById("selectSynonymSet").value
 
-    document.getElementById("errorNewSynonym").style.display = "none"
-    document.getElementById("errorRemoveSynonym").style.display = "none"
-
     if(wordOfSynonymSet === "") {
       document.getElementById("errorSynonymSet").innerHTML ="empty field !"
       document.getElementById("synonymSet").value = ""
@@ -942,7 +958,6 @@ function selectSynonymSet(){
       return 
     }
 
-    document.getElementById("errorSynonymSet").style.display = "none"
     document.getElementById("synonymSet").value = "";
     let conceptWords = wordOfSynonymSet.split(" ")
     let lemmas = []
@@ -976,9 +991,6 @@ function selectSynonymSet(){
 
     let newSynonym = document.getElementById("synonymWord").value
     
-    document.getElementById("errorNewSynonym").style.display = "none"
-    document.getElementById("errorRemoveSynonym").style.display = "none"
-
     if (newSynonym === "") {
       document.getElementById("errorNewSynonym").innerHTML ="empty field !"
       showMsg("errorNewSynonym", "red")
@@ -992,7 +1004,6 @@ function selectSynonymSet(){
     }
     
 
-    document.getElementById("errorNewSynonym").style.display = "none"
     let lemma = newSynonym;
     if($synonymList.includes(lemma)) {  // already present
       document.getElementById("errorNewSynonym").innerHTML ="the word typed is already present in the synonym set !"
@@ -1038,9 +1049,6 @@ function selectSynonymSet(){
 
     let synonymToRemove = document.getElementById("synonymWord").value
     
-    document.getElementById("errorNewSynonym").style.display = "none"
-    document.getElementById("errorRemoveSynonym").style.display = "none"
-
     if (synonymToRemove === "") {
       document.getElementById("errorRemoveSynonym").innerHTML ="empty field !"
       showMsg("errorRemoveSynonym", "red")

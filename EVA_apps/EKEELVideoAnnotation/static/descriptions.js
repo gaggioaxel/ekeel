@@ -101,11 +101,9 @@ function showDescriptionDiv(reset_fields){
     $(document).off("keydown")
     $(document).on('keydown', function(event) {
         // If an input field or textarea is focused, return early
-        if ($(document.activeElement).is('input, textarea')) {
+        if ($(document.activeElement).is('input, textarea'))
             return;
-        }
 
-        event.preventDefault(); // Prevent default scrolling
 
         switch (event.keyCode) {
             case 32: // Space key
@@ -113,17 +111,14 @@ function showDescriptionDiv(reset_fields){
                 break;
     
             case 37: // Left Arrow key
-                player.currentTime(Math.max(0, player.currentTime() - skipSeconds)); 
-                break;
-    
             case 39: // Right Arrow key
-                player.currentTime(Math.min(videoDuration, player.currentTime() + skipSeconds)); 
-                break;
+                return
             
             case 27:
                 closeDescriptionDiv();
                 break;
         }
+        event.preventDefault(); // Prevent default scrolling
     });
 
 }
@@ -144,6 +139,7 @@ function closeDescriptionDiv(){
     attachUpdateTimeListenerOnTranscript()
     highlightExplanationInTranscript(-1, -1)
     attachPlayerKeyEvents()
+    setConceptSelectionElements("--")
 
     $("#slidesContainer, #mainButtonsContainer").fadeIn("fast")
     $("#descriptionsTable, #relationsTable").css("overflow", "hidden auto")

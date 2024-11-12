@@ -524,6 +524,7 @@ td .btn {
 .tab-error {
   color: red;
   font-style: italic;
+  font-weight: bold;
   text-align: center;
   border-bottom: 1px solid red;
   width: max-content;
@@ -598,11 +599,11 @@ td .btn {
 }
 
 .concept.selected-concept-text{
-  background-color: #1c7ade63;
+  background-color: #1c7ade45;
 }
 
 .concept.selected-synonym-text{
-  background-color: #1cb7de63;
+  background-color: #1cb7de45;
 }
 
 .filter-vocabulary-class {
