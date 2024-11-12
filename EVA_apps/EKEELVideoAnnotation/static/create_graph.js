@@ -154,6 +154,7 @@ function pushDefinition(concept, start, end, startSentID, endSentID, description
 function editConceptAnnotation(button){
     let elements = $(button).parents("tr").find("td")
     let concept = elements.get()[0].innerText;
+    setConceptSelectionElements(concept)
     let prevConceptStart = secondsToTime(timeToSeconds(elements.get()[1].innerText));
     let prevConceptEnd = secondsToTime(timeToSeconds(elements.get()[2].innerText));
     let prevDescriptionType = elements.get()[3].innerText;
@@ -235,6 +236,7 @@ function editConceptAnnotation(button){
            .append(saveChangesButton)
 
     showDescriptionDiv(false)
+    $(document.getElementById("transcript")).off("click",".concept")
 }
 
 function deleteDefinition(button, concept, start, end){

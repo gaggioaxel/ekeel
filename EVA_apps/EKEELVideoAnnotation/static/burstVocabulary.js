@@ -501,10 +501,10 @@ function deleteConcept(button,concept) {
 
 function addConcept(){
 
-  let concept = document.getElementById("newConcept").value
+  let concept = document.getElementById("newConcept").value.replaceAll("  "," ").trim()
 
   if(concept === "") {
-    document.getElementById("errorConcept").innerHTML ="empty field !"
+    document.getElementById("errorConcept").innerText ="empty field !"
     showMsg("errorConcept", "red")
     return
   }
@@ -517,7 +517,7 @@ function addConcept(){
     conceptWords.forEach(word => conceptLemmas.push($allWordsLemmas[word]))
   }
   if (conceptLemmas.some(item => item === undefined)) {
-    document.getElementById("errorConcept").innerHTML ="some words are not present in the text !"
+    document.getElementById("errorConcept").innerText ="some words are not present in the text !"
     showMsg("errorConcept", "red")
     return
   }
@@ -527,7 +527,7 @@ function addConcept(){
     foundOccurrences = [...foundOccurrences, ...selectConcept(concept, firstLemma)];
   });
   if(!foundOccurrences.length){
-    document.getElementById("errorConcept").innerHTML ="this sequence of words has not been found in transcript !"
+    document.getElementById("errorConcept").innerText ="this sequence of words has not been found in transcript !"
     showMsg("errorConcept", "red")
     return
   }
@@ -561,12 +561,12 @@ function addConcept(){
     clearInterval(sendingLemmaNotification)
     let conceptLemma = result.lemmatized_term
     if(conceptLemma == ""){
-      document.getElementById("errorConcept").innerHTML ="error in backend lemmatization process !"
+      document.getElementById("errorConcept").innerText ="error in backend lemmatization process !"
       showMsg("errorConcept", "red")
       return
     }
     if($concepts.includes(conceptLemma)) {
-      document.getElementById("errorConcept").innerHTML ="the concept is already present !"
+      document.getElementById("errorConcept").innerText ="the concept is already present !"
       showMsg("errorConcept", "orange")
       return
     }
@@ -583,7 +583,7 @@ function addConcept(){
     //console.log("--------------------")
     // $('#conceptsModal').modal('hide')
     document.getElementById("newConcept").value = ""
-    document.getElementById("errorConcept").innerHTML = "Concept added successfully!"
+    document.getElementById("errorConcept").innerText = "Concept added successfully!"
     showMsg("errorConcept", "green", 4000)
     uploadManuGraphOnDB()
   })
@@ -992,13 +992,13 @@ function selectSynonymSet(){
     let newSynonym = document.getElementById("synonymWord").value
     
     if (newSynonym === "") {
-      document.getElementById("errorNewSynonym").innerHTML ="empty field !"
+      document.getElementById("errorNewSynonym").innerText ="empty field !"
       showMsg("errorNewSynonym", "red")
       return
     }
 
     if($synonymList.length === 0) {
-      document.getElementById("errorNewSynonym").innerHTML ="select a synonym set !"
+      document.getElementById("errorNewSynonym").innerText ="select a synonym set !"
       showMsg("errorNewSynonym", "red")
       return
     }
@@ -1006,13 +1006,13 @@ function selectSynonymSet(){
 
     let lemma = newSynonym;
     if($synonymList.includes(lemma)) {  // already present
-      document.getElementById("errorNewSynonym").innerHTML ="the word typed is already present in the synonym set !"
+      document.getElementById("errorNewSynonym").innerText ="the word typed is already present in the synonym set !"
       showMsg("errorNewSynonym", "orange")
       return
     }
     
     if (!$concepts.includes(lemma)){ // not a concept
-      document.getElementById("errorNewSynonym").innerHTML ="the word typed is not a concept !"
+      document.getElementById("errorNewSynonym").innerText ="the word typed is not a concept !"
       showMsg("errorNewSynonym", "red")
       return
     }
@@ -1039,7 +1039,7 @@ function selectSynonymSet(){
     document.getElementById("synonymSet").value = "";
     document.getElementById("selectSynonymSet").value = "";
     document.getElementById("synonymWord").value = "";
-    document.getElementById("errorNewSynonym").innerHTML = "word successfully added to the synonyms set"
+    document.getElementById("errorNewSynonym").innerText = "word successfully added to the synonyms set"
     showMsg("errorNewSynonym", "green")
     return
   }
@@ -1050,26 +1050,26 @@ function selectSynonymSet(){
     let synonymToRemove = document.getElementById("synonymWord").value
     
     if (synonymToRemove === "") {
-      document.getElementById("errorRemoveSynonym").innerHTML ="empty field !"
+      document.getElementById("errorRemoveSynonym").innerText ="empty field !"
       showMsg("errorRemoveSynonym", "red")
       return
     }
 
     if($synonymList.length === 0) {
-      document.getElementById("errorRemoveSynonym").innerHTML ="select a synonym set !"
+      document.getElementById("errorRemoveSynonym").innerText ="select a synonym set !"
       showMsg("errorRemoveSynonym", "red")
       return
     }
 
     let lemma = synonymToRemove;
     if (!$concepts.includes(lemma)){ // not a concept
-      document.getElementById("errorRemoveSynonym").innerHTML ="the word typed is not a concept !"
+      document.getElementById("errorRemoveSynonym").innerText ="the word typed is not a concept !"
       showMsg("errorRemoveSynonym", "red")
       return
     }
 
     if(!$synonymList.includes(lemma)) {  // not a synonym
-      document.getElementById("errorRemoveSynonym").innerHTML ="the word typed is not in the selected synonym set !"
+      document.getElementById("errorRemoveSynonym").innerText ="the word typed is not in the selected synonym set !"
       showMsg("errorRemoveSynonym", "orange")
       return
     }
@@ -1088,6 +1088,6 @@ function selectSynonymSet(){
     document.getElementById("synonymSet").value = "";
     document.getElementById("selectSynonymSet").value = "";
     document.getElementById("synonymWord").value = "";
-    document.getElementById("errorRemoveSynonym").innerHTML = "word successfully removed from the synonyms set"
+    document.getElementById("errorRemoveSynonym").innerText = "word successfully removed from the synonyms set"
     showMsg("errorRemoveSynonym", "green")
   }
