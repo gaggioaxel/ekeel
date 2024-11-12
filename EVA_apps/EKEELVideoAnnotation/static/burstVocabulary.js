@@ -226,7 +226,7 @@ function selectConcept(conceptWords, firstWordLemma) {
         }
         if (nextWord.includes(words[j])) {
           allSpan.push(currentSpan)
-          num_words_tol = 1
+          num_words_tol = 6
         } else if(num_words_tol > 0) {
           // if a word is part of the concept but not the right one, this is not the same concept
           if (words.includes(nextWord[0]) || words.includes(nextWord[1])) {
@@ -946,148 +946,150 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 
 // Create and add Synonym sets (vocabualary)
 function selectSynonymSet(){
-    
-    $synonymList=[];
+  
+  $synonymList=[];
 
-    let wordOfSynonymSet = document.getElementById("selectSynonymSet").value
+  //console.log("---")
 
-    if(wordOfSynonymSet === "") {
-      document.getElementById("errorSynonymSet").innerHTML ="empty field !"
-      document.getElementById("synonymSet").value = ""
-      showMsg("errorSynonymSet", "red")
-      return 
-    }
+  let wordOfSynonymSet = document.getElementById("selectSynonymSet").value
+  // var synonymSet = "run, move"
+  //console.log("synonymSetString")
+  //console.log(synonymSetString)
 
-    document.getElementById("synonymSet").value = "";
-    let conceptWords = wordOfSynonymSet.split(" ")
-    let lemmas = []
-    conceptWords.forEach(word => lemmas.push($allWordsLemmas[word]))
-    lemma = lemmas.join(" ")
-    
-    if($concepts.includes(lemma)) {
-      let listOfSynonymsOfLemma = $conceptVocabulary[lemma];
-      let synonymSetText = lemma;
-      for (let i=0; i<listOfSynonymsOfLemma.length; i++) {
-        synonymSetText += ", " + listOfSynonymsOfLemma[i];
-      }
-      $synonymList = [lemma];
-      for (let i=0; i<listOfSynonymsOfLemma.length; i++) {
-        $synonymList.push(listOfSynonymsOfLemma[i]);
-      }
-      document.getElementById("synonymSet").value = synonymSetText;
-      document.getElementById("selectSynonymSet").value = "";
-      return
-    }
-
-    document.getElementById("errorSynonymSet").innerHTML ="the word is not a concept !"
+  if(wordOfSynonymSet === "") {
+    document.getElementById("printMessageSynonymSet").innerHTML ="empty field !"
     document.getElementById("synonymSet").value = ""
-    showMsg("errorSynonymSet", "red")
-    $synonymList = [];
+    showMsg("printMessageSynonymSet", "red")
+    return
   }
-
-
-  // Create and add Synonym sets (vocabualary)
-  function addSynonym(){
-
-    let newSynonym = document.getElementById("synonymWord").value
-    
-    if (newSynonym === "") {
-      document.getElementById("errorNewSynonym").innerText ="empty field !"
-      showMsg("errorNewSynonym", "red")
-      return
-    }
-
-    if($synonymList.length === 0) {
-      document.getElementById("errorNewSynonym").innerText ="select a synonym set !"
-      showMsg("errorNewSynonym", "red")
-      return
-    }
-    
-
-    let lemma = newSynonym;
-    if($synonymList.includes(lemma)) {  // already present
-      document.getElementById("errorNewSynonym").innerText ="the word typed is already present in the synonym set !"
-      showMsg("errorNewSynonym", "orange")
-      return
-    }
-    
-    if (!$concepts.includes(lemma)){ // not a concept
-      document.getElementById("errorNewSynonym").innerText ="the word typed is not a concept !"
-      showMsg("errorNewSynonym", "red")
-      return
-    }
-
-    for(let syn of $conceptVocabulary[lemma]) {
-      for (let word of $synonymList) {
-        $conceptVocabulary[word].push(syn);          
-      }
-      for (let word of $synonymList) {
-        $conceptVocabulary[syn].push(word);
-      }
-    }
-
-    for (let word of $synonymList) {
-      $conceptVocabulary[word].push(lemma);          
-    }
-    for (let word of $synonymList) {
-      $conceptVocabulary[lemma].push(word);
-    }
-    showVocabularyBurst($conceptVocabulary);
-    //console.log("synonyms")
-    //console.log($synonyms);
+  document.getElementById("synonymSet").value = "";
+  let lemma = wordOfSynonymSet;
+  if(!$concepts.includes(lemma)) {
+    document.getElementById("printMessageSynonymSet").innerHTML ="the word is not a concept !"
+    showMsg("printMessageSynonymSet", "red")
     $synonymList = [];
-    document.getElementById("synonymSet").value = "";
-    document.getElementById("selectSynonymSet").value = "";
-    document.getElementById("synonymWord").value = "";
-    document.getElementById("errorNewSynonym").innerText = "word successfully added to the synonyms set"
-    showMsg("errorNewSynonym", "green")
     return
   }
 
- 
-  function removeSynonym(){
-
-    let synonymToRemove = document.getElementById("synonymWord").value
-    
-    if (synonymToRemove === "") {
-      document.getElementById("errorRemoveSynonym").innerText ="empty field !"
-      showMsg("errorRemoveSynonym", "red")
-      return
-    }
-
-    if($synonymList.length === 0) {
-      document.getElementById("errorRemoveSynonym").innerText ="select a synonym set !"
-      showMsg("errorRemoveSynonym", "red")
-      return
-    }
-
-    let lemma = synonymToRemove;
-    if (!$concepts.includes(lemma)){ // not a concept
-      document.getElementById("errorRemoveSynonym").innerText ="the word typed is not a concept !"
-      showMsg("errorRemoveSynonym", "red")
-      return
-    }
-
-    if(!$synonymList.includes(lemma)) {  // not a synonym
-      document.getElementById("errorRemoveSynonym").innerText ="the word typed is not in the selected synonym set !"
-      showMsg("errorRemoveSynonym", "orange")
-      return
-    }
-
-    $conceptVocabulary[lemma] = []; 
-    for (let word of $synonymList) {
-      if(word !== lemma) {
-        $conceptVocabulary[word] = $conceptVocabulary[word].filter(item => item !== lemma);
-      }
-    }
-
-    showVocabularyBurst($conceptVocabulary);
-    //console.log("synonyms")
-    //console.log($synonyms);
-    $synonymList = [];
-    document.getElementById("synonymSet").value = "";
-    document.getElementById("selectSynonymSet").value = "";
-    document.getElementById("synonymWord").value = "";
-    document.getElementById("errorRemoveSynonym").innerText = "word successfully removed from the synonyms set"
-    showMsg("errorRemoveSynonym", "green")
+  let listOfSynonymsOfLemma = $conceptVocabulary[lemma];
+  let synonymSetText = lemma;
+  for (let i=0; i<listOfSynonymsOfLemma.length; i++) {
+    synonymSetText += ", " + listOfSynonymsOfLemma[i];
   }
+  $synonymList = [lemma];
+  for (let i=0; i<listOfSynonymsOfLemma.length; i++) {
+    $synonymList.push(listOfSynonymsOfLemma[i]);
+  }
+  document.getElementById("synonymSet").value = synonymSetText;
+  document.getElementById("selectSynonymSet").value = "";
+}
+
+
+// Create and add Synonym sets (vocabualary)
+function addSynonym(){
+
+  let newSynonym = document.getElementById("synonymWord").value
+  
+
+  if (newSynonym === "") { // empty
+    document.getElementById("printMessageSynonymAdd").innerText ="empty field !"
+    showMsg("printMessageSynonymAdd", "red")
+    return
+  }
+
+  if($synonymList.length === 0) { // not selected synset
+    document.getElementById("printMessageSynonymAdd").innerText ="select a synonym set !"
+    showMsg("printMessageSynonymAdd", "red")
+    return
+  }
+
+  if($synonymList.includes(newSynonym)) {  // already present
+    document.getElementById("printMessageSynonymAdd").innerText ="the word typed is already present in the synonym set !"
+    showMsg("printMessageSynonymAdd", "orange")
+    return
+  }
+  let lemma = newSynonym;
+  
+  if (!$concepts.includes(lemma)){ // not a concept
+      document.getElementById("printMessageSynonymAdd").innerText ="the word typed is not a concept !"
+      showMsg("printMessageSynonymAdd", "red")
+      return
+  }
+
+  
+  for(let syn of $conceptVocabulary[lemma]) {
+    for (let word of $synonymList) {
+      $conceptVocabulary[word].push(syn);          
+    }
+    for (let word of $synonymList) {
+      $conceptVocabulary[syn].push(word);
+    }
+  }
+
+  for (let word of $synonymList) {
+    $conceptVocabulary[word].push(lemma);          
+  }
+  for (let word of $synonymList) {
+    $conceptVocabulary[lemma].push(word);
+  }
+
+  showVocabulary($conceptVocabulary);
+  uploadManuGraphOnDB()
+
+  document.getElementById("selectSynonymSet").value = document.getElementById("synonymSet").value.split(",")[0];
+  selectSynonymSet()
+  document.getElementById("selectSynonymSet").value = "";
+  document.getElementById("synonymWord").value = "";
+  document.getElementById("printMessageSynonymAdd").innerText = "word successfully added to the synonyms set !"
+  showMsg("printMessageSynonymAdd", "green")
+}
+
+
+function removeSynonym(){
+
+  let synonymToRemove = document.getElementById("synonymWord").value
+  
+
+  if (synonymToRemove === "") {
+    document.getElementById("printMessageSynonymAdd").innerText ="empty field !"
+    showMsg("printMessageSynonymAdd", "red")
+    return
+  }
+
+  if($synonymList.length === 0) {
+    document.getElementById("printMessageSynonymAdd").innerText ="select a synonym set !"
+    showMsg("printMessageSynonymAdd", "red")
+    return
+  }
+
+  let lemma = synonymToRemove;
+  if (!$concepts.includes(lemma)){ // not a concept
+    document.getElementById("printMessageSynonymAdd").innerText ="the word typed is not a concept !"
+    showMsg("printMessageSynonymAdd", "red")
+    return
+  }
+  if(!$synonymList.includes(lemma)) {  // not a synonym
+    document.getElementById("printMessageSynonymAdd").innerText ="the word typed is not in the selected synonym set !"
+    showMsg("printMessageSynonymAdd", "orange")
+    return
+  }
+
+
+  $conceptVocabulary[lemma] = []; 
+
+  for (let word of $synonymList) {
+    if(word !== lemma) {
+      $conceptVocabulary[word] = $conceptVocabulary[word].filter(item => item !== lemma);
+    }
+  }
+
+  showVocabulary($conceptVocabulary);
+  uploadManuGraphOnDB()
+  
+  document.getElementById("selectSynonymSet").value = $synonymList[0]
+  selectSynonymSet()
+  document.getElementById("selectSynonymSet").value = "";
+  document.getElementById("synonymWord").value = "";
+  document.getElementById("printMessageSynonymAdd").innerText = "word successfully removed from the synonyms set"
+  showMsg("printMessageSynonymAdd", "green")
+}
