@@ -809,7 +809,7 @@ function highlightConcept(conceptWords, firstWordLemma) {
             if(nextRow !== undefined){
                 currentSpan = nextRow.find("span")[0]
                 if(currentSpan !== undefined)
-                  nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text()]  
+                  nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text()]  
                   //nextWord = currentSpan.attributes[0].nodeValue
             }
         }
