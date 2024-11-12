@@ -315,8 +315,9 @@ function addConcept(){
   }
 
   let conceptLemmas = []
-  if ($allLemmas.includes(concept)){
-    conceptLemmas.push(concept);
+  // Allow both lemmas present in the text and the concept words 
+  if (concept.split(" ").length == 1 && $allLemmas.includes(concept)){
+    conceptLemmas.push([concept]);
   } else {
     let conceptWords = concept.split(" ")
     conceptWords.forEach(word => conceptLemmas.push($allWordsLemmas[word]))
@@ -326,14 +327,12 @@ function addConcept(){
     showMsg("errorConcept", "red")
     return
   }
-  conceptLemmas = conceptLemmas.join(" ")
-  if($concepts.includes(conceptLemmas)) {
-    document.getElementById("errorConcept").innerHTML ="the concept is already present !"
-    showMsg("errorConcept", "orange")
-    return
-  }
-  let foundOccurences = highlightConcept(concept, conceptLemmas);
-  if(!foundOccurences.length){
+  
+  let foundOccurrences = [];
+  conceptLemmas[0].forEach(function(firstLemma) {
+    foundOccurrences = [...foundOccurrences, ...highlightConcept(concept, firstLemma)];
+  });
+  if(!foundOccurrences.length){
     document.getElementById("errorConcept").innerHTML ="this sequence of words has not been found in transcript !"
     showMsg("errorConcept", "red")
     return
@@ -349,8 +348,8 @@ function addConcept(){
     "video_id": $video_id,
     "concept": {
       "term": concept,
-      "variants": foundOccurences,
-      "frequency": foundOccurences.length,
+      "variants": foundOccurrences,
+      "frequency": foundOccurrences.length,
     }
   }
 
@@ -368,6 +367,11 @@ function addConcept(){
       showMsg("errorConcept", "red")
       return
     }
+    if($concepts.includes(conceptLemma)) {
+      document.getElementById("errorConcept").innerHTML ="the concept is already present !"
+      showMsg("errorConcept", "orange")
+      return
+    }
     $concepts.push(conceptLemma)
     $conceptVocabulary[conceptLemma]=[];
     $concepts.sort()
@@ -381,7 +385,7 @@ function addConcept(){
     //console.log("--------------------")
     // $('#conceptsModal').modal('hide')
     document.getElementById("newConcept").value = ""
-    document.getElementById("errorConcept").innerHTML = "word successfully added to the concepts"
+    document.getElementById("errorConcept").innerHTML = "Concept added successfully!"
     showMsg("errorConcept", "green", 4000)
     uploadManuGraphOnDB()
   })
@@ -452,15 +456,6 @@ function addSynonym(){
     showMsg("errorNewSynonym", "red")
     return
   }
-
-  //let conceptWords = newSynonym.split(" ")
-  //let lemmas = []
-  //conceptWords.forEach(word => lemmas.push($allWordsLemmas[word]))
-  //if (lemmas.some(item => item === undefined)) {
-  //  document.getElementById("errorConcept").innerHTML ="some words are not present in the text !"
-  //  showMsg("errorConcept", "red")
-  //  return
-  //}
 
   let lemma = newSynonym;
   if($synonymList.includes(lemma)) {  // already present
@@ -764,15 +759,14 @@ function deleteConcept(button,concept) {
 }
 
 /* highlight a concept in a div with id div_id */
-function highlightConcept(conceptWords, conceptLemmas) {
+function highlightConcept(conceptWords, firstWordLemma) {
   
   let words = conceptWords.split(" ")
-  let firstWord = words[0];
-  let firstLemma = conceptLemmas.split(" ")[0]
+  let firstWord = words[0]
   let conceptOccurencesText = [];
   let elements = $("#transcript span[lemma]").filter(function() {
     let this_query = $(this)
-    return this_query.text() == firstWord || this_query.text() == firstLemma || this_query.attr("lemma") == firstWord || this_query.attr("lemma")==firstLemma;
+    return this_query.text() == firstWord || this_query.text() == firstWordLemma || this_query.attr("lemma") == firstWord || this_query.attr("lemma") == firstWordLemma;
   })
   if(words.length == 1) {
     elements.each((_,conceptElem) => {

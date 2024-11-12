@@ -75,6 +75,16 @@ function addRelation(replaceIndx){
     let curr_time = targetBox ? 
                         player.currentTime() : 
                         parseFloat($("#transcript").find(`[sent_id=${sentID}][word_id=${wordID}]`).attr("start_time"));
+    
+    for (rel of relations)
+        if (rel.prerequisite == prereq &&
+          rel.target == target && 
+          rel.sent_id == sentID &&
+          rel.word_id == wordID ) {
+            alert("This relation already exists");
+            return false;
+        }
+
     let xywh="None"
 
     if(targetBox!= undefined){
@@ -119,10 +129,6 @@ function addRelation(replaceIndx){
         sortRelations(this);
     });
     closeRelationDiv();
-
-    targetSentID = null
-    targetWordID = null
-    targetTime = null
     uploadManuGraphOnDB()
 }
 

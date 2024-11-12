@@ -62,6 +62,7 @@ function attachRelationKeyEvents(){
 function showRelationDiv(){
   state="rel"
   clearAnnotatorVisualElements()
+  setConceptSelectionElements("--")
   $("html, body").animate({ scrollTop: $("#navbar").offset().top }, "slow");
   $("#slidesContainer, #mainButtonsContainer").hide()
   $("#descriptionsTable, #relationsTable").css("overflow", "visible")
@@ -191,6 +192,30 @@ function closeRelationDiv(){
   $('#canvas-wrap, #relation, #transcript').undim({ fadeOutDuration: 300 });
 }
 
+function setConceptSelectionElements(selectedConcept){
+  document.getElementById("transcript-selected-concept").innerHTML = selectedConcept;
+  
+  let syns = $conceptVocabulary[selectedConcept] || [];
+  let synsText = syns.join(", ");
+
+  document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText || "--";
+
+  $("#transcript").find("[concept]")
+    .filter(function() {
+      return $(this).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ");
+    })
+    .get()
+    .forEach(function(element) { 
+      element.classList.add("selected-concept-text") 
+    });
+  syns.forEach(function(syn) { 
+    $("[concept~='" + syn.replaceAll(" ","_") + "']")
+      .get()
+      .forEach(function(element) { 
+        element.classList.add("selected-synonym-text")
+      }) 
+    })
+}
 
 function attachClickListenerOnConcepts(){
   $(document.getElementById("transcript")).on("click", ".concept", function (e) {
@@ -202,13 +227,12 @@ function attachClickListenerOnConcepts(){
       $(this).removeClass("selected-concept-text").removeClass("selected-synonym-text")
     })
   
-    var target = e.currentTarget;
-    var selectedConcept = target.getAttribute("concept")
+    let selectedConcept = e.currentTarget.getAttribute("concept")
       .split(" ")
       .filter(str => str.length > 0)
       .sort((a, b) => a.split("_").length - b.split("_").length)
       .reverse()[0];
-    var selectedConceptText = selectedConcept.replaceAll("_", " ");
+    let selectedConceptText = selectedConcept.replaceAll("_", " ");
   
     if (document.getElementById("transcript-selected-concept").innerHTML == selectedConceptText) {
       document.getElementById("transcript-selected-concept").innerHTML = "";
@@ -220,28 +244,7 @@ function attachClickListenerOnConcepts(){
     
     if (state == "desc")
       document.getElementById("conceptDescribed").value = selectedConceptText;
-    document.getElementById("transcript-selected-concept").innerHTML = selectedConceptText;
-  
-    let syns = $conceptVocabulary[selectedConceptText] || [];
-    let synsText = syns.join(", ");
-  
-    document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText || "--";
-  
-    $("#transcript").find("[concept]")
-      .filter(function() {
-        return $(this).attr("concept").includes(" "+selectedConcept+" ");
-      })
-      .get()
-      .forEach(function(element) { 
-        element.classList.add("selected-concept-text") 
-      });
-    syns.forEach(function(syn) { 
-      $("[concept~='" + syn.replaceAll(" ","_") + "']")
-        .get()
-        .forEach(function(element) { 
-          element.classList.add("selected-synonym-text")
-        }) 
-      })
+    setConceptSelectionElements(selectedConceptText)
   });
 }
 

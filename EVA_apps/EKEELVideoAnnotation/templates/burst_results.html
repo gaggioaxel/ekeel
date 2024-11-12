@@ -300,11 +300,15 @@
         let match;
         while ((match = regex.exec(sub["text"])) !== null) {
             // Split by space and take the first word (if needed)
-            let word = match[2].split(" ")[0].toLowerCase();
+            let word = match[2];
             let lemma = match[1];
 
             // Add the word -> lemma pair to the map
-            $allWordsLemmas[word] = lemma;
+            if(!(word in $allWordsLemmas))
+              $allWordsLemmas[word] = [lemma];
+            else
+              if(!$allWordsLemmas[word].includes(lemma))
+                $allWordsLemmas[word].push(lemma);
         }
     });
     delete regex;

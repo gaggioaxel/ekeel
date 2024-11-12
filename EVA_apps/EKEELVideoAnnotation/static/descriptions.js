@@ -59,6 +59,7 @@ function showDescriptionDiv(reset_fields){
             $(this).addClass("selected-concept-text");
           }
         });
+        setConceptSelectionElements(selectedConceptText);
         
     });
 
