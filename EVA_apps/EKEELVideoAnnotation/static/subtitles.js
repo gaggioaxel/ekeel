@@ -251,6 +251,9 @@ function attachClickListenerOnConcepts(){
   });
 }
 
+function capitalize(text){
+  return text ? String(text).charAt(0).toUpperCase() + String(text).slice(1) : ""
+}
 
 function addSubtitles(){
 
@@ -267,9 +270,9 @@ function addSubtitles(){
   
   // Add event listener for click to prevent time change on concept click
   attachUpdateTimeListenerOnTranscript()
-  for(let i in $concepts)
+  for(let concept of $concepts)
     // Highlighting words
-    selectConcept($concepts[i],"")
+    selectConcept(concept)
   
   attachClickListenerOnConcepts()
 }

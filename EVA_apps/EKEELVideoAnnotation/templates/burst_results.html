@@ -118,41 +118,38 @@
 
                   <!-- TAB 3 - Manage Synonyms -->
                   <div class="tab-pane fade tab-body-3" id="add-synonyms" role="tabpanel" aria-labelledby="add-tab">
-                    <div class="main-vocabulary-body">
+                    <!-- Synonym set selected -->
+                    <div class="row selected-synset-show">
+                      <p class="spaced-text same-line">Selected Synonym Set: </p>
+                      <input type="text" id="synonymSet" class="synonym-set-class" placeholder="--" readonly style="text-align: center;">
+                    </div>
 
-                      <!-- Synonym set selected -->
-                      <div class="row selected-synset-show">
-                        <p class="spaced-text same-line">Selected Synonym Set: </p>
-                        <input type="text" id="synonymSet" class="synonym-set-class" placeholder="--" readonly style="text-align: center;">
+                    <!-- Synonym set selection -->
+                    <div id="synset-selection" class="spaced-text synset-selection-class row">
+                      <div class="row">
+                        <label for="selectSynonymSet">Word of Synonym Set:</label>
+                        <input type="text" class="form-control" autocomplete="on" id="selectSynonymSet"  placeholder="Select one of the synonym set word">
+                      </div>
+                      <div style="display:none">
+                        <div class="row tab-error" id="printMessageSynonymSet"></div>
                       </div>
 
-                      <!-- Synonym set selection -->
-                      <div id="synset-selection" class="spaced-text synset-selection-class row">
-                        <div class="row">
-                          <label for="selectSynonymSet">Word of Synonym Set:</label>
-                          <input type="text" class="form-control" autocomplete="on" id="selectSynonymSet"  placeholder="Select one of the synonym set word">
+                    <!-- Add new synonym -->
+                    <div id="add-syn-selection" class="spaced-text add-syn-selection-class row">
+                      <div class="row">
+                          <label for="newSynonym">Add/Remove Synonym:</label>
+                          <input type="text" class="form-control" autocomplete="off" id="synonymWord"  placeholder="Enter synonym to add/remove">
+                      </div>
+                      <div class="row">
+                        <div class="col-6">
+                            <button  onclick="addSynonym()" class="btn btn-primary button-syn">Add Synonym</button>
                         </div>
-                        <div style="display:none">
-                          <div class="row tab-error" id="printMessageSynonymSet"></div>
+                        <div class="col-6">
+                          <button  onclick="removeSynonym()" class="btn btn-primary button-syn delete">Remove Synonym</button>
                         </div>
-
-                      <!-- Add new synonym -->
-                      <div id="add-syn-selection" class="spaced-text add-syn-selection-class row">
-                        <div class="row">
-                            <label for="newSynonym">Add/Remove Synonym:</label>
-                            <input type="text" class="form-control" autocomplete="off" id="synonymWord"  placeholder="Enter synonym to add/remove">
-                        </div>
-                        <div class="row">
-                          <div class="col-6">
-                              <button  onclick="addSynonym()" class="btn btn-primary button-add-syn">Add Synonym</button>
-                          </div>
-                          <div class="col-6">
-                            <button  onclick="removeSynonym()" class="btn btn-primary button-rem-syn">Remove Synonym</button>
-                          </div>
-                        </div>
-                        <div style="display:none">
-                          <div class="row tab-error" id="printMessageSynonymAdd"></div>
-                        </div>
+                      </div>
+                      <div style="display:none">
+                        <div class="row tab-error" id="printMessageSynonymAdd"></div>
                       </div>
                     </div>
                   </div>

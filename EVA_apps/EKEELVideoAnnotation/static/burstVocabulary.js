@@ -964,7 +964,7 @@ function selectSynonymSet(){
   }
   document.getElementById("synonymSet").value = "";
   let lemma = wordOfSynonymSet;
-  if(!$concepts.includes(lemma)) {
+  if(!$concepts.some((concept) => concept.text == lemma)) {
     document.getElementById("printMessageSynonymSet").innerHTML ="the word is not a concept !"
     showMsg("printMessageSynonymSet", "red")
     $synonymList = [];
@@ -1010,7 +1010,7 @@ function addSynonym(){
   }
   let lemma = newSynonym;
   
-  if (!$concepts.includes(lemma)){ // not a concept
+  if (!$concepts.some((concept) => concept.text == lemma)){ // not a concept
       document.getElementById("printMessageSynonymAdd").innerText ="the word typed is not a concept !"
       showMsg("printMessageSynonymAdd", "red")
       return
@@ -1063,7 +1063,7 @@ function removeSynonym(){
   }
 
   let lemma = synonymToRemove;
-  if (!$concepts.includes(lemma)){ // not a concept
+  if (!$concepts.some((concept) => concept.text == lemma)){ // not a concept
     document.getElementById("printMessageSynonymAdd").innerText ="the word typed is not a concept !"
     showMsg("printMessageSynonymAdd", "red")
     return

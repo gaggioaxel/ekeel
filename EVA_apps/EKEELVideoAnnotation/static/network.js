@@ -91,7 +91,7 @@ function uploadManuGraphOnDB(){
         dataType : 'json',
         data : js_data
     }).done(function(result) {
-        //console.log(result)
+        console.log(result)
         //if(result.done == true) {
         //    savedText.textContent = "Saved graph successfully!"
         //    savedText.style.color = "green";

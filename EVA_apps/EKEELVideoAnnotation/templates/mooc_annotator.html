@@ -404,7 +404,7 @@
       </div>
 
       <!-- Modal Concepts & Synonyms -->
-      <div class="modal-body" style="height:auto; overflow-y:hidden;">
+      <div class="modal-body" style="overflow-y:clip;">
           <button type="button" class="close" onclick="closeVocabularyDiv()" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -421,81 +421,79 @@
               </li>
           </ul>
 
-          <!-- Body of the modal Concepts & Synonyms -->
-          <div class="tab-content tab-body" id="myTabContent">
+          
+      </div>
 
-            <!-- TAB 1 - Concepts Vocabulary -->
-            <div class="tab-pane fade show active tab-body-1" id="concepts" role="tabpanel" aria-labelledby="concepts-tab" style="overflow-y:scroll;">
-                <div class="list-group list-group-flush" id="conceptsTable">
-                  <div class="list-group-item list-group-item-action conceptList">
-                    <input type="text" oninput="filterVocabulary(this.value)" class="form-control filter-vocabulary-class" autocomplete="off" id="filter-vocabulary"  placeholder="Search concept...">
-                    <div id="conceptVocabularyContent"></div> 
-                  </div>
-                </div>
-            </div>
+      <!-- Body of the modal Concepts & Synonyms -->
+      <div class="tab-content tab-body" id="myTabContent">
 
-            <!-- TAB 2 - Add Concepts -->
-            <div class="tab-pane fade tab-body-2" id="add-concept" role="tabpanel" aria-labelledby="add-tab">
-              <div>
-
-                <div class="row">
-                    <label for="newConcept"> Add Concept:</label>
-                    <input type="text" class="form-control" autocomplete="off" id="newConcept"  placeholder="Enter new concept">
-                </div>
-                  <br>
-                <div class="row">
-                    <button  onclick="addConcept()" class="btn btn-primary">Add new concept</button>
-                </div>
-                  <br>
-                <div style="display:none">
-                  <div class="row tab-error" id="errorConcept"></div>
-                </div>
+        <!-- TAB 1 - Concepts Vocabulary -->
+        <div class="tab-pane fade show active tab-body-1" id="concepts" role="tabpanel" aria-labelledby="concepts-tab" style="max-height:40vh">
+            <div class="list-group list-group-flush" id="conceptsTable">
+              <div class="list-group-item list-group-item-action conceptList">
+                <input type="text" oninput="filterVocabulary(this.value)" class="form-control filter-vocabulary-class" autocomplete="off" id="filter-vocabulary"  placeholder="Search concept...">
+                <div id="conceptVocabularyContent"></div> 
               </div>
             </div>
+        </div>
 
-            <!-- TAB 3 - Manage Synonyms -->
-            <div class="tab-pane fade tab-body-3" id="add-synonyms" role="tabpanel" aria-labelledby="add-tab">
-              <div  class="main-vocabulary-body">
+        <!-- TAB 2 - Add Concepts -->
+        <div class="tab-pane fade tab-body-2" id="add-concept" role="tabpanel" aria-labelledby="add-tab">
+          <div>
 
-                <!-- Synonym set selected -->
-                <div class="row selected-synset-show">
-                  <p class="spaced-text same-line">Selected Synonym Set: </p>
-                  <input type="text" id="synonymSet" class="synonym-set-class" placeholder="--" readonly style="text-align: center;">
-                </div>
-
-                <!-- Synonym set selection -->
-                <div id="synset-selection" class="spaced-text synset-selection-class row">
-                  <div class="row">
-                    <label for="selectSynonymSet">Word of Synonym Set:</label>
-                    <input type="text" class="form-control" autocomplete="off" id="selectSynonymSet"  placeholder="Enter and select one of the synonym set">
-                  </div>
-                  <div style="display:none">
-                    <div class="row tab-error" id="printMessageSynonymSet"></div>
-                  </div>
-                </div>
-
-                <!-- Add new synonym -->
-                <div id="add-syn-selection" class="spaced-text add-syn-selection-class row">
-                  <div class="row">
-                      <label for="newSynonym">Add/Remove Synonym:</label>
-                      <input type="text" class="form-control" autocomplete="off" id="synonymWord"  placeholder="Enter synonym to add/remove">
-                  </div>
-                  <div class="row">
-                    <div class="col-6">
-                        <button  onclick="addSynonym()" class="btn btn-primary button-add-syn">Add Synonym</button>
-                    </div>
-                    <div class="col-6">
-                      <button  onclick="removeSynonym()" class="btn btn-primary button-rem-syn">Remove Synonym</button>
-                    </div>
-                  </div>
-                  <div style="display:none">
-                    <div class="row tab-error" id="printMessageSynonymAdd"></div>
-                  </div>
-                </div>
-              </div>
+            <div class="row">
+                <label for="newConcept"> Add Concept:</label>
+                <input type="text" class="form-control" autocomplete="off" id="newConcept"  placeholder="Enter new concept">
             </div>
-
+              <br>
+            <div class="row">
+                <button  onclick="addConcept()" class="btn btn-primary">Add new concept</button>
+            </div>
+              <br>
+            <div style="display:none; margin-bottom:30px">
+              <div class="row tab-error" id="errorConcept"></div>
+            </div>
           </div>
+        </div>
+
+        <!-- TAB 3 - Manage Synonyms -->
+        <div class="tab-pane fade tab-body-3" id="add-synonyms" role="tabpanel" aria-labelledby="add-tab">
+          <!-- Synonym set selected -->
+          <div class="row selected-synset-show">
+            <p class="spaced-text same-line">Selected Synonym Set: </p>
+            <input type="text" id="synonymSet" class="synonym-set-class" placeholder="--" readonly style="text-align: center;">
+          </div>
+
+          <!-- Synonym set selection -->
+          <div id="synset-selection" class="spaced-text synset-selection-class row">
+            <div class="row">
+              <label for="selectSynonymSet">Word of Synonym Set:</label>
+              <input type="text" class="form-control" autocomplete="off" id="selectSynonymSet" placeholder="Enter and select one of the synonym set">
+            </div>
+            <div style="display:none; margin: 20px auto;">
+              <div class="row tab-error" id="printMessageSynonymSet"></div>
+            </div>
+          </div>
+
+          <!-- Add new synonym -->
+          <div id="add-syn-selection" class="spaced-text add-syn-selection-class row">
+            <div class="row">
+                <label for="newSynonym">Add/Remove Synonym:</label>
+                <input type="text" class="form-control" autocomplete="off" id="synonymWord"  placeholder="Enter synonym to add/remove">
+            </div>
+            <div class="row" style="margin: 20px 0;">
+              <div class="col-6">
+                  <button  onclick="addSynonym()" class="btn btn-primary button-syn">Add Synonym</button>
+              </div>
+              <div class="col-6">
+                <button  onclick="removeSynonym()" class="btn btn-primary button-syn delete">Remove Synonym</button>
+              </div>
+            </div>
+            <div style="display:none; margin: 20px auto;">
+              <div class="row tab-error" id="printMessageSynonymAdd"></div>
+            </div>
+          </div>
+        </div>
 
       </div>
       

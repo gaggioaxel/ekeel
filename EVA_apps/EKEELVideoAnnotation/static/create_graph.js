@@ -49,10 +49,10 @@ function addRelation(replaceIndx){
     if ((prereq === "") || (target === "")) {
       alert("Concepts must be non-empty!");
       return false;
-    }else if (!$concepts.includes(prereq)) {
+    }else if (!$concepts.some((concept) => concept.text == prereq)) {
       alert(prereq + " is not a concept");
       return false;
-    }else if (!$concepts.includes(target)) {
+    }else if (!$concepts.some((concept) => concept.text == target)) {
       alert(target + " is not a concept");
       return false;
     }else if (checkCycle(prereq, target)){

@@ -77,7 +77,11 @@ def create_skos_dictionary(synonyms, video_id, mode, language):
     jsonld = pyld.jsonld.compact(jsonld, context)
 
     if '@graph' not in jsonld:
-        jsonld["@graph"] = []
+        node = {}
+        for key in list(jsonld.keys()):
+            if key != "@context":
+                node[key] = jsonld.pop(key)
+        jsonld["@graph"] = [node] if len(node.keys()) > 1 else []
 
     print("***** EKEEL - Video Annotation: synonyms.py::create_skos_dictionary(): Fine ******")
 

@@ -269,11 +269,12 @@ def video_selection():
         if conceptVocabulary is not None:
             conceptVocabulary = {key:value for key,value in conceptVocabulary.items()}
             lemmatized_concepts = []
-            for key in conceptVocabulary:
-                lemmatized_concepts.append(key)
-        # If the concept vocabulary is new (empty) in DB then initialize it
+            for concept in conceptVocabulary:
+                lemmatized_concepts.append(SemanticText(concept,language).get_semantic_structure_info())
+        
+        # If the concept vocabulary is new (empty) in DB then initialize it from the terms extracted
         if conceptVocabulary is None :
-            lemmatized_concepts = vid_analyzer.lemmatize_terms()
+            lemmatized_concepts = [SemanticText(concept,language).get_semantic_structure_info() for concept in vid_analyzer.data["transcript_data"]["terms"]]
             #-----------------------------------------------------------------
             # 1) Automatically obtain synonyms using wordnet NLTK
             #
@@ -282,8 +283,9 @@ def video_selection():
             #
             conceptVocabulary = {}
             for concept in lemmatized_concepts :
-                conceptVocabulary[concept] = []
+                conceptVocabulary[concept["text"]] = []
             #-----------------------------------------------------------------
+        # This shouldn't happen but in case of different versions of annotations is kept for compatibility
         for rel in relations:
             if rel["prerequisite"] not in lemmatized_concepts:
                 lemmatized_concepts.append(rel["prerequisite"])
@@ -681,18 +683,19 @@ def video_segmentation_refinement():
 @app.route('/lemmatize_term', methods=["GET", "POST"])
 def lemmatize_term():
     language = request.json["lang"]
-    term = request.json["concept"]
-    video_id = request.json["video_id"]
+    concept = request.json["concept"]
     if language == "en":
         sem_text = SemanticText("", language=language)
+        return {}
         return {"lemmatized_term": " ".join(sem_text.set_text(word).lemmatize() for word in term["text"].split(" "))}
     elif language == "it":
-        VideoAnalyzer(url= "https://www.youtube.com/watch?v="+video_id, \
-                      request_fields_from_db=["video_id"]) \
-                    .lemmatize_an_italian_term(term)
-        print(f"chosen: {term['lemma']}")
-        return {"lemmatized_term": term["lemma"]}
-    return {"lemmatized_term": ""}
+        #VideoAnalyzer(url= "https://www.youtube.com/watch?v="+video_id, \
+        #              request_fields_from_db=["video_id"]) \
+        #            .lemmatize_an_italian_term(term)
+        #print(f"chosen: {term['lemma']}")
+        #return {"lemmatized_term": term["lemma"]}
+        return SemanticText(concept,language).get_semantic_structure_info()
+    raise Exception("not implemented")
     
 
 DEBUG = False

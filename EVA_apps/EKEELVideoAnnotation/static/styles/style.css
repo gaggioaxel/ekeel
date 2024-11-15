@@ -74,6 +74,11 @@ h1 {
   background-color: hsl(348, 83%, 42%);
 }
 
+.btn.delete:active {
+  background-color: hsl(348, 100%, 28%) !important;
+  border: 1px solid rgba(220, 20, 60, 0.452) !important;
+}
+
 .btn-container, .status-container {
   height: 24px;
 }
@@ -204,13 +209,14 @@ input[type=submit] {
 }
 
 .autocomplete-items-custom1 {
-  position: absolute;
+  position: relative;
   border: 1px solid #d4d4d4;
   z-index: 99;
-  top: 222px;
-  left: 20px;
-  width: 560px;
-  max-height: 148px;
+  width: 100%;
+  width: -moz-available;          /* For Mozzila */
+  width: -webkit-fill-available;  /* For Chrome */
+  width: stretch;                 /* Unprefixed */
+  max-height: 10vh;
   overflow-y: scroll;
 }
 
@@ -349,6 +355,7 @@ td .btn {
   font-family: serif;
   font-weight: normal;
   margin-bottom: 10px;
+  margin-right: 2.5em;
 }
 .m-synonym-text2 {
   color: #10677ca8;
@@ -428,7 +435,7 @@ td .btn {
 }
 
 .synset-selection-class {
-  margin-bottom: 3em;
+  margin-bottom: 2em;
   height: auto;
   display: block !important;
   margin-left: 0px !important;
@@ -436,11 +443,10 @@ td .btn {
 }
 
 .add-syn-selection-class {
-  margin-bottom: 30px;
-  height: 130px;
   display: block !important;
   margin-left: 0px !important;
   margin-right: 0px !important;
+  margin-bottom: 20px;
 }
 
 .button-select-synset {
@@ -449,20 +455,10 @@ td .btn {
   width: 50%;
 }
 
-.button-add-syn {
+.button-syn {
   margin-top: 10px;
   margin-bottom: 8px;
   width: 100%;
-}
-
-.button-rem-syn {
-  margin-top: 10px;
-  margin-bottom: 8px;
-  width: 100%;
-}
-
-.main-vocabulary-body {
-  max-height: 340px;
 }
 
 .conceptList:hover {
@@ -507,7 +503,8 @@ td .btn {
 }
 
 .tab-body {
-  height: auto;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .tab-body-1, .tab-body-2, .tab-body-3 {
@@ -515,10 +512,7 @@ td .btn {
 }
 
 .tab-body-2, .tab-body-3 {
-  padding-top: 30px;
-  padding-left: 40px;
-  padding-right: 40px;
-  padding-bottom: 30px;
+  padding: 0 8%;
 }
 
 .tab-error {
@@ -538,15 +532,19 @@ td .btn {
 
 .custom-modal {
   width: 20vw;
-  height: 50vh;
-  position: relative;
   max-width: 800px;
   min-width: 500px;
-  min-height: 550px;
+  max-height: 700px;
+}
+
+.modal-footer{
+  position: relative;
+  bottom: 0;
+  width: 100%;
 }
 
 .rectangle-container {
-  position: absolute;
+  position: relative;
   top: 0px;  /* Adjust this as needed */
   left: 50%;
   transform: translateX(-50%); /* Center horizontally */

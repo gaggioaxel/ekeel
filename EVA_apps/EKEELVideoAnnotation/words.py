@@ -131,6 +131,21 @@ class SemanticText():
     def get_embeddings(self):
         self.tokenize()
         return NLPSingleton().encode_text(self._tokenized_text)
+    
+    def get_semantic_structure_info(self):
+        doc = NLPSingleton().lemmatize(self._text, self._language)
+        term_infos = {"text": self._text, "lemmatization_data": {"tokens": []}}
+        for i, token in enumerate(doc):
+            term_word = {"word": token.text,
+                         "gen": token.morph.get("Gender")[0] if len(token.morph.get("Gender")) else "",
+                         "num": token.morph.get("Number")[0] if len(token.morph.get("Number")) else "",
+                         "lemma": token.lemma_
+                        }
+            term_infos["lemmatization_data"]["tokens"].append(term_word)
+            if token.dep_ == "ROOT":
+                term_infos["lemmatization_data"]["head_indx"] = i
+        NLPSingleton().destroy()
+        return term_infos
 
 
 def transcript_to_string(timed_transcript:'list[dict]'):
