@@ -422,7 +422,7 @@ function addConcept(){
       return
     }
     term.text = conceptLemma
-    for (concept of $concepts)
+    for (let concept of $concepts)
       if(concept.text == conceptLemma) {
         document.getElementById("errorConcept").innerText ="the concept is already present !"
         showMsg("errorConcept", "orange")

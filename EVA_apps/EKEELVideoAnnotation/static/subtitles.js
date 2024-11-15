@@ -270,9 +270,28 @@ function addSubtitles(){
   
   // Add event listener for click to prevent time change on concept click
   attachUpdateTimeListenerOnTranscript()
-  for(let concept of $concepts)
-    // Highlighting words
-    selectConcept(concept)
+  for(let i in $concepts) {
+    // backward compatibility
+    if (typeof($concepts[i])=="string"){
+      let js_data = {
+        "lang": $language,
+        "concept": $concepts[i]
+      }
+    
+      $.ajax({
+          url: '/annotator/lemmatize_term',
+          type : 'post',
+          contentType: 'application/json',
+          dataType : 'json',
+          data : JSON.stringify(js_data)
+      }).done(function(term) {
+        $concepts[i] = term
+        selectConcept($concepts[i])
+      })
+    } else
+      // Highlighting words
+      selectConcept($concepts[i])
+  }
   
   attachClickListenerOnConcepts()
 }

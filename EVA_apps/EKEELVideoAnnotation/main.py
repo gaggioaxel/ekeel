@@ -288,9 +288,9 @@ def video_selection():
         # This shouldn't happen but in case of different versions of annotations is kept for compatibility
         for rel in relations:
             if rel["prerequisite"] not in lemmatized_concepts:
-                lemmatized_concepts.append(rel["prerequisite"])
+                lemmatized_concepts.append(SemanticText(rel["prerequisite"],language).get_semantic_structure_info())
             if rel["target"] not in lemmatized_concepts:
-                lemmatized_concepts.append(rel["target"])
+                lemmatized_concepts.append(SemanticText(rel["target"],language).get_semantic_structure_info())
         
         NLPSingleton().destroy()  
                 

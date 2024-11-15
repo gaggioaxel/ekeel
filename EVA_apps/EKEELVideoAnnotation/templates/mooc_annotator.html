@@ -532,10 +532,8 @@
 
       let $captions = {{ result|tojson }};
       let $startTimes = {{ start_times|tojson }};
-      console.log($startTimes)
       let $imagesPath = {{ images_path|tojson }};
       let $concepts = {{ concepts|tojson }};
-      $concepts.sort()
       let $conceptVocabulary = {{ conceptVocabulary|tojson }};
       let $synonymList = [];
       let $lemmatizedSubs = {{ lemmatized_subtitles|tojson }};
