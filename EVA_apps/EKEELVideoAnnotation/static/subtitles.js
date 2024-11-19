@@ -103,22 +103,32 @@ function showRelationDiv(){
 
     let higlightConcept = function (selectedConcept) { 
       clickedElement.classList.add("selected-concept-text")
+      let counter = 1
+      let num_words = selectedConcept.split(" ")
+      if (counter == num_words)
+        return
       let parent = $(clickedElement).parent()
       let nextSentenceConcepts = parent.nextAll().slice(0,1).find(".concept")
       let prevSentenceConcepts = parent.prevAll().slice(0,1).find(".concept")
       let elems = $(parent.find(".concept")
                           .get()
                           .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") ))
-      elems.get().forEach( elem => elem.classList.add("selected-concept-text") );
+      for(let elem of elems.get())
+        elem.classList.add("selected-concept-text");
+        counter++
+        if(counter == num_words)
+          return
       if(elems.length){
         if(!$(elems.get()[0]).prevAll().find("span").length && prevSentenceConcepts.length)
           prevSentenceConcepts.get()
                               .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") )
-                              .forEach( elem => elem.classList.add("selected-concept-text") )
+                              .forEach(elem => { if(counter < num_words) { elem.classList.add("selected-concept-text"); counter++ } })
+        if(counter == num_words)
+          return
         if(!$(elems.get()[elems.length-1]).nextAll().find("span").length && nextSentenceConcepts.length)
           nextSentenceConcepts.get()
                               .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") )
-                              .forEach( elem => elem.classList.add("selected-concept-text") )
+                              .forEach(elem => { if(counter < num_words) { elem.classList.add("selected-concept-text"); counter++ } })
       }
     }
 
