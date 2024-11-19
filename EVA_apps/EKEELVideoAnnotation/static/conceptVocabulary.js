@@ -309,30 +309,29 @@ $(document).on("click", ".concept-row", function (e) {
   conceptWords = conceptText.split(" ");
   obj = []
   occurrences = []
-  for(let occurrence of occurrences_text) {
-    if (occurrence.getAttribute("lemma") == conceptWords[conceptWords.length-1] || occurrence.innerText == conceptWords[conceptWords.length-1]){
-      obj.push(occurrence);
+  for(let i in occurrences_text) {
+    if(i % conceptWords.length == conceptWords.length-1) { 
+      obj.push(occurrences_text[i]);
       occurrences.push(obj);
       obj = []
     } else
-      obj.push(occurrence)
+      obj.push(occurrences_text[i])
   }
 
   let occurrences_syn = $("#transcript .selected-synonym-text");
   obj = [];
-  syns = syns.map(syn => syn.replaceAll(" ","_"));
+  let synsUndescored = syns.map(syn => syn.replaceAll(" ","_"));
 
-  for(let occurrence of occurrences_syn) {
-    for(let syn of syns){
-      if (occurrence.getAttribute("concept").includes(" " + syn + " ")) {
-        syn = syn.split("_")
-        if(syn[syn.length-1] == occurrence.getAttribute("lemma")){
-          obj.push(occurrence);
-          occurrences.push(obj);
-          obj = [];
-        } else
-          obj.push(occurrence);
-      }
+  for(let syn of synsUndescored){
+    synWords = syn.split("_")
+    let this_syn_occurrences = occurrences_syn.filter(`[concept~="${syn}"]`)
+    for(let i in this_syn_occurrences.get()) {
+      if(i % synWords.length == synWords.length-1) { 
+        obj.push(this_syn_occurrences[i]);
+        occurrences.push(obj);
+        obj = []
+      } else
+        obj.push(this_syn_occurrences[i])
     }
   }
 
@@ -423,12 +422,13 @@ function addConcept(){
     }
     term.text = conceptLemma
     for (let concept of $concepts)
-      if(concept.text == conceptLemma) {
+      if(concept == conceptLemma) {
         document.getElementById("errorConcept").innerText ="the concept is already present !"
         showMsg("errorConcept", "orange")
         return
       }
-    $concepts.push(term)
+    $conceptsStructured.push(term)
+    $concepts.push(conceptLemma)
     $conceptVocabulary[conceptLemma]=[];
     $concepts.sort()
     showVocabulary($conceptVocabulary)
@@ -463,7 +463,7 @@ function selectSynonymSet(showMessage){
   }
   document.getElementById("synonymSet").value = "";
   let lemma = wordOfSynonymSet;
-  if(!$concepts.some((concept) => concept.text == lemma )) {
+  if(!$concepts.some((concept) => concept == lemma )) {
     document.getElementById("printMessageSynonymSet").innerHTML ="the word is not a concept !"
     showMsg("printMessageSynonymSet", "red")
     $synonymList = [];
@@ -513,7 +513,7 @@ function addSynonym(){
   }
   let lemma = newSynonym;
   
-  if (!$concepts.some((concept) => concept.text == lemma)){ // not a concept
+  if (!$concepts.some((concept) => concept == lemma)){ // not a concept
       document.getElementById("printMessageSynonymAdd").innerText ="the word typed is not a concept !"
       showMsg("printMessageSynonymAdd", "red")
       return
@@ -566,7 +566,7 @@ function removeSynonym(){
   }
 
   let lemma = synonymToRemove;
-  if (!$concepts.some((concept) => concept.text == lemma)){ // not a concept
+  if (!$concepts.some((concept) => concept == lemma)){ // not a concept
     document.getElementById("printMessageSynonymAdd").innerText ="the word typed is not a concept !"
     showMsg("printMessageSynonymAdd", "red")
     return
@@ -613,7 +613,7 @@ function removeConcept(button, concept){
   showVocabulary($conceptVocabulary)
 
   let conceptIndx = -1
-  $($concepts).each((indx,conc) => { if(conc.text == concept) conceptIndx = indx; })
+  $($concepts).each((indx,conc) => { if(conc == concept) conceptIndx = indx; })
   if (conceptIndx > -1) $concepts.splice(conceptIndx,1)
 
   // remove the concept from the concept field and unset the concept class if the field is empty
@@ -805,7 +805,17 @@ function selectConcept(concept) {
                         .sort((a, b) => b[1] - a[1]) // Sort by count (second element in each entry)
                         .map(([key]) => key);
     
-    let conceptLemma = occurrences.includes(firstTerm.lemma) ? firstTerm.lemma : occurrences[0];
+    let conceptLemma = occurrences[0]
+    if (elements.get().some(elem => elem.innerText == firstTerm.lemma))
+      conceptLemma = firstTerm.lemma
+    // else try selecting
+    else
+      for(element of elements)
+        if(element.getAttribute("num")=="s") {
+          conceptLemma = element.innerText
+          if(element.getAttribute("gen")=="m")
+            break
+        }
 
     elements.each((_,conceptElem) => {
       let currentConcept = conceptElem.getAttribute("concept") || " "; // Get existing concept or a space string
@@ -821,9 +831,19 @@ function selectConcept(concept) {
     
   let occurrences = [];
   let allSpansPerConcept = []
+
+  // Take the head term
+  let head_indx = concept.lemmatization_data.head_indx
+  let head_lemma = concept.lemmatization_data.tokens[head_indx].lemma
+  let conceptLemma = null
+  
+
   elements.each(function () {
 
+    let foundSingularTerm = false
     let allSpan = [this]
+    if (head_indx == 0 && this.getAttribute("num") == "s")
+      foundSingularTerm = true
     let currentSpan = this
     let isConcept = true
     let num_words_tol = 6 // number of words of tolerance to skip when looking for a concept 
@@ -836,7 +856,7 @@ function selectConcept(concept) {
 
       if(nextSpan[0] !== undefined){
 
-        nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text()]
+        nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text(), $(nextSpan[0]).attr("num")]
         //nextWord = nextSpan[0].attributes[0].nodeValue
         currentSpan = nextSpan[0]
 
@@ -850,19 +870,40 @@ function selectConcept(concept) {
           if(nextRow !== undefined){
               currentSpan = nextRow.find("span")[0]
               if(currentSpan !== undefined)
-                nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text()]  
-                //nextWord = currentSpan.attributes[0].nodeValue
+                nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text(), $(currentSpan).attr("num")]
           }
       }
-      if (nextWord.includes(words[j].word) || nextWord.includes(words[j].lemma)) {
+      if (nextWord[0] == words[j].word || 
+          nextWord[1] == words[j].word || 
+          nextWord[0] == words[j].lemma||
+          nextWord[1] == words[j].lemma ) {
         allSpan.push(currentSpan)
         num_words_tol = 6
+        
+        // head word is num singular
+        if(j == head_indx && nextWord[2] == "s")
+          foundSingularTerm = true
+
+      // multiword has been split in the concept but merged in the transcript
+      } else if(nextWord[1].includes(words[j].word)){
+        for(jj=j; jj < words.length; jj++){
+          if(nextWord[1].endsWith(words[jj].word)){
+            j = jj
+            allSpan.push(currentSpan)
+            break
+          } else if(!nextWord[1].includes(words[jj].word)){
+            isConcept = false
+            break
+          }
+        }
+        if(!isConcept)
+          break
+
       } else if(num_words_tol > 0) {
-        // if a word is part of the concept but not the right one, this is not the same concept
-        //if (words.includes(nextWord[0]) || words.includes(nextWord[1])) {
-        //  isConcept = false
-        //  break
-        //}
+        if(words[0].word == nextWord[0] || words[0].word == nextWord[1]){
+          isConcept = false
+          break
+        }
         num_words_tol--;
         j--;
       } else {
@@ -876,27 +917,34 @@ function selectConcept(concept) {
       //  allSpan[i].classList.replace("concept","sub-concept");
       
       //$(allSpan).each((_,span) => span.classList.add("concept"))
-      occurrence = ""
+      let occurrence = ""
       $(allSpan).each((_, span) => {
         occurrence += span.innerText + " "
       });
+      if(foundSingularTerm)
+        conceptLemma = occurrence.trim()
       occurrences[occurrence.trim()] = (occurrences[occurrence.trim()] || 0) + 1;
       allSpansPerConcept.push(allSpan);
     }
   })
-  occurrences = Object.entries(occurrences)
-                      .sort((a, b) => b[1] - a[1]) // Sort by count (second element in each entry)
-                      .map(([key]) => key);
 
-  // Take the head term
-  let head_lemma = concept.lemmatization_data.tokens[concept.lemmatization_data.head_indx].lemma
-  let conceptLemma = occurrences[0] || "";
-  for(occurrence of occurrences)
-    if(occurrence.includes(head_lemma))
-      conceptLemma = occurrence
+  // if not found concept lemma as an occurrence with singular head term
+  if(!conceptLemma) {
+    occurrences = Object.entries(occurrences)
+                        .sort((a, b) => b[1] - a[1]) // Sort by count (second element in each entry)
+                        .map(([key]) => key);
+
+    conceptLemma = occurrences[0] || "";
+    if (!conceptLemma.length) return
+
+    for(let occurrence of occurrences)
+      if(occurrence.includes(head_lemma))
+        conceptLemma = occurrence
+  }
+
   let conceptLemmaUnderscored = conceptLemma.replaceAll(" ","_")
-  $(allSpansPerConcept).each((_,allSpan) => {
-    $(allSpan).each((_,currSpan) => {
+  allSpansPerConcept.forEach( allSpan => {
+    allSpan.forEach( currSpan => {
       currSpan.classList.add("concept");
       let currentConcept = currSpan.getAttribute("concept") || " "; // Get existing concept or empty string
       if (!currentConcept.includes(" " + conceptLemmaUnderscored + " "))

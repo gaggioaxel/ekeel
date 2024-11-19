@@ -101,11 +101,30 @@ function showRelationDiv(){
     let selectedConcept = targetConcepts[0]
     let clickedElement = this
 
+    let higlightConcept = function (selectedConcept) { 
+      clickedElement.classList.add("selected-concept-text")
+      let parent = $(clickedElement).parent()
+      let nextSentenceConcepts = parent.nextAll().slice(0,1).find(".concept")
+      let prevSentenceConcepts = parent.prevAll().slice(0,1).find(".concept")
+      let elems = $(parent.find(".concept")
+                          .get()
+                          .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") ))
+      elems.get().forEach( elem => elem.classList.add("selected-concept-text") );
+      if(elems.length){
+        if(!$(elems.get()[0]).prevAll().find("span").length && prevSentenceConcepts.length)
+          prevSentenceConcepts.get()
+                              .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") )
+                              .forEach( elem => elem.classList.add("selected-concept-text") )
+        if(!$(elems.get()[elems.length-1]).nextAll().find("span").length && nextSentenceConcepts.length)
+          nextSentenceConcepts.get()
+                              .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") )
+                              .forEach( elem => elem.classList.add("selected-concept-text") )
+      }
+    }
+
     if(targetConcepts.length == 1) {
-      this.classList.add("selected-concept-text")
-      $(this).siblings(".concept").get()
-                                  .filter( elem => $(elem).attr("concept").includes(" "+selectedConcept.replaceAll(" ","_")+" ") )
-                                  .forEach( elem => elem.classList.add("selected-concept-text") );
+      higlightConcept(selectedConcept)
+      
       targetSelector.attr("sent_id", $(".selected-concept-text").get()[0].getAttribute("sent_id"))
                     .attr("word_id", $(".selected-concept-text").get()[0].getAttribute("word_id"))
                     .removeAttr("readonly")
@@ -131,20 +150,10 @@ function showRelationDiv(){
         $(this).removeClass("focused")
                .addClass("filled");
 
-        let selectedConceptUnderscore = selectedConcept.replaceAll(" ", "_");
-        // TODO currently takes only siblings (same row words and not other rows for performances but may break some annotations)
-        let nearElements = $(clickedElement).addClass("selected-concept-text")
-                                  .siblings(".concept")
-                                  .filter(function() {
-                                      return $(this).attr("concept").includes(" "+selectedConceptUnderscore+" ");
-                                  });
-        for(let words_counter in selectedConcept.split(" ").slice(1))
-          $(nearElements[words_counter]).addClass("selected-concept-text");
-        nearElements.filter(function() { $(this).hasClass("selected-concept-text") })
-        targetSelector.attr("sent_id", nearElements.get().length 
-                              ? nearElements.get()[0].getAttribute("sent_id") : clickedElement.getAttribute("sent_id"))
-                      .attr("word_id", nearElements.get().length 
-                              ? nearElements.get()[0].getAttribute("word_id") : clickedElement.getAttribute("word_id"))
+        higlightConcept(selectedConcept)
+
+        targetSelector.attr("sent_id", $(".selected-concept-text").get()[0].getAttribute("sent_id"))
+                      .attr("word_id", $(".selected-concept-text").get()[0].getAttribute("word_id"))
       });      
     }
   });
@@ -271,26 +280,8 @@ function addSubtitles(){
   // Add event listener for click to prevent time change on concept click
   attachUpdateTimeListenerOnTranscript()
   for(let i in $concepts) {
-    // backward compatibility
-    if (typeof($concepts[i])=="string"){
-      let js_data = {
-        "lang": $language,
-        "concept": $concepts[i]
-      }
-    
-      $.ajax({
-          url: '/annotator/lemmatize_term',
-          type : 'post',
-          contentType: 'application/json',
-          dataType : 'json',
-          data : JSON.stringify(js_data)
-      }).done(function(term) {
-        $concepts[i] = term
-        selectConcept($concepts[i])
-      })
-    } else
-      // Highlighting words
-      selectConcept($concepts[i])
+    $concepts[i] = selectConcept($conceptsStructured[i])
+    $conceptsStructured[i].text = $concepts[i]
   }
   
   attachClickListenerOnConcepts()

@@ -49,10 +49,10 @@ function addRelation(replaceIndx){
     if ((prereq === "") || (target === "")) {
       alert("Concepts must be non-empty!");
       return false;
-    }else if (!$concepts.some((concept) => concept.text == prereq)) {
+    }else if (!$concepts.some((concept) => concept == prereq)) {
       alert(prereq + " is not a concept");
       return false;
-    }else if (!$concepts.some((concept) => concept.text == target)) {
+    }else if (!$concepts.some((concept) => concept == target)) {
       alert(target + " is not a concept");
       return false;
     }else if (checkCycle(prereq, target)){
@@ -75,15 +75,15 @@ function addRelation(replaceIndx){
     let curr_time = targetBox ? 
                         player.currentTime() : 
                         parseFloat($("#transcript").find(`[sent_id=${sentID}][word_id=${wordID}]`).attr("start_time"));
-    
-    for (rel of relations)
-        if (rel.prerequisite == prereq &&
-          rel.target == target && 
-          rel.sent_id == sentID &&
-          rel.word_id == wordID ) {
-            alert("This relation already exists");
-            return false;
-        }
+    if(replaceIndx == undefined)
+        for (rel of relations)
+            if (rel.prerequisite == prereq &&
+              rel.target == target && 
+              rel.sent_id == sentID &&
+              rel.word_id == wordID ) {
+                alert("This relation already exists");
+                return false;
+            }
 
     let xywh="None"
 

@@ -189,7 +189,7 @@ function addDescription(){
         alert("Concept cannot be empty")
         return
     }
-    if (!$concepts.some((other_concept) => other_concept.text == concept)) {
+    if (!$concepts.some((other_concept) => other_concept == concept)) {
         let conceptSplit = concept.split(" ")
         let filteredElements = $('.transcript-in-description').find('[lemma]:contains("'+conceptSplit[0]+'")')
         for(wordIndx in conceptSplit) {

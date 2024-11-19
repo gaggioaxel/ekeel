@@ -225,7 +225,7 @@
           <input type="text" id="descriptionRangeInput" readonly style="border:0; color:dodgerblue; font-weight:bold;">
         </div>-->
 
-        <button id="insertRelationButton" onclick="addRelation(null);" class="btn btn-primary">Add Relation</button>
+        <button id="insertRelationButton" onclick="addRelation()" class="btn btn-primary">Add Relation</button>
       </div>
       
 
@@ -533,7 +533,8 @@
       let $captions = {{ result|tojson }};
       let $startTimes = {{ start_times|tojson }};
       let $imagesPath = {{ images_path|tojson }};
-      let $concepts = {{ concepts|tojson }};
+      let $conceptsStructured = {{ concepts|tojson }};
+      let $concepts = $conceptsStructured.map(conc => conc.text)
       let $conceptVocabulary = {{ conceptVocabulary|tojson }};
       let $synonymList = [];
       let $lemmatizedSubs = {{ lemmatized_subtitles|tojson }};
