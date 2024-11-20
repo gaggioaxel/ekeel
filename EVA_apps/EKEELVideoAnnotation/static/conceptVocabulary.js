@@ -270,7 +270,6 @@ function closeVocabularyDiv(){
   setConceptSelectionElements("--")
 }
 
-let lastConceptSelected = undefined
 
 $(document).on("click", ".concept-row", function (e) {
 
@@ -801,7 +800,8 @@ function selectConcept(concept) {
     return  capitalize(this_text) == capitalize(firstTerm.word) ||
             capitalize(this_text) == capitalize(firstTerm.lemma) || 
             capitalize(this_lemma) == capitalize(firstTerm.word) || 
-            capitalize(this_lemma) == capitalize(firstTerm.lemma);
+            capitalize(this_lemma) == capitalize(firstTerm.lemma) ||
+            capitalize(this_text) == capitalize(concept.text.split(" ")[0]);
   })
   if(!elements.length)
     return null
@@ -859,11 +859,19 @@ function selectConcept(concept) {
     let isConcept = true
     let num_words_tol = 8 // number of words of tolerance to skip when looking for a concept 
     // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
+    
+    let nextWord = [$(this).attr("lemma"), $(this).text()]
+    let j = 0
+    if(!nextWord.some(word => word == words[0].word || word == words[0].lemma)) // partial match
+      for(let jj=j; jj < words.length; jj++)
+        if(nextWord[1].endsWith(words[jj].word))
+          j = jj
+          
 
-    for(let j=1; j<words.length; j++){
+    for( j++; j<words.length; j++){
 
       let nextSpan =  $(currentSpan).nextAll('span:first')
-      let nextWord = []
+      nextWord = []
 
       if(nextSpan[0] !== undefined){
 
