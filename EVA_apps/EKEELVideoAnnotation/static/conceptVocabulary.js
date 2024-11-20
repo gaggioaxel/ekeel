@@ -270,6 +270,8 @@ function closeVocabularyDiv(){
   setConceptSelectionElements("--")
 }
 
+let lastConceptSelected = undefined
+
 $(document).on("click", ".concept-row", function (e) {
 
   // ignore clicks on the trash
@@ -278,19 +280,19 @@ $(document).on("click", ".concept-row", function (e) {
 
   let conceptElements = $(document.getElementsByClassName("concept"));
 
-  conceptElements.each(function() { this.classList = ["concept"]})
+  conceptElements.filter(".selected-concept-text, .selected-synonym-text").each(function() { this.classList = ["concept"]})
 
   var target = e.currentTarget;
   let conceptText = target.innerText.split(":")[0]
   let selectedConcept = conceptText.replaceAll(" ","_")
 
-  document.getElementById("transcript-selected-concept").innerHTML = conceptText;
+  document.getElementById("transcript-selected-concept").innerText = conceptText;
 
   
   let syns = $conceptVocabulary[conceptText] || [];
   let synsText = syns.join(", ");
 
-  document.getElementById("transcript-selected-concept-synonym").innerHTML = synsText;
+  document.getElementById("transcript-selected-concept-synonym").innerText = synsText;
 
   conceptElements.each(function() { 
     let concepts = this.getAttribute("concept")
@@ -346,7 +348,14 @@ $(document).on("click", ".concept-row", function (e) {
       focusIndex = parseInt(i)
     $(occurrences[i][0]).attr("onfocus",false)
   }
+  if(focusIndex+1 == occurrences.length) {
+    document.getElementById("transcript-selected-concept").innerText = "--";
+    document.getElementById("transcript-selected-concept-synonym").innerText = "--"
+    conceptElements.filter(".selected-concept-text, .selected-synonym-text").each(function() { this.classList = ["concept"]})
+    return
+  }
   $(occurrences[(focusIndex+1) % occurrences.length][0]).attr("onfocus",true)
+  
       
   // Scroll the second nearest element into view
   let scrollToElem = occurrences[(focusIndex+1) % occurrences.length][0]

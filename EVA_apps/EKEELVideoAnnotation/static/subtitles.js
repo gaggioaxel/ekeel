@@ -245,8 +245,8 @@ function attachClickListenerOnConcepts(){
 
     let conceptElements = document.getElementsByClassName("concept");
   
-    // removes the fields for the elements
-    $(conceptElements).each( function(){
+    // unselect previous elements
+    $(conceptElements).filter(".selected-concept-text, .selected-synonym-text").each( function(){
       $(this).removeClass("selected-concept-text").removeClass("selected-synonym-text")
     })
   
