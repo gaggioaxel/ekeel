@@ -422,6 +422,7 @@ function playExplanation(button, start, end) {
     if (currentTime >= timeToSeconds(end) || currentTime < timeToSeconds(start)) {
       player.pause();
       player.currentTime(prevTime);
+      player.controls(true);
       $(".play-definition.active").removeClass("active");
       $(".highlighted-text").removeClass("highlighted-text");
       player.off("timeupdate")
