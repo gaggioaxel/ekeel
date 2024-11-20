@@ -269,8 +269,9 @@ def video_selection():
         if conceptVocabulary is not None:
             conceptVocabulary = {key:value for key,value in conceptVocabulary.items()}
             lemmatized_concepts = []
+            sem_text = SemanticText("",language)
             for concept in conceptVocabulary:
-                lemmatized_concepts.append(SemanticText(concept,language).get_semantic_structure_info())
+                lemmatized_concepts.append(sem_text.set_text(concept).get_semantic_structure_info())
         
         # If the concept vocabulary is new (empty) in DB then initialize it from the terms extracted
         if conceptVocabulary is None :

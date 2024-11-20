@@ -89,6 +89,7 @@ class SemanticText():
         self._text = text
         self._tokenized_text = None
         self._language = language
+        self._nlp = NLPSingleton()
 
     def set_text(self,text:str,language:str=None):
         '''
@@ -119,7 +120,7 @@ class SemanticText():
 
     def lemmatize(self):
         assert self._text is not None
-        tokens = NLPSingleton().lemmatize(self._text, self._language)
+        tokens = self._nlp.lemmatize(self._text, self._language)
         #print("'",tokens,"'")
         return [token.lemma_ for token in tokens]
 
@@ -133,7 +134,7 @@ class SemanticText():
         return NLPSingleton().encode_text(self._tokenized_text)
     
     def get_semantic_structure_info(self):
-        doc = NLPSingleton().lemmatize(self._text, self._language)
+        doc = self._nlp.lemmatize(self._text, self._language)
         term_infos = {"text": self._text, "lemmatization_data": {"tokens": []}}
         for i, token in enumerate(doc):
             term_word = {"word": token.text,
@@ -144,7 +145,6 @@ class SemanticText():
             term_infos["lemmatization_data"]["tokens"].append(term_word)
             if token.dep_ == "ROOT":
                 term_infos["lemmatization_data"]["head_indx"] = i
-        NLPSingleton().destroy()
         return term_infos
 
 
