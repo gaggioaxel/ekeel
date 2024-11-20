@@ -70,12 +70,14 @@ function showDescriptionDiv(reset_fields){
         if (selection.rangeCount == 0)
           return
         
-        if(selection.getRangeAt(0).commonAncestorContainer.id != "transcript") {
+        let start_range = selection.getRangeAt(0) 
+        if(start_range.commonAncestorContainer.id != "transcript" &&
+         !start_range.commonAncestorContainer.classList.contains("sentence-marker")) {
           selection.removeAllRanges()
           return
         }
       
-        var start_time = $(selection.getRangeAt(0).startContainer).closest("[start_time]").attr("start_time")
+        var start_time = $(start_range.startContainer).closest("[start_time]").attr("start_time")
         
         if (!start_time) return
       
