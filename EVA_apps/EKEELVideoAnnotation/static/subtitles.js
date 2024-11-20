@@ -191,6 +191,7 @@ function closeRelationDiv(){
   targetSelector.get()[0].classList = ["form-control"]
 
   targetSelector.val("")
+                .attr("readonly",true)
                 .find("option:not([value=''])")
                 .remove();
   targetSelector.find("option[value='']")
