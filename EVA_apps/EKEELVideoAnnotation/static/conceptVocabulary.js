@@ -848,7 +848,7 @@ function selectConcept(concept) {
       foundSingularTerm = true
     let currentSpan = this
     let isConcept = true
-    let num_words_tol = 6 // number of words of tolerance to skip when looking for a concept 
+    let num_words_tol = 8 // number of words of tolerance to skip when looking for a concept 
     // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
 
     for(let j=1; j<words.length; j++){
@@ -875,12 +875,15 @@ function selectConcept(concept) {
                 nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text(), $(currentSpan).attr("num")]
           }
       }
-      if (nextWord[0] == words[j].word || 
+      if (!nextWord.length){
+        isConcept = false
+        break
+      } else if (nextWord[0] == words[j].word || 
           nextWord[1] == words[j].word || 
           nextWord[0] == words[j].lemma||
           nextWord[1] == words[j].lemma ) {
         allSpan.push(currentSpan)
-        num_words_tol = 6
+        num_words_tol = 8
         
         // head word is num singular
         if(j == head_indx && nextWord[2] == "s")
@@ -905,8 +908,8 @@ function selectConcept(concept) {
         if(words[0].word == nextWord[0] || words[0].word == nextWord[1]){
           isConcept = false
           break
-        }
-        num_words_tol--;
+        } else if(![",",".","?","!"].includes(nextWord[1])) // punctuation doesn't count in words count tol
+          num_words_tol--;
         j--;
       } else {
         isConcept = false
@@ -915,10 +918,6 @@ function selectConcept(concept) {
     }
 
     if(isConcept){
-      //for (let i in allSpan)
-      //  allSpan[i].classList.replace("concept","sub-concept");
-      
-      //$(allSpan).each((_,span) => span.classList.add("concept"))
       let occurrence = ""
       $(allSpan).each((_, span) => {
         occurrence += span.innerText + " "

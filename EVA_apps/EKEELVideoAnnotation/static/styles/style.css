@@ -201,14 +201,20 @@ input[type=submit] {
   color: #fff;
 }
 .autocomplete-items {
-  position: absolute;
+  position: relative;
+  width: 100%;
+  width: -moz-available;          /* For Mozzila */
+  width: -webkit-fill-available;  /* For Chrome */
+  width: stretch;                 /* Unprefixed */
+  max-height: 10vh;
+  overflow-y: scroll;
   border: 1px solid #d4d4d4;
   border-bottom: none;
   border-top: none;
   z-index: 99;
 }
 
-.autocomplete-items-custom1 {
+.autocomplete-list-scrolling {
   position: relative;
   border: 1px solid #d4d4d4;
   z-index: 99;

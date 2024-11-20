@@ -169,98 +169,179 @@ async function showMsg(id, color, timer) {
 
 
 /* highlight a concept in a div with id div_id */
-function selectConcept(conceptWords, firstWordLemma) {
+function selectConcept(concept) {
   
-  let words = conceptWords.split(" ")
-  let firstWord = words[0]
-  let conceptOccurencesText = [];
+  let words = concept.lemmatization_data.tokens
+  let firstTerm = words[0]
+  
   let elements = $("#transcript span[lemma]").filter(function() {
     let this_query = $(this)
-    return this_query.text() == firstWord || this_query.text() == firstWordLemma || this_query.attr("lemma") == firstWord || this_query.attr("lemma") == firstWordLemma;
+    let this_text = this_query.text()
+    let this_lemma = this_query.attr("lemma")
+    return  capitalize(this_text) == capitalize(firstTerm.word) ||
+            capitalize(this_text) == capitalize(firstTerm.lemma) || 
+            capitalize(this_lemma) == capitalize(firstTerm.word) || 
+            capitalize(this_lemma) == capitalize(firstTerm.lemma);
   })
+  if(!elements.length)
+    return null
+  // It must be the head
   if(words.length == 1) {
-    elements.each((_,conceptElem) => {
-          let currentConcept = conceptElem.getAttribute("concept") || " "; // Get existing concept or a space string
-          if (!currentConcept.includes(" " + words[0]+" ")) {
-            currentConcept = currentConcept + words[0] + " ";
-            conceptElem.setAttribute("concept", currentConcept); // Update concept attribute
-          }
-          conceptElem.classList.add("concept");
-          conceptOccurencesText.push(conceptElem.innerText)
-        });
-  } else {
-
-    elements.each(function () {
-
-      let allSpan = [this]
-      let currentSpan = this
-      let isConcept = true
-      let num_words_tol = 6 // number of words of tolerance to skip when looking for a concept 
-      // constrain: terms must have concordance on genre and number
-      // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
-
-      for(let j=1; j<words.length; j++){
-
-        let nextSpan =  $(currentSpan).nextAll('span:first')
-        let nextWord = []
-
-        if(nextSpan[0] !== undefined){
-
-          nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text()]
-          //nextWord = nextSpan[0].attributes[0].nodeValue
-          currentSpan = nextSpan[0]
-
-        }else{
-
-          //controllo che le altre parole non siano nella riga successiva
-          //prendo riga successiva
-          let nextRow =  $(currentSpan).parent().nextAll('p:first')
-          
-          //prendo la prima parola
-            if(nextRow !== undefined){
-                currentSpan = nextRow.find("span")[0]
-                if(currentSpan !== undefined)
-                  nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text()]  
-                  //nextWord = currentSpan.attributes[0].nodeValue
-            }
+    let occurrences = {};
+    elements.each(function() {
+      let textContent = $(this).text();
+      occurrences[textContent] = (occurrences[textContent] || 0) + 1;
+    });
+    occurrences = Object.entries(occurrences)
+                        .sort((a, b) => b[1] - a[1]) // Sort by count (second element in each entry)
+                        .map(([key]) => key);
+    
+    let conceptLemma = occurrences[0]
+    if (elements.get().some(elem => elem.innerText == firstTerm.lemma))
+      conceptLemma = firstTerm.lemma
+    // else try selecting
+    else
+      for(element of elements)
+        if(element.getAttribute("num")=="s") {
+          conceptLemma = element.innerText
+          if(element.getAttribute("gen")=="m")
+            break
         }
-        if (nextWord.includes(words[j])) {
-          allSpan.push(currentSpan)
-          num_words_tol = 6
-        } else if(num_words_tol > 0) {
-          // if a word is part of the concept but not the right one, this is not the same concept
-          if (words.includes(nextWord[0]) || words.includes(nextWord[1])) {
+
+    elements.each((_,conceptElem) => {
+      let currentConcept = conceptElem.getAttribute("concept") || " "; // Get existing concept or a space string
+      if (!currentConcept.includes(" " + conceptLemma +" ")) {
+        currentConcept = currentConcept + conceptLemma + " ";
+        conceptElem.setAttribute("concept", currentConcept); // Update concept attribute
+      }
+      conceptElem.classList.add("concept");
+    });
+    return conceptLemma
+
+  } 
+    
+  let occurrences = [];
+  let allSpansPerConcept = []
+
+  // Take the head term
+  let head_indx = concept.lemmatization_data.head_indx
+  let head_lemma = concept.lemmatization_data.tokens[head_indx].lemma
+  let conceptLemma = null
+  
+
+  elements.each(function () {
+
+    let foundSingularTerm = false
+    let allSpan = [this]
+    if (head_indx == 0 && this.getAttribute("num") == "s")
+      foundSingularTerm = true
+    let currentSpan = this
+    let isConcept = true
+    let num_words_tol = 8 // number of words of tolerance to skip when looking for a concept 
+    // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
+
+    for(let j=1; j<words.length; j++){
+
+      let nextSpan =  $(currentSpan).nextAll('span:first')
+      let nextWord = []
+
+      if(nextSpan[0] !== undefined){
+
+        nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text(), $(nextSpan[0]).attr("num")]
+        //nextWord = nextSpan[0].attributes[0].nodeValue
+        currentSpan = nextSpan[0]
+
+      }else{
+
+        //controllo che le altre parole non siano nella riga successiva
+        //prendo riga successiva
+        let nextRow =  $(currentSpan).parent().nextAll('p:first')
+        
+        //prendo la prima parola
+          if(nextRow !== undefined){
+              currentSpan = nextRow.find("span")[0]
+              if(currentSpan !== undefined)
+                nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text(), $(currentSpan).attr("num")]
+          }
+      }
+      if (!nextWord.length){
+        isConcept = false
+        break
+      } else if (nextWord[0] == words[j].word || 
+          nextWord[1] == words[j].word || 
+          nextWord[0] == words[j].lemma||
+          nextWord[1] == words[j].lemma ) {
+        allSpan.push(currentSpan)
+        num_words_tol = 8
+        
+        // head word is num singular
+        if(j == head_indx && nextWord[2] == "s")
+          foundSingularTerm = true
+
+      // multiword has been split in the concept but merged in the transcript
+      } else if(nextWord[1].includes(words[j].word)){
+        for(jj=j; jj < words.length; jj++){
+          if(nextWord[1].endsWith(words[jj].word)){
+            j = jj
+            allSpan.push(currentSpan)
+            break
+          } else if(!nextWord[1].includes(words[jj].word)){
             isConcept = false
             break
           }
-          num_words_tol--;
-          j--;
-        } else {
+        }
+        if(!isConcept)
+          break
+
+      } else if(num_words_tol > 0) {
+        if(words[0].word == nextWord[0] || words[0].word == nextWord[1]){
           isConcept = false
           break
-        }
+        } else if(![",",".","?","!"].includes(nextWord[1])) // punctuation doesn't count in words count tol
+          num_words_tol--;
+        j--;
+      } else {
+        isConcept = false
+        break
       }
+    }
 
-      if(isConcept){
-        //for (let i in allSpan)
-        //  allSpan[i].classList.replace("concept","sub-concept");
-        
-        //$(allSpan).each((_,span) => span.classList.add("concept"))
-        occurrence = ""
-        $(allSpan).each((_, span) => {
-          let currentConcept = span.getAttribute("concept") || " "; // Get existing concept or empty string
-          if (!currentConcept.includes(" " + words.join("_") + " ")) {
-            let updatedConcept = currentConcept + words.join("_") + " "; // Append new words
-            span.setAttribute("concept", updatedConcept); // Update concept attribute
-          }
-          span.classList.add("concept");
-          occurrence += span.innerText + " "
-        });
-        conceptOccurencesText.push(occurrence.trim());
-      }
-    })
+    if(isConcept){
+      let occurrence = ""
+      $(allSpan).each((_, span) => {
+        occurrence += span.innerText + " "
+      });
+      if(foundSingularTerm)
+        conceptLemma = occurrence.trim()
+      occurrences[occurrence.trim()] = (occurrences[occurrence.trim()] || 0) + 1;
+      allSpansPerConcept.push(allSpan);
+    }
+  })
+
+  // if not found concept lemma as an occurrence with singular head term
+  if(!conceptLemma) {
+    occurrences = Object.entries(occurrences)
+                        .sort((a, b) => b[1] - a[1]) // Sort by count (second element in each entry)
+                        .map(([key]) => key);
+
+    conceptLemma = occurrences[0] || "";
+    if (!conceptLemma.length) return
+
+    for(let occurrence of occurrences)
+      if(occurrence.includes(head_lemma))
+        conceptLemma = occurrence
   }
-  return conceptOccurencesText;
+
+  let conceptLemmaUnderscored = conceptLemma.replaceAll(" ","_")
+  allSpansPerConcept.forEach( allSpan => {
+    allSpan.forEach( currSpan => {
+      currSpan.classList.add("concept");
+      let currentConcept = currSpan.getAttribute("concept") || " "; // Get existing concept or empty string
+      if (!currentConcept.includes(" " + conceptLemmaUnderscored + " "))
+        currSpan.setAttribute("concept", currentConcept + conceptLemmaUnderscored + " "); // Update concept attribute
+    })
+  })
+  return conceptLemma
 }
 
 

@@ -98,7 +98,30 @@ function autocomplete(inp, arr, classes) {
     if (currentFocus >= x.length) currentFocus = 0;
     if (currentFocus < 0) currentFocus = (x.length - 1);
 
-    x[currentFocus].scrollIntoView({ behavior: "smooth", inline: "center" });
+    let scrollParentOnlyIfScrollable = function (element) {
+      const parent = element.parentElement;
+      
+      if (parent && parent.scrollHeight > parent.clientHeight) {
+          // Get the parent's scrollable offset and the element's offset within the parent
+          const parentRect = parent.getBoundingClientRect();
+          const elementRect = element.getBoundingClientRect();
+  
+          // Calculate how much the parent needs to scroll to make the element visible
+          const offsetTop = elementRect.top - parentRect.top + parent.scrollTop;
+          const offsetBottom = elementRect.bottom - parentRect.bottom + parent.scrollTop;
+  
+          // Scroll the parent smoothly if the element is outside the visible area
+          if (elementRect.top < parentRect.top) {
+              parent.scrollTo({ top: offsetTop, behavior: "smooth" });
+          } else if (elementRect.bottom > parentRect.bottom) {
+              parent.scrollTo({ top: offsetBottom, behavior: "smooth" });
+          }
+      }
+    }
+  
+    // Example usage
+    scrollParentOnlyIfScrollable(x[currentFocus]);
+    //x[currentFocus].scrollIntoView({ behavior: "smooth", inline: "center" });
     /*add class "autocomplete-active":*/
     x[currentFocus].classList.add("autocomplete-active");
 
