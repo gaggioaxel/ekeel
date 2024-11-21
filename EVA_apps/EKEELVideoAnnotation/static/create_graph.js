@@ -411,7 +411,7 @@ function printRelations() {
             `<td><button `+
                 `class="icon-button trash " ` +
                 `style="font-size:20" `+ 
-                `onclick="deleteRelation(this,'${t}','${p}','${w}','${ti}')"`+
+                `onclick="deleteRelation(this,\`${t}\`,\`${p}\`,\`${w}\`,\`${ti}\`)"`+
                 `title="delete relation between the two concepts">` +
             `<i class="fa-solid fa-trash"></i></button></td></tr>`;
 
