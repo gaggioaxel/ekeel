@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <div class="container" id="videoSelectionTextContainer" style="margin-top: 10px">
+      <div class="container" id="videoSelectionTextContainer" style="margin-top: 10px; max-width:unset; width:60vw">
         <div class="row">
           <div class="col">
               <p class="title"> Video Annotation Selection  </p>
@@ -71,39 +71,47 @@
         <div id="videos" class="center_selection" style="margin-top: 2%;">
           <div class="creators-container">
             {% for creator, vids in videos|groupby('creator') %}
-              <div class="creator-group">
-                <h3 style="color: #343a40;">{{ creator }}</h3>
-                <hr>
-                {% for vid in vids|sort(attribute='title') %}
-                  <label class="video_radio" video="{{ vid.video_id }}">
-                    <input type="radio" name="video" value="{{ vid.video_id }}" id="{{ vid.video_id }}">
-                    <div class="btn-container">
-                      <button class="btn-expanding delete" title="Delete this video and all associated annotations" onclick="deleteVideo('{{ vid.video_id }}')">
-                        <span class="checkmark">&#9932;</span>
-                        <span class="label">Delete</span>
-                      </button>
-                    </div>
-                    <img src="https://img.youtube.com/vi/{{ vid.video_id }}/hqdefault.jpg" video="{{ vid.video_id }}">
-                    <div class="status-container">
-                      {% if vid.annotation_status == "Completed" %}
-                        <button class="btn-expanding status completed" disabled>
-                          <span class="checkmark">&#10004;</span>
-                          <span class="label">Annotated</span>
-                        </button>
-                      {% elif vid.annotation_status == "Progressing" %}
-                        <button class="btn-expanding status annotating" disabled>
-                          <i class="fa-solid fa-pen-to-square annotating"></i>
-                          <span class="label">Annotating</span>
-                        </button>
-                      {% else %}
-                        <!-- Placeholder to maintain alignment -->
-                        <span></span>
-                      {% endif %}
-                  </div>
-                    <p class="video_title" video="{{ vid.video_id }}">{{ vid.title }}</p>
-                  </label>
-                {% endfor %}
-              </div>
+            <div class="creator-group">
+              <h3 style="color: #343a40;">{{ creator }}</h3>
+              <hr>
+              {% for vid in vids|sort(attribute='title') %}
+              <label class="video_radio" video="{{ vid.video_id }}">
+                <input type="radio" name="video" value="{{ vid.video_id }}" id="{{ vid.video_id }}">
+                <div class="btn-container">
+                  {% if (vid.annotation_status == "Completed" or vid.annotation_status == "Progressing") %}
+                  <button class="btn-expanding erase left" title="remove your annotations on this video" onclick="deleteAnnotation('{{ vid.video_id }}')">
+                    <i class="fa-solid fa-eraser annotating"></i>
+                    <span class="label">Unannotate</span>
+                  </button>
+                  {% else %}
+                  <span class="spacer"></span>
+                  {% endif %}
+                  <button class="btn-expanding delete right" title="Delete this video and all associated annotations" onclick="deleteVideo('{{ vid.video_id }}')">
+                    <span class="checkmark">&#9932;</span>
+                    <span class="label">Delete</span>
+                  </button>
+                </div>
+                <img src="https://img.youtube.com/vi/{{ vid.video_id }}/hqdefault.jpg" video="{{ vid.video_id }}">
+                <div class="status-container">
+                  {% if vid.annotation_status == "Completed" %}
+                    <button class="btn-expanding status completed" disabled>
+                      <span class="checkmark">&#10004;</span>
+                      <span class="label">Annotated</span>
+                    </button>
+                  {% elif vid.annotation_status == "Progressing" %}
+                    <button class="btn-expanding status annotating" disabled>
+                      <i class="fa-solid fa-pen-to-square annotating"></i>
+                      <span class="label">Annotating</span>
+                    </button>
+                  {% else %}
+                    <!-- Placeholder to maintain alignment -->
+                    <span></span>
+                  {% endif %}
+                </div>
+                  <p class="video_title" video="{{ vid.video_id }}">{{ vid.title }}</p>
+              </label>
+              {% endfor %}
+            </div>
             {% endfor %}
           </div>
       

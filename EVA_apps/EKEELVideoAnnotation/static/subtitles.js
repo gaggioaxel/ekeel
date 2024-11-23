@@ -291,8 +291,12 @@ function addSubtitles(){
   // Add event listener for click to prevent time change on concept click
   attachUpdateTimeListenerOnTranscript()
   for(let i in $concepts) {
+    let concept_lemma_before = $conceptsStructured[i].text
     $concepts[i] = selectConcept($conceptsStructured[i])
     $conceptsStructured[i].text = $concepts[i]
+    let this_concept_vocabulary = $conceptVocabulary[concept_lemma_before]
+    delete $conceptVocabulary[concept_lemma_before]
+    $conceptVocabulary[$concepts[i]] = this_concept_vocabulary
   }
   
   attachClickListenerOnConcepts()

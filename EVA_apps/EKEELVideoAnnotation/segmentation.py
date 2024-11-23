@@ -336,7 +336,7 @@ class VideoAnalyzer:
         db_mongo.insert_video_data(self.data)
 
 
-    def transcript_segmentation_and_thumbnails(self, c_threshold=0.22, sec_min=35, S=1, frame_range=15, create_thumbnails=True):
+    def transcript_segmentation(self, c_threshold=0.22, sec_min=35, S=1, frame_range=15, create_thumbnails=True):
         """
         :param c_threshold: threshold per la similarità tra frasi
         :param sec_min: se un segmento è minore di sec_min verrà unito con il successivo
@@ -741,7 +741,7 @@ class VideoAnalyzer:
             raise Exception(f"Language is not between supported ones: {locale.get_supported_languages()}")
         return self.data['language'] if format =='pt1' else locale.get_full_from_pt1(self.data['language'])
 
-    def analyze_transcript(self, async_call:bool=False, _disable_term_extraction:bool=True):
+    def analyze_transcript(self, async_call:bool=False, _disable_term_extraction:bool=False):
 
         #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
         if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
@@ -823,23 +823,26 @@ class VideoAnalyzer:
         #
         #with open("transcript.json","w") as f:
         #    json.dump({"transcript": self.data["transcript_data"]["text"], "lemmas": self.data["transcript_data"]["lemmas"]},f,indent=4)
-            
-        self.data["transcript_data"]["text"] = timed_transcript
-        if _disable_term_extraction:
-            from pandas import DataFrame
-            terms = DataFrame()
-        else:
-            terms = api_obj.execute_term_extraction(doc_id)
 
-        try:
-            self.data["transcript_data"].update({ "ItaliaNLP_doc_id":   doc_id, 
-                                                  "terms":              terms.to_dict('records')})
-        except Exception:
-            raise Exception("Error extracting terms with the API")
-        
-        self.transcript_segmentation_and_thumbnails()
+        self.data["transcript_data"]["text"] = timed_transcript
+        self.data["transcript_data"].update({ "ItaliaNLP_doc_id":   doc_id })
+
         db_mongo.insert_video_data(self.data)
-        return
+    
+    def request_terms(self):
+        if "terms" in self.data["transcript_data"].keys() and any(self.data["transcript_data"]["terms"]):
+            return
+        
+        terms = ItaliaNLAPI().execute_term_extraction(self.data["transcript_data"]["ItaliaNLP_doc_id"])
+        self.data["transcript_data"].update({"terms": terms.to_dict('records')})
+        db_mongo.insert_video_data(self.data)
+        
+    def filter_terms(self, filtering_opts:dict=None):
+        if filtering_opts is None:
+            filtering_opts = {"domain_relevance_thresh": 80}
+        terms = DataFrame(self.data["transcript_data"]["terms"]) 
+        self.data["transcript_data"]["terms"] = terms[terms["domain_relevance"] > filtering_opts["domain_relevance_thresh"]].to_dict("records")
+        
 
     def lemmatize_an_italian_term(self, term):
         nlp = NLPSingleton()
@@ -1284,12 +1287,14 @@ if __name__ == '__main__':
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
     for video in db_mongo.get_videos(["video_id","title"]):
         print(video)
-        if video["video_id"] != "OXcm2ny4qus":
-            continue
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
+        #vid_analyzer.data["transcript_data"]["terms"] = []
         #vid_analyzer.analyze_transcript()
-        vid_analyzer.data["transcript_data"]["text"] = []
-        db_mongo.insert_video_data(vid_analyzer.data)
+        #vid_analyzer.request_terms()
+        vid_analyzer.filter_terms()
+        #vid_analyzer.analyze_transcript()
+        #vid_analyzer.data["transcript_data"]["text"] = []
+        #db_mongo.insert_video_data(vid_analyzer.data)
         
         #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=iiovZBNkC40")
         #vid_analyzer.analyze_transcript()

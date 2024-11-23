@@ -481,7 +481,7 @@ function printDescriptions(){
 /*
 * Given a concept, it returns all the concepts of which he is a prerequisite
 * */
-function getNeighbors (concept){
+function getNeighbors(concept){
     let neighbors = [];
 
     for (let key in relations){

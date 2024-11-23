@@ -23,36 +23,105 @@ function search_video(){
 }
 
 function deleteAnnotation(video_id){
-  // Target the button associated with this video_id
-  let button = $(`label[video=${video_id}] .btn-expanding.delete`);
-  let statusButton = $(`label[video=${video_id}] .btn-expanding.status`);
+
+  // Hide the box
+  function closeConfirmBox() {
+    $("#confirmEraseAnnotationBox").fadeOut(200, function() {
+        $('body').css('overflow', 'auto'); // Ripristina lo scrolling
+        $(this).remove()
+    }).undim({ fadeOutDuration: 200 });
+  }
+
+  // Ceate confirm box
+  $('<div></div>', {
+    class: 'box',
+    id: "confirmEraseAnnotationBox",
+    css: {
+        position: 'fixed',
+        top: '40%',
+        left: '48%',
+        width: 'auto',
+        height: 'auto',
+        backgroundColor: 'white',
+        border: '2px solid gray',
+        borderRadius: '10px',
+        transform: 'translate(-50%, -50%)',
+        display: 'none',
+        padding: '1em',
+        textAlign: 'center'
+    }
+  }).appendTo('body');
   
-  // Start the animation (e.g., fade out)
-  button.fadeOut(300, function() {
-    // Perform the AJAX request after the fadeOut
-    $.ajax({
-      url: '/annotator/delete_annotation',
-      type: 'post',
-      contentType: 'application/json',
-      dataType: 'json',
-      data: JSON.stringify({ "video_id": video_id })
-    }).done(function(result) {
-      // After the AJAX call completes
-    
-      // Disable the delete button and the status button
-      $(this).prop('disabled', true);
-      statusButton.prop('disabled', true);
-    
-      // Optionally, remove the annotation status visually
-      // Change the status button to reflect the annotation has been removed
+  let box = $("#confirmEraseAnnotationBox")
+  
+  // Add confirmation text
+  let title = $("<div><h2 style='margin: 1em;'>Are you sure you want to delete your annotations of this video?</h2></div>").css({
+    margin: '0 0 1em',
+    color: '#333'
+  }).appendTo(box);
+  $('<hr>').css("margin-bottom","3em").appendTo(title);
+
+
+  // Clone the image, wrap it in a div, and append to box
+  $(`<div></div>`).append($(`img[video=${video_id}]`).clone()).appendTo(title);
+
+  $(`<div style="margin:2em 0;"></div>`).append($(`p[video=${video_id}]`).clone()).appendTo(title);
+  $('<hr>').css("margin-bottom","5em").appendTo(title);
+
+  // Create button container for symmetry
+  const buttonsContainer = $("<div></div>").appendTo(title);
+
+  // Add 'No' button
+  $("<button class='btn btn-primary btn-addrelation btn-dodgerblue'>No</button>")
+    .css({
+      position: 'absolute',
+      bottom: '2em',
+      left: '5%'
+    })
+    .on("click", function() {
+      closeConfirmBox() // Restore scroll on close
+    })
+    .appendTo(buttonsContainer);
+
+  // Add 'Yes' button
+  $("<button class='btn btn-primary btn-addrelation delete'>Yes</button>")
+    .css({
+      position: 'absolute',
+      bottom: '2em',
+      left: '81%'
+    })
+    .on("click", function() {
+      closeConfirmBox()
+      // Target the button associated with this video_id
+      let button = $(`label[video=${video_id}] .btn-expanding.erase`);
+      let statusButton = $(`label[video=${video_id}] .btn-expanding.status`);
+
+      // Start the animation (e.g., fade out)
       statusButton.fadeOut(300, function() {
-        $(this).remove();
+        // Perform the AJAX request after the fadeOut
+        $.ajax({
+          url: '/annotator/delete_annotation',
+          type: 'post',
+          contentType: 'application/json',
+          dataType: 'json',
+          data: JSON.stringify({ "video_id": video_id })
+        }).done(function(result) {
+        
+          $(button).fadeOut(300, function() {
+            $(button).replaceWith('<span class="spacer"></span>');
+          });
+
+        });
       });
-      
-      // Optionally remove the "Unannotate" button entirely
-      $(this).remove();
-    });
-  });
+    })
+    .appendTo(buttonsContainer);
+
+
+  $('body').css('overflow', 'hidden');
+  box.css({opacity: 0, display: 'flex'}).animate({
+    opacity: 1
+  }, 500).dimBackground({ darkness: bgDarknessOnOverlay });
+
 }
 
 function deleteVideo(video_id){

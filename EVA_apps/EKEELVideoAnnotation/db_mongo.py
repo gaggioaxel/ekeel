@@ -29,12 +29,15 @@ def reset_password(email, password):
         new = {"$set": {"password_hash": password}}
         users.update_one(query, new)
         
-def remove_annotations_data(video_id:str):
-    for collection in [db.graphs, db.conlls]:
+def remove_annotations_data(video_id:str, user:dict=None):
+    if user is None:
         while True:
-            doc = collection.find_one_and_delete({"video_id":video_id})
+            doc = db.graphs.find_one_and_delete({"video_id":video_id})
             if doc is None:
-                break
+                return
+    
+    doc = db.graphs.find_one_and_delete({"video_id":video_id, "annotator_id": user["id"], "annotator_name": user["name"]})
+    
             
 
 def insert_graph(data):

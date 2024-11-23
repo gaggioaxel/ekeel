@@ -295,11 +295,11 @@ $(document).on("click", ".concept-row", function (e) {
 
   conceptElements.each(function() { 
     let concepts = this.getAttribute("concept")
-    if (concepts.includes(" " + selectedConcept + " "))
+    if (concepts.includes(" " + selectedConcept + " ") || concepts.includes(" " + selectedConcept.toLowerCase() + " "))
       this.classList.add("selected-concept-text");
     else {
       for (let syn of syns) 
-        if (concepts.includes(" " + syn.replaceAll(" ","_") + " "))
+        if (concepts.includes(" " + syn.replaceAll(" ","_") + " ") || concepts.includes(" " + syn.replaceAll(" ","_").toLowerCase() + " "))
           this.classList.add("selected-synonym-text") 
     }
   });
@@ -390,8 +390,8 @@ function addConcept(){
     return
   }
   if($concepts.includes(concept)) {
-    // debug purposes distinguish between words already present (00) and lemmatized concept already present (01)
-    document.getElementById("errorConcept").innerText ="the concept is already present ! (00)" 
+    // debug purposes distinguish between words already present and lemmatized concept already present
+    document.getElementById("errorConcept").innerText ="this concept is already present at word level !" 
     showMsg("errorConcept", "orange")
     return
   }
@@ -433,7 +433,7 @@ function addConcept(){
     term.text = conceptLemma
     for (let concept of $concepts)
       if(concept == conceptLemma) {
-        document.getElementById("errorConcept").innerText ="the concept is already present !"
+        document.getElementById("errorConcept").innerText ="the concept is already present at lemmas level !"
         showMsg("errorConcept", "orange")
         return
       }
@@ -623,19 +623,21 @@ function removeConcept(button, concept){
   showVocabulary($conceptVocabulary)
 
   let conceptIndx = -1
-  $($concepts).each((indx,conc) => { if(conc == concept) conceptIndx = indx; })
+  $($concepts).each((indx,conc) => { if(conc == concept || conc == concept.toLowerCase()) conceptIndx = indx; })
   if (conceptIndx > -1) $concepts.splice(conceptIndx,1)
 
   // remove the concept from the concept field and unset the concept class if the field is empty
   // (i.e. the lemmas are not anymore part of any concept)
-  let underlinedConcept = concept.replaceAll(" ","_");
-  let elementsToRemove = $("[concept~=" + $.escapeSelector(underlinedConcept) + "]");
+  let underscoredConcept = concept.replaceAll(" ","_");
+  let elementsToRemove = $("[concept~=" + $.escapeSelector(underscoredConcept) + "], [concept~=" + $.escapeSelector(underscoredConcept.toLowerCase())+ "]");
   elementsToRemove.removeClass("selected-concept-text");
   for(let wtd of synonymsToDel) {
     $("[concept~=" + $.escapeSelector(wtd.replaceAll(" ", "_")) + "]").removeClass("selected-synonym-text");
   }
   elementsToRemove.each((_, element) => { 
-      element.setAttribute("concept", element.getAttribute("concept").replace(underlinedConcept,""));
+      element.setAttribute("concept", element.getAttribute("concept")
+             .replace(" "+underscoredConcept+" ","")
+             .replace(" "+underscoredConcept.toLowerCase()+" ",""));
       if (element.getAttribute("concept").trim().length == 0)
         element.classList.remove("concept");
   })
@@ -784,7 +786,7 @@ function deleteConcept(button,concept) {
     $(".icon-button.trash.active").removeClass("active")
     return
   }
-  confirmConceptDelete(button, concept);  
+  confirmConceptDelete(button, concept);
 }
 
 /* highlight a concept in a div with id div_id */
@@ -847,7 +849,7 @@ function selectConcept(concept) {
   let head_indx = concept.lemmatization_data.head_indx
   let head_lemma = concept.lemmatization_data.tokens[head_indx].lemma
   let conceptLemma = null
-  
+
 
   elements.each(function () {
 
@@ -939,7 +941,7 @@ function selectConcept(concept) {
       $(allSpan).each((_, span) => {
         occurrence += span.innerText + " "
       });
-      if(foundSingularTerm)
+      if(foundSingularTerm && (conceptLemma == null || occurrence.trim().length < conceptLemma.length) )
         conceptLemma = occurrence.trim()
       occurrences[occurrence.trim()] = (occurrences[occurrence.trim()] || 0) + 1;
       allSpansPerConcept.push(allSpan);

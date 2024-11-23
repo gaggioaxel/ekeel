@@ -79,8 +79,26 @@ h1 {
   border: 1px solid rgba(220, 20, 60, 0.452) !important;
 }
 
+.btn-container {
+  display: flex;
+  justify-content: space-between; /* Ensures buttons are anchored to opposite sides */
+  align-items: center;           /* Aligns buttons vertically within the container */
+  width: 100%;                   /* Optional: Set a specific width if needed */
+}
+
+.spacer,
 .btn-container, .status-container {
   height: 24px;
+}
+
+.btn-expanding.left {
+  justify-self: flex-start; /* Anchor to the left */
+  right: 5%;
+}
+
+.btn-expanding.right {
+  justify-self: flex-end;   /* Anchor to the right */
+  left: 5%;
 }
 
 .btn-expanding {
@@ -97,9 +115,9 @@ h1 {
   font-weight: bold;
   width: 30px;
   height: 30px;
-  transition: width 0.4s ease, padding-right 0.6s ease, left 0.4s ease;
   overflow: hidden;
   pointer-events: visible;
+  transition: width 0.4s ease, padding-right 0.6s ease, left 0.4s ease;
 }
 
 .btn-expanding.status{
@@ -114,19 +132,35 @@ h1 {
   background-color: crimson;
   position: relative;
   top: 5px;
-  left: 90%;
 }
 
-.btn-expanding.delete:hover {
-  background-color: crimson;
+.btn-expanding.erase {
+  background-color: rgb(155, 155, 155);
+  position: relative;
+  top: 5px;
+}
+
+.btn-expanding.left:hover {
   width: 125px;
-  left: 59%;
-  padding-right: 0px;
+  left: 6%;
+  padding-right: 5px;
 }
 
-.btn-expanding.delete .checkmark {
+.btn-expanding.right:hover {
+  width: 125px;
+  left: 6%;
+  padding-right: 5px;
+}
+
+.btn-expanding.right .checkmark {
   font-size: 30px;
   padding-left: 64px;
+  padding-bottom: 4px;
+}
+
+.btn-expanding.left .checkmark {
+  font-size: 30px;
+  padding-left: 110px;
   padding-bottom: 4px;
 }
 
@@ -137,10 +171,15 @@ h1 {
 }
 
 .btn-expanding:hover {
-  background-color: dodgerblue;
   width: 160px;
   left: 10%;
   padding-right: 40px;
+}
+
+.btn-expanding.left:hover {
+  width: 145px;
+  left: -5%;
+  padding-right: 45px;
 }
 
 .btn-expanding:hover .label {

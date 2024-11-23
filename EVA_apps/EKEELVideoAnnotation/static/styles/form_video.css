@@ -10,12 +10,9 @@
 
 
 .video_radio {
-    display: inline-grid;
-    margin-bottom: .5rem;
-}
-
-.video_radio {
-  margin-right: 20px;
+  display: inline-grid;
+  margin-bottom: .5rem;
+  margin-right: 30px;
   width: 195px;
   cursor: pointer;
   font-weight: 300;

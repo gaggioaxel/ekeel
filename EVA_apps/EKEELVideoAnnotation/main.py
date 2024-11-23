@@ -242,6 +242,9 @@ def video_selection():
         # NOTE extracting transcript from audio with whisper on high-end i9 8 core process at ~1.3 sec/s
         vid_analyzer.request_transcript()
         vid_analyzer.analyze_transcript()
+        vid_analyzer.request_terms()
+        vid_analyzer.filter_terms()
+        vid_analyzer.transcript_segmentation()
         vid_analyzer.create_thumbnails()
         #vid_analyzer.analyze_video()  for now we don't extract slides
         video_id = vid_analyzer.video_id
@@ -275,7 +278,7 @@ def video_selection():
         
         # If the concept vocabulary is new (empty) in DB then initialize it from the terms extracted
         if conceptVocabulary is None :
-            lemmatized_concepts = [SemanticText(concept,language).get_semantic_structure_info() for concept in vid_analyzer.data["transcript_data"]["terms"]]
+            lemmatized_concepts = [SemanticText(term["term"],language).get_semantic_structure_info() for term in vid_analyzer.data["transcript_data"]["terms"]]
             #-----------------------------------------------------------------
             # 1) Automatically obtain synonyms using wordnet NLTK
             #
@@ -397,18 +400,22 @@ def prepare_annotated_graph():
     print("***** EKEEL - Video Annotation: main.py::download_annotated_graph(): Fine ******")
     # real download happens on the js side
     return result   
-
-#@app.route('/delete_annotation', methods=["GET", "POST"])
-#def delete_annotated_graph():
-#    video_id = request.json["video_id"]
-#    #db_mongo.delete_annotation(current_user.mongodb_id, video_id)
-#    return {}
   
 @app.route('/delete_video', methods=["GET", "POST"])
 def delete_video():
     video_id = request.json["video_id"]
     db_mongo.remove_video(video_id)
     return {"done":True}
+
+@app.route("/delete_annotation", methods=["GET","POST"])
+def delete_annotation():
+    video_id = request.json["video_id"]
+    user = {"id": current_user.mongodb_id,
+            "name": current_user.complete_name}
+    db_mongo.remove_annotations_data(video_id, user)
+    
+    return {"done":True}
+    
 
 @app.route('/analysis', methods=['GET', 'POST'])
 @login_required
