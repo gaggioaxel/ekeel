@@ -169,7 +169,7 @@ def apply_italian_fixes(timed_sentences:list, min_segment_len:int=4, min_segment
            timed_sentences[i-1]["text"].endswith("'") or 
            sentence["text"].startswith("'")):
             prev_segment = timed_sentences[i-1]
-            prev_segment["text"] += sentence["text"] # sentence always contains trailing initial space
+            prev_segment["text"] += " " + sentence["text"] 
             for word in sentence["words"]:
                 prev_segment["words"].append(word)
             prev_segment["end"] = sentence["end"]
@@ -286,7 +286,7 @@ def apply_italian_fixes(timed_sentences:list, min_segment_len:int=4, min_segment
                 segment["words"].insert(j+1, new_word)
                 word["word"] = word["word"][:-1]
             
-            elif any(re.findall(r"\.[0-9]+", word["word"])):
+            elif any(re.findall(r"\s\.[0-9]+", word["word"])):
                 new_word = word.copy()
                 new_word["word"] = word["word"][1:]
                 segment["words"].insert(j+1, new_word)

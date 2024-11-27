@@ -1286,12 +1286,14 @@ if __name__ == '__main__':
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=8cwNzffXPT0")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
     for video in db_mongo.get_videos(["video_id","title"]):
+        if video["video_id"] != "jBcCqelFgCE":
+            continue
         print(video)
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
         #vid_analyzer.data["transcript_data"]["terms"] = []
-        #vid_analyzer.analyze_transcript()
+        vid_analyzer.analyze_transcript()
         #vid_analyzer.request_terms()
-        vid_analyzer.filter_terms()
+        #vid_analyzer.filter_terms()
         #vid_analyzer.analyze_transcript()
         #vid_analyzer.data["transcript_data"]["text"] = []
         #db_mongo.insert_video_data(vid_analyzer.data)
