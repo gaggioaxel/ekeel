@@ -72,11 +72,8 @@ if __name__ == "__main__":
                 os.remove(wav_path)
                 #os.remove(json_path)  # Don't remove json for debug purposes
                 
-                # apply fixes after transcription
-                #if language == "it":
-                #    transcribed_data = apply_italian_fixes(transcribed_data["segments"],min_segment_len=4)
-                
                 video_data = get_video_data(video_id)
+                video_data["transcript_data"]["is_whisper_transcribed"] = True
                     
                 insert_video_data(video_data,update=False)
                 remove_annotations_data(video_id)
