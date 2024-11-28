@@ -741,9 +741,15 @@ class VideoAnalyzer:
             raise Exception(f"Language is not between supported ones: {locale.get_supported_languages()}")
         return self.data['language'] if format =='pt1' else locale.get_full_from_pt1(self.data['language'])
 
-    def analyze_transcript(self, async_call:bool=False, _disable_term_extraction:bool=False):
+    def analyze_transcript(self, async_call:bool=False, _reload_from_json=False):
 
         #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
+        if _reload_from_json:
+            self.data["transcript_data"].pop("ItaliaNLP_doc_id", None)
+            from pathlib import Path
+            from json import load
+            with open(Path(__file__).parent.joinpath("static","videos",self.video_id,self.video_id+".json")) as f:
+                self.data["transcript_data"]["text"] = load(f)["segments"]
         if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
             return
         

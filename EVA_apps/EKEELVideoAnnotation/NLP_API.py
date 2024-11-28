@@ -92,7 +92,8 @@ class ItaliaNLAPI():
             res = requests.get(url=url,params={'id': term_extraction_id}).json()
             if res['status'] == "OK":
                 if len(res["terms"]) == 0:
-                    raise Exception("With this config ItaliaNLP.term_extraction() has not found anything")
+                    print("With this config ItaliaNLP.term_extraction() has not found anything")
+                    #raise Exception("With this config ItaliaNLP.term_extraction() has not found anything")
                 else:
                     break
             elif res["status"] == "IN_PROGRESS":
