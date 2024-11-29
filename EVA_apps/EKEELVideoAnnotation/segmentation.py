@@ -770,6 +770,7 @@ class VideoAnalyzer:
         for sentence in tagged_sentences:
             tagged_transcript["full_text"] += sentence["sentence"]+" "
             for word in sentence["words"]:
+                # append the word from NLPTranscript but remove "-" from for example "inviar-", "li"
                 word = {"word":     word["word"] if len(word["word"]) == 1 or (len(word["word"]) > 1 and not word["word"].endswith("-")) else word["word"][:-1], 
                         "lemma":    word["lemma"], 
                         "pos":      word["pos"], 
@@ -778,25 +779,27 @@ class VideoAnalyzer:
                         "num":      word["num"]}
                 tagged_transcript["words"].append(word)
 
-        word_counter = 0
+        words_cursor = 0
         tagged_transcript_words = tagged_transcript["words"]
         is_first_part_of_word = True
         is_misaligned = False
         for sentence in timed_transcript:
             for word_indx, word in enumerate(sentence["words"]):
-                if word["word"] == tagged_transcript_words[word_counter]["word"] or \
-                  (word["word"] == "po'" and tagged_transcript_words[word_counter]["word"] == "p\u00f2"):
-                    transcript_word = tagged_transcript_words[word_counter]
+                if word["word"] == tagged_transcript_words[words_cursor]["word"] or \
+                  (word["word"] == "po'" and tagged_transcript_words[words_cursor]["word"] == "p\u00f2"):
+                    transcript_word = tagged_transcript_words[words_cursor]
                     word["gen"] = transcript_word["gen"] if transcript_word["gen"] is not None else ""
                     word["lemma"] = transcript_word["lemma"]
                     word["pos"] = transcript_word["pos"]
                     word["cpos"] = transcript_word["cpos"]
                     word["num"] = transcript_word["num"] if transcript_word["num"] is not None else ""
                 
-                elif tagged_transcript_words[word_counter]["word"] in word["word"]:
+                # Can be for example in Whisper transcript "inviarli" a single word but ItaliaNLP gives "inviar", "li"
+                elif tagged_transcript_words[words_cursor]["word"] in word["word"]:
                     if is_first_part_of_word:
                         new_word = word.copy()
-                    transcript_word = tagged_transcript_words[word_counter]
+                    transcript_word = tagged_transcript_words[words_cursor]
+                    word["word"] = transcript_word["word"]
                     word["gen"] = transcript_word["gen"] if transcript_word["gen"] is not None else ""
                     word["lemma"] = transcript_word["lemma"]
                     word["pos"] = transcript_word["pos"]
@@ -811,17 +814,25 @@ class VideoAnalyzer:
                         is_first_part_of_word = False
                     else:
                         is_first_part_of_word = True
-                # match is partial so it's wrong, print a message on backend but continue
-                elif word["word"] in tagged_transcript_words[word_counter]["word"] and \
-                  ((len(sentence["words"]) > word_indx+1 and sentence["words"][word_indx+1]["word"] in tagged_transcript_words[word_counter]["word"]) or \
+                        
+                # match is partial so it's wrong, print a message on backend but continue (TODO but may break)
+                elif word["word"] in tagged_transcript_words[words_cursor]["word"] and \
+                  ((len(sentence["words"]) > word_indx+1 and sentence["words"][word_indx+1]["word"] in tagged_transcript_words[words_cursor]["word"]) or \
                   is_misaligned) :
-                    word["gen"] = ""; word["lemma"] = ""; word["pos"] = ""; word["cpos"] = ""; word["num"] = ""
-                    is_misaligned = not is_misaligned
-                    if is_misaligned:
-                        word_counter -= 1
+                    tagged_word = tagged_transcript_words[words_cursor]
+                    word["gen"] = tagged_word["gen"]
+                    word["lemma"] = tagged_word["lemma"]
+                    word["pos"] = tagged_word["pos"]
+                    word["cpos"] = tagged_word["cpos"] 
+                    word["num"] = tagged_word["gen"]
+                    is_misaligned = not tagged_word["word"].endswith(word["word"])
                     print(f"Error in matching tagged and timed transcript, for video: {self.data['video_id']}")
-                    print(f"word \"{word['word']}\" is not \"{tagged_transcript_words[word_counter]['word']}\"")
-                word_counter += 1
+                    print(f"word \"{word['word']}\" is not \"{tagged_transcript_words[words_cursor]['word']}\"")
+                    if is_misaligned:
+                        words_cursor -= 1
+                    else:
+                        print("Realigned successfully!")
+                words_cursor += 1
 
         #import json
         #with open("lemmas.json","w") as f:
@@ -1292,7 +1303,7 @@ if __name__ == '__main__':
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=8cwNzffXPT0")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
     for video in db_mongo.get_videos(["video_id","title"]):
-        if video["video_id"] != "jBcCqelFgCE":
+        if video["video_id"] != "da3NOtH3PXM":
             continue
         print(video)
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")

@@ -257,10 +257,13 @@ def apply_italian_fixes(timed_sentences:list, min_segment_len:int=4, min_segment
                     word["word"] = replacement
 
             # Case "termo" "-idrometrico" -> merged into "termo-idrometrico" for T2K compatibility
+            # can also be "pay-as-you-go" found split into "pay", "-as", "-you", "-go"
             elif word["word"].startswith("-"):
-                prev_word = segment["words"][j-1]
-                prev_word["word"] = prev_word["word"] + word["word"]
-                prev_word["end"] = word["end"]
+                for head_word in segment["words"][j-1::-1]:
+                    if not head_word["word"].startswith("-"):
+                        break
+                head_word["word"] = head_word["word"] + word["word"]
+                head_word["end"] = word["end"]
                 to_remove_words.append(j)
                 
             # Sometime happened the shift of the apostrophe ["accetta l", "'ipotesi forte"] 

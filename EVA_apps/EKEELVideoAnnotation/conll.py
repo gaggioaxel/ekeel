@@ -322,16 +322,19 @@ def html_interactable_transcript_word_level(sentences):
             # if articulated preposition with apostrophe eg. "dell'" 
             # or verb with after a cyclic pronoun eg. "specchiar-si" 
             # or word that has a punctutation mark after
-            # don't add space between 
-            if ((word["pos"] in ["EA","E"] or word["cpos"] == "R") and word["word"].endswith("'")) or \
+            # or websites (saved as "www.google.com" and words ["www",".google",".com"])
+            # don't add space between
+            if  (word["word"].endswith("'")) or \
+                (word_id + 1 < len(sentence["words"]) and sentence["words"][word_id+1]["cpos"] == "X") or \
                 (word["cpos"] == "V" and word_id + 1 < len(sentence["words"]) and sentence["words"][word_id+1]["pos"] == "PC") or \
-                (word_id + 1 < len(sentence["words"]) and sentence["words"][word_id+1]["pos"] in ["FC","FF","FS"]) :
+                (word_id + 1 < len(sentence["words"]) and sentence["words"][word_id+1]["pos"] in ["FC","FF","FS"]) or \
+                (word_id + 1 < len(sentence["words"]) and sentence["words"][word_id+1]["word"].startswith(".")):
                html_sent.pop()
         html_lemmatized_sents.append({"text": "".join(html_sent)})
     return html_lemmatized_sents
 
 if __name__ == '__main__':
     from segmentation import VideoAnalyzer
-    vid = VideoAnalyzer("https://www.youtube.com/watch?v=jBcCqelFgCE")
+    vid = VideoAnalyzer("https://www.youtube.com/watch?v=da3NOtH3PXM")
     print(html_interactable_transcript_word_level(vid.data["transcript_data"]["text"]))
     #print(conll_gen("L94FfnqrJUk",SemanticText("Hello my name is Ekeel","en")))
