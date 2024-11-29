@@ -399,6 +399,7 @@ class VideoAnalyzer:
             start_times.append(c.start_time)
             end_times.append(c.end_time)
         self.data["video_data"] = {"segments": list(zip(start_times, end_times))}
+        db_mongo.insert_video_data(self.data)
 
 
         print("Reached the part of finding clusters")
