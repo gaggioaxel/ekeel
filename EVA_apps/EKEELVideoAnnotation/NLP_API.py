@@ -94,8 +94,7 @@ class ItaliaNLAPI():
                 if len(res["terms"]) == 0:
                     print("With this config ItaliaNLP.term_extraction() has not found anything")
                     #raise Exception("With this config ItaliaNLP.term_extraction() has not found anything")
-                else:
-                    break
+                break
             elif res["status"] == "IN_PROGRESS":
                 print(f"Been waiting term extraction for {(_+1)*10} seconds...")
             time.sleep(10)
@@ -106,6 +105,8 @@ class ItaliaNLAPI():
         #with open("terms.json","w") as f:
         #    json.dump(res,f,indent=4)
         terms = DataFrame(res['terms'])
+        if terms.empty:
+            terms = DataFrame(columns=["term", "domain_relevance", "frequency"])
         terms['word_count'] = terms['term'].apply(lambda x: len(x.split()))
         return terms.sort_values(by='word_count').drop(columns=['word_count'])
 

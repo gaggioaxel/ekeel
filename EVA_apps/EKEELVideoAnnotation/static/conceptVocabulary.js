@@ -221,7 +221,7 @@ function showVocabularyDiv(){
   // Apply CSS to position the cloned transcript to the right of the modal-content
   transcriptElement.css({
     'position': 'absolute',
-    'right': '650px', // Adjust this value to control the distance from the modal
+    'right': '110%', // Relative to the modal
     'top': '-10vh',
     'width': '30vw',
     'min-width': '300px',

@@ -362,7 +362,7 @@ class VideoAnalyzer:
         #                                         .replace("Dr.","Dr").replace("dr.","dr") \
         #                                         .replace("Mr.","Mr").replace("mr.","mr")
         #print("Checking punctuation...")
-        semantic_transcript = SemanticText(transcript_to_string(self.data["transcript_data"]["text"]),language)
+        semantic_transcript = SemanticText(" ".join(timed_sentence["text"] for timed_sentence in self.data["transcript_data"]["text"] if not "[" in timed_sentence['text']),language)
 
         #video = db_mongo.get_video(video_id)
         
@@ -756,11 +756,10 @@ class VideoAnalyzer:
         
         timed_transcript = self.data["transcript_data"]["text"].copy()        
         language = self.identify_language()
-        if language == "it":
-            timed_transcript = apply_italian_fixes(timed_transcript)
-        string_transcript = transcript_to_string(timed_transcript)
-        if language == "it":
-            timed_transcript = restore_italian_fixes(timed_transcript)
+        wh_to_T2k = WhisperToT2K(language)
+        timed_transcript = wh_to_T2k.apply_rules(wh_to_T2k.group_short_sentences(timed_transcript))
+        string_transcript = " ".join(timed_sentence["text"] for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
+        timed_transcript = wh_to_T2k.revert_rules(timed_transcript)
         
         api_obj = ItaliaNLAPI()
         doc_id = api_obj.upload_document(string_transcript, language=language, async_call=async_call)
@@ -859,6 +858,8 @@ class VideoAnalyzer:
         if filtering_opts is None:
             filtering_opts = {"domain_relevance_thresh": 80}
         terms = DataFrame(self.data["transcript_data"]["terms"]) 
+        if terms.empty:
+            terms = DataFrame(columns=["term", "domain_relevance", "frequency"])
         self.data["transcript_data"]["terms"] = terms[terms["domain_relevance"] > filtering_opts["domain_relevance_thresh"]].to_dict("records")
         
 
@@ -1304,7 +1305,7 @@ if __name__ == '__main__':
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=8cwNzffXPT0")
     #vid_analyzer = VideoAnalyzer("https://www.youtube.com/watch?v=0BX8zOzYIZk")
     for video in db_mongo.get_videos(["video_id","title"]):
-        if video["video_id"] != "da3NOtH3PXM":
+        if video["video_id"] != "MMzdKTtUIFM":
             continue
         print(video)
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")

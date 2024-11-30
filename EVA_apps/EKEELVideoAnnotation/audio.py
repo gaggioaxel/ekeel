@@ -2,7 +2,6 @@ import subprocess
 import os
 from pathlib import Path
 import json
-from words import apply_italian_fixes
 
 
 # Function to convert MP4 video to MP3 audio
@@ -27,56 +26,8 @@ def convert_mp4_to_wav(video_path:str, video_id:str) -> Path:
     return output_file_path
 
 
-class WhisperTranscriber:
-    
-    @staticmethod
-    def _whisper_transcribe(wav_path:Path, json_path:Path):
-        import stable_whisper
-        # TODO dq True -> va piu veloce ma skippa discorsi molto veloci, inficiando sulla qualita' finale del transcript, ma skippa anche imprecisioni e ripensamenti
-        # Tempi quasi raddoppiano
-        # TODO stable-ts version 2.17.3: passing the language is not working, will be inferenced at cost of small increase in time
-        # self._model.transcribe(wav_path.__str__(), decode_options={"language":language}) \
-        #             .save_as_json(json_path.__str__())
-        # must move model outside ekeel otherwise will allocate multiple instances when gunicorn spawns workers
-        stable_whisper.load_model(name='large-v3', cpu_preload=False).transcribe(wav_path.__str__()).save_as_json(json_path.__str__())
-    
-    @staticmethod
-    def transcribe(video_id:str, language:str, min_segment_len:int = 4):
-        """
-        Transcribe the audio from a video using Whisper and return the transcribed segments with timestamps.
-        """
-        folder_path = Path(__file__).parent.joinpath("static").joinpath('videos').joinpath(video_id)
-        json_path = folder_path.joinpath(video_id+".json")
-        wav_path = convert_mp4_to_wav(folder_path, video_id)
-        
-        print("Starting transcription...")
-        
-        #WhisperTranscriber._whisper_transcribe(wav_path, json_path)
-        #WhisperTranscriber._whisper_transcribe(json_path, wav_path, language)
-        # When used as a separated process it won't release the memory and goes into lock
-        #thread = Thread(target=WhisperTranscriber._whisper_transcribe, args=(json_path, wav_path, language))
-        #thread.start()
-        #thread.join()
-        #process = Process(target=_whisper_transcribe, args=(json_path, wav_path, language))
-        #process.start()
-        #process.join()
-        #process.terminate()
-        #del process
-        #gc.collect()
-        
-        with open(json_path) as f:
-            data = json.load(f)["segments"]
-        os.remove(wav_path)             
-        #os.remove(json_path)
-        
-        if language == "it":
-            return apply_italian_fixes(data,min_segment_len=4)
-        
-        raise Exception("must be implemented")
-
 if __name__ == '__main__':
-    
-    WhisperTranscriber.transcribe("iiovZBNkC40","it")
+    pass
     
     #from segmentation import VideoAnalyzer
     #video1 = VideoAnalyzer("https://www.youtube.com/watch?v=TsONshNsHHw")

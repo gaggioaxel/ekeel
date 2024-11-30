@@ -148,220 +148,420 @@ class SemanticText():
         return term_infos
 
 
-def transcript_to_string(timed_transcript:'list[dict]'):
-    return " ".join(timed_sentence["text"] for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
-
-
-def apply_italian_fixes(timed_sentences:list, min_segment_len:int=4, min_segment_duration:float=3):
-    '''
-    Applies italian specific fixes to the text in order to be correctly analized by ItaliaNLP and matched back
-    Furthemore groups short sentences.
-    '''
-    # Step 1 
-    # Group short sentences
-    for i, sentence in reversed(list(enumerate(timed_sentences))): 
-        # if i=4 and sent3 = "Ebbene," sent4 = "nulla si puo' dire perche' tutto e' stato detto." => merge into "Ebbene, nulla si puo' dire perche' tutto e' stato detto."
-        # if sent3 = "quindi otteniamo cio' che ci aspettiamo," and sent4 = "cioe' niente." => merge into sent3 = "quindi otteniamo cio' che ci aspettiamo, cioe' niente." and pop sent4
-        if i > 0 and not timed_sentences[i-1]["text"].endswith(".") and \
-          (len(sentence["text"].strip().split()) < min_segment_len or 
-           len(timed_sentences[i-1]["text"].strip().split()) < min_segment_len or 
-           sentence["end"] - sentence["start"] < min_segment_duration or 
-           timed_sentences[i-1]["text"].endswith("'") or 
-           sentence["text"].startswith("'")):
-            prev_segment = timed_sentences[i-1]
-            prev_segment["text"] += " " + sentence["text"] 
-            for word in sentence["words"]:
-                prev_segment["words"].append(word)
-            prev_segment["end"] = sentence["end"]
-            timed_sentences.pop(i)
-            
-    out_sentences = []    
-    accent_replacements = {
-                              "e'": "è", "E'": "È",
-                              "o'": "ò", "O'": "Ò",
-                              "a'": "à", "A'": "À",
-                              "i'": "ì", "I'": "Ì",
-                              "u'": "ù", "U'": "Ù", "po'": "pò"
-                          }
-    number_regex = r'(-?\d+(?:\.\d*)?)'
-    big_numer_regex = r'(-?)(\d+)(.\d\d\d)+'
-    degrees_regex = number_regex[:-1] + r'°)'
-    temperature_regex = degrees_regex[:-1] + r'[C|c|F|f|K|k])'
+class WhisperToT2K():
+    _lang:str
     
-    for i, segment in enumerate(timed_sentences):
-        segment = {"text": segment["text"].lstrip(),
-                   "words": segment["words"],
-                   "start": segment["start"], 
-                   "end": segment["end"]}
+    def __init__(self,language:str) -> None:
+        self._lang = language
+    
+    def group_short_sentences(self, timed_sentences:list, min_segment_len:int=4, min_segment_duration:float=3):
+        for i, sentence in reversed(list(enumerate(timed_sentences))): 
+            # if i=4 and sent3 = "Ebbene," sent4 = "nulla si puo' dire perche' tutto e' stato detto." => merge into "Ebbene, nulla si puo' dire perche' tutto e' stato detto."
+            # if sent3 = "quindi otteniamo cio' che ci aspettiamo," and sent4 = "cioe' niente." => merge into sent3 = "quindi otteniamo cio' che ci aspettiamo, cioe' niente." and pop sent4
+            if i > 0 and not timed_sentences[i-1]["text"].endswith(".") and \
+              (len(sentence["text"].strip().split()) < min_segment_len or 
+               len(timed_sentences[i-1]["text"].strip().split()) < min_segment_len or 
+               sentence["end"] - sentence["start"] < min_segment_duration or 
+               timed_sentences[i-1]["text"].endswith("'") or 
+               sentence["text"].startswith("'")):
+                prev_segment = timed_sentences[i-1]
+                prev_segment["text"] += " " + sentence["text"] 
+                for word in sentence["words"]:
+                    prev_segment["words"].append(word)
+                prev_segment["end"] = sentence["end"]
+                timed_sentences.pop(i)
+        return timed_sentences 
         
-        to_remove_words = []
-        
-        for j, word in enumerate(segment["words"]):
-            word["word"] = word["word"].lstrip()
-                
-            word.pop("tokens",None)
-            
-            # Match "fatto," that must be split into tokens "fatto" and "," 
-            if len(word["word"]) > 1 and word["word"][-1] in [",",".","?","!"]:
-                new_word = word.copy()
-                new_word["word"] = word["word"][-1]
-                segment["words"].insert(j+1, new_word)
-                word["word"] = word["word"][:-1]
-            
-            if word["word"][0] == "," and any(re.findall(r',\d+',word["word"])):
-                new_word = word.copy()
-                new_word["word"] = word["word"][1:]
-                word["word"] = word["word"][0]
-                segment["words"].insert(j+1, new_word)
-                segment["text"] = segment["text"].replace(",",", ")
-                
-            # Realign apostrophe and replace accented words
-            if word["word"].startswith("'"):
-                segment["words"][j-1]["word"] += "'"
-                if len(segment["words"][j-1]["word"]) == 2:
-                    for pattern, replacement in accent_replacements.items():
-                        segment["words"][j-1]["word"] = re.sub(pattern, replacement, segment["words"][j-1]["word"])
-                        segment["text"] = re.sub(pattern, replacement, segment["text"])
-                word["word"] = word["word"][1:]
-            
-            # Match math symbol terminology "x'" that should be "x primo" and "E'" that should be "È"
-            elif any(re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])):
-                match_ = re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])[0]
-                if match_ in accent_replacements.keys():
-                    replacement = accent_replacements[word["word"]]
-                    segment["text"] = segment["text"].replace(word["word"],replacement)
-                    word["word"] = replacement
-                # TODO there can be a case like "l'altezza di l'(primo) nel..." in text that can break it
-                # but make it work would require to rework the structures and map words as indices of the text string
-                elif any(re.findall(f"{match_}[ .,:?!]",segment["text"])):
-                    word["word"] = word["word"].split("'")[0]
+    def _apply_italian_fixes(self,timed_sentences:list):
+        '''
+        Applies italian specific fixes to the text in order to be correctly analized by ItaliaNLP and matched back
+        Furthemore groups short sentences.
+        '''
+
+        out_sentences = []    
+        accent_replacements = {
+                                  "e'": "è", "E'": "È",
+                                  "o'": "ò", "O'": "Ò",
+                                  "a'": "à", "A'": "À",
+                                  "i'": "ì", "I'": "Ì",
+                                  "u'": "ù", "U'": "Ù", "po'": "pò"
+                              }
+        number_regex = r'(-?\d+(?:\.\d*)?)'
+        big_numer_regex = r'(-?)(\d+)(.\d\d\d)+'
+        degrees_regex = number_regex[:-1] + r'°)'
+        temperature_regex = degrees_regex[:-1] + r'[C|c|F|f|K|k])'
+
+        for i, segment in enumerate(timed_sentences):
+            segment = {"text": segment["text"].lstrip(),
+                       "words": segment["words"],
+                       "start": segment["start"], 
+                       "end": segment["end"]}
+
+            to_remove_words = []
+
+            for j, word in enumerate(segment["words"]):
+                word["word"] = word["word"].lstrip()
+
+                word.pop("tokens",None)
+
+                # Match "fatto," that must be split into tokens "fatto" and "," 
+                if len(word["word"]) > 1 and word["word"][-1] in [",",".","?","!"]:
                     new_word = word.copy()
-                    new_word["word"] = "primo"
-                    segment["words"].insert(j+1,new_word)
-                    segment["text"] = segment["text"].replace(match_,match_[:-1]+" primo")
-                # fixes some random " l 'apostrofo mal messo" -> " l'apostrofo mal messo"
-                elif any(re.findall(r"[a-zA-Z]+ '", segment["text"])):
-                    match_ = re.findall(r"[a-zA-Z]+ '", segment["text"])[0]
-                    segment["text"] = segment["text"].replace(match_, match_[:-2]+"'")
-            
-            # "di raggio R." separated symbol R -> "di raggio R ." for T2K correct pos tag
-            # TODO check with another video that Whisper AI correctly separates the two words in words list 
-            elif any(re.findall(r"\s[a-zA-Z][?,.!;:]", segment["text"])):
-                segment["text"] = re.sub(r"\s([a-zA-Z])([?,.!;:])",r" \1 \2", segment["text"])
-                    
-            # Match "po'" but ignores "anch'" or "dell'" 
-            elif any(re.findall(r"[a-zA-Z]+'", word["word"])) and word["word"].endswith("'") and len(word["word"]) >= 3:
-                match_ = re.findall(r"[a-zA-Z]+'", word["word"])[0]
-                if match_ in accent_replacements.keys():
-                    replacement = accent_replacements[word["word"]]
-                    word["word"] = replacement
+                    new_word["word"] = word["word"][-1]
+                    segment["words"].insert(j+1, new_word)
+                    word["word"] = word["word"][:-1]
 
-            # Case "termo" "-idrometrico" -> merged into "termo-idrometrico" for T2K compatibility
-            # can also be "pay-as-you-go" found split into "pay", "-as", "-you", "-go"
-            elif word["word"].startswith("-"):
-                for head_word in segment["words"][j-1::-1]:
-                    if not head_word["word"].startswith("-"):
-                        break
-                head_word["word"] = head_word["word"] + word["word"]
-                head_word["end"] = word["end"]
-                to_remove_words.append(j)
-                
-            # Sometime happened the shift of the apostrophe ["accetta l", "'ipotesi forte"] 
-            # Should not happen due to prior merge
-            #if segment["text"].startswith("'") and not "'" in segment["words"][0] and i > 0:
-            #    segment["text"] = segment["text"][1:]
-            #    timed_sentences[i-1]["text"] += "'"
-            #    timed_sentences[i-1]["words"][-1]["word"] += "'"
-            
-            # Case "25°C" -> "25°" "celsius"
-            if any(re.findall(temperature_regex,word["word"])):
-                new_word = word.copy()
-                new_word["word"] = word["word"][-1]
-                #segment["text"] = segment["text"].replace(word["word"][-1]," "+scale)
-                segment["words"].insert(j+1, new_word)
-                word["word"] = word["word"][:-1]
-            
-            # Case "22°" -> "22" "°"
-            if any(re.findall(degrees_regex, word["word"])):
-                new_word = word.copy()
-                new_word["word"] = "°" 
-                #segment["text"] = segment["text"].replace("°"," ° ")
-                segment["words"].insert(j+1, new_word)
-                word["word"] = word["word"][:-1]
-            
-            elif any(re.findall(r"\s\.[0-9]+", word["word"])):
-                new_word = word.copy()
-                new_word["word"] = word["word"][1:]
-                segment["words"].insert(j+1, new_word)
-                word["word"] = "."
-            
-            if any(re.findall(big_numer_regex, segment["text"])):
-                match_ = "".join(re.findall(big_numer_regex, segment["text"])[0])
-                segment["text"] = segment["text"].replace(match_, match_.replace("-"," - ").replace("."," . "))
-            
-            # Sometimes words list don't perfectly match the text: "'attrito della ruota", words: ["attrito","della", "ruota'"]
-            # But "pò" in words and "po'" in text match, TODO Fix with T2K 
-            if word["word"] not in segment["text"] and not (word["word"] == "pò" and "po'" in segment["text"]) :
-                longest_substring = ''
-                text = segment["text"]
-                word_ = word["word"]
-                for ch_l in range(len(word_)):
-                    for ch_r in range(ch_l + 1, len(word_) + 1):
-                        if word_[ch_l:ch_r] in text and len(word_[ch_l:ch_r]) > len(longest_substring):
-                            longest_substring = word_[ch_l:ch_r]
-                # Replace the word with the longest substring
-                word["word"] = longest_substring
-            
-            # Random points in words
-            if len(word["word"]) > 1 and word["word"].endswith("."):
-                new_word = word.copy()
-                new_word["word"] = "."
-                word["word"] = word["word"][:-1]
-                segment["words"].insert(j+1, new_word)
-            
-            
-            # Case "22%" -> "22" "%"
-            elif any(re.findall(number_regex+'%', word["word"])):
-                new_word = word.copy()
-                word["word"] = word["word"][:-1]
-                new_word["word"] = "%"
-                segment["words"].insert(j+1, new_word)
-            
-            if any(re.findall(number_regex+'%', segment["text"])):
-                segment["text"] = re.sub(r"%([?,.!;:])",r"% \1", segment["text"])
-                segment["text"] = re.sub(r"([0-9])%",r"\1 %", segment["text"])
-                
-                    
-            # Match with "dell'SiO2" -> split into tokens "dell'" and "SiO2"
-            if len(word["word"].split("'")) > 1 and len(word["word"].split("'")[1]) > 0:
-                before_apos, after_apos = word["word"].split("'")
-                new_word = word.copy()
-                new_word["word"] = after_apos
-                segment["words"].insert(j+1, new_word)
-                word["word"] = before_apos+"'"
-        
-        for indx in reversed(to_remove_words):
-            del segment["words"][indx]
-        
-        segment["text"] = segment["text"].replace("  ", " ")
-        out_sentences.append(segment)
-        
-    return out_sentences
+                if word["word"][0] == "," and any(re.findall(r',\d+',word["word"])):
+                    new_word = word.copy()
+                    new_word["word"] = word["word"][1:]
+                    word["word"] = word["word"][0]
+                    segment["words"].insert(j+1, new_word)
+                    segment["text"] = segment["text"].replace(",",", ")
 
-def restore_italian_fixes(transcript:list):
-    for sentence in transcript:
-        sentence["text"] = re.sub(r'\s+%', '%', sentence["text"])                           # replace " %" with "%"
-        sentence["text"] = re.sub(r'%\s([?,.!;:])', r'%\1', sentence["text"])               # replace "% ," with "%,"
-        sentence["text"] = re.sub(r"\s([a-zA-Z])\s([?,.!;:])",r" \1\2", sentence["text"])   # replace " A ." with " A."
-        match_ = re.findall(r'(\s-\s)?(\d+)(\s.\s\d{3})+',sentence["text"])                 # find any big number spaced " - 24 . 000" (meno 24 mila)
-        if any(match_):
-            sentence["text"] = sentence["text"].replace("".join(match_[0]), "".join(match_[0]).replace(" ",""))
-    return transcript
+                # Realign apostrophe and replace accented words
+                if word["word"].startswith("'"):
+                    segment["words"][j-1]["word"] += "'"
+                    if len(segment["words"][j-1]["word"]) == 2:
+                        for pattern, replacement in accent_replacements.items():
+                            segment["words"][j-1]["word"] = re.sub(pattern, replacement, segment["words"][j-1]["word"])
+                            segment["text"] = re.sub(pattern, replacement, segment["text"])
+                    word["word"] = word["word"][1:]
+
+                # Match math symbol terminology "x'" that should be "x primo" and "E'" that should be "È"
+                elif any(re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])):
+                    match_ = re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])[0]
+                    if match_ in accent_replacements.keys():
+                        replacement = accent_replacements[word["word"]]
+                        segment["text"] = segment["text"].replace(word["word"],replacement)
+                        word["word"] = replacement
+                    # TODO there can be a case like "l'altezza di l'(primo) nel..." in text that can break it
+                    # but make it work would require to rework the structures and map words as indices of the text string
+                    elif any(re.findall(f"{match_}[ .,:?!]",segment["text"])):
+                        word["word"] = word["word"].split("'")[0]
+                        new_word = word.copy()
+                        new_word["word"] = "primo"
+                        segment["words"].insert(j+1,new_word)
+                        segment["text"] = segment["text"].replace(match_,match_[:-1]+" primo")
+                    # fixes some random " l 'apostrofo mal messo" -> " l'apostrofo mal messo"
+                    elif any(re.findall(r"[a-zA-Z]+ '", segment["text"])):
+                        match_ = re.findall(r"[a-zA-Z]+ '", segment["text"])[0]
+                        segment["text"] = segment["text"].replace(match_, match_[:-2]+"'")
+
+                # "di raggio R." separated symbol R -> "di raggio R ." for T2K correct pos tag
+                # TODO check with another video that Whisper AI correctly separates the two words in words list 
+                elif any(re.findall(r"\s[a-zA-Z][?,.!;:]", segment["text"])):
+                    segment["text"] = re.sub(r"\s([a-zA-Z])([?,.!;:])",r" \1 \2", segment["text"])
+
+                # Match "po'" but ignores "anch'" or "dell'" 
+                elif any(re.findall(r"[a-zA-Z]+'", word["word"])) and word["word"].endswith("'") and len(word["word"]) >= 3:
+                    match_ = re.findall(r"[a-zA-Z]+'", word["word"])[0]
+                    if match_ in accent_replacements.keys():
+                        replacement = accent_replacements[word["word"]]
+                        word["word"] = replacement
+
+                # Case "termo" "-idrometrico" -> merged into "termo-idrometrico" for T2K compatibility
+                # can also be "pay-as-you-go" found split into "pay", "-as", "-you", "-go"
+                elif word["word"].startswith("-"):
+                    for head_word in segment["words"][j-1::-1]:
+                        if not head_word["word"].startswith("-"):
+                            break
+                    head_word["word"] = head_word["word"] + word["word"]
+                    head_word["end"] = word["end"]
+                    to_remove_words.append(j)
+
+                # Sometime happened the shift of the apostrophe ["accetta l", "'ipotesi forte"] 
+                # Should not happen due to prior merge
+                #if segment["text"].startswith("'") and not "'" in segment["words"][0] and i > 0:
+                #    segment["text"] = segment["text"][1:]
+                #    timed_sentences[i-1]["text"] += "'"
+                #    timed_sentences[i-1]["words"][-1]["word"] += "'"
+
+                # Case "25°C" -> "25°" "celsius"
+                if any(re.findall(temperature_regex,word["word"])):
+                    new_word = word.copy()
+                    new_word["word"] = word["word"][-1]
+                    #segment["text"] = segment["text"].replace(word["word"][-1]," "+scale)
+                    segment["words"].insert(j+1, new_word)
+                    word["word"] = word["word"][:-1]
+
+                # Case "22°" -> "22" "°"
+                if any(re.findall(degrees_regex, word["word"])):
+                    new_word = word.copy()
+                    new_word["word"] = "°" 
+                    #segment["text"] = segment["text"].replace("°"," ° ")
+                    segment["words"].insert(j+1, new_word)
+                    word["word"] = word["word"][:-1]
+
+                elif any(re.findall(r"\s\.[0-9]+", word["word"])):
+                    new_word = word.copy()
+                    new_word["word"] = word["word"][1:]
+                    segment["words"].insert(j+1, new_word)
+                    word["word"] = "."
+
+                if any(re.findall(big_numer_regex, segment["text"])):
+                    match_ = "".join(re.findall(big_numer_regex, segment["text"])[0])
+                    segment["text"] = segment["text"].replace(match_, match_.replace("-"," - ").replace("."," . "))
+
+                # Sometimes words list don't perfectly match the text: "'attrito della ruota", words: ["attrito","della", "ruota'"]
+                # But "pò" in words and "po'" in text match, TODO Fix with T2K 
+                if word["word"] not in segment["text"] and not (word["word"] == "pò" and "po'" in segment["text"]) :
+                    longest_substring = ''
+                    text = segment["text"]
+                    word_ = word["word"]
+                    for ch_l in range(len(word_)):
+                        for ch_r in range(ch_l + 1, len(word_) + 1):
+                            if word_[ch_l:ch_r] in text and len(word_[ch_l:ch_r]) > len(longest_substring):
+                                longest_substring = word_[ch_l:ch_r]
+                    # Replace the word with the longest substring
+                    word["word"] = longest_substring
+
+                # Random points in words
+                if len(word["word"]) > 1 and word["word"].endswith("."):
+                    new_word = word.copy()
+                    new_word["word"] = "."
+                    word["word"] = word["word"][:-1]
+                    segment["words"].insert(j+1, new_word)
 
 
-def extract_terms_frequency(tagged_transcript:'list[dict]'):
-    #TODO
-    pass
+                # Case "22%" -> "22" "%"
+                elif any(re.findall(number_regex+'%', word["word"])):
+                    new_word = word.copy()
+                    word["word"] = word["word"][:-1]
+                    new_word["word"] = "%"
+                    segment["words"].insert(j+1, new_word)
+
+                if any(re.findall(number_regex+'%', segment["text"])):
+                    segment["text"] = re.sub(r"%([?,.!;:])",r"% \1", segment["text"])
+                    segment["text"] = re.sub(r"([0-9])%",r"\1 %", segment["text"])
+
+
+                # Match with "dell'SiO2" -> split into tokens "dell'" and "SiO2"
+                if len(word["word"].split("'")) > 1 and len(word["word"].split("'")[1]) > 0:
+                    before_apos, after_apos = word["word"].split("'")
+                    new_word = word.copy()
+                    new_word["word"] = after_apos
+                    segment["words"].insert(j+1, new_word)
+                    word["word"] = before_apos+"'"
+
+            for indx in reversed(to_remove_words):
+                del segment["words"][indx]
+
+            segment["text"] = segment["text"].replace("  ", " ")
+            out_sentences.append(segment)
+
+        return out_sentences
+    
+    def _restore_italian_fixes(timed_transcript:list):
+        for sentence in timed_transcript:
+            sentence["text"] = re.sub(r'\s+%', '%', sentence["text"])                           # replace " %" with "%"
+            sentence["text"] = re.sub(r'%\s([?,.!;:])', r'%\1', sentence["text"])               # replace "% ," with "%,"
+            sentence["text"] = re.sub(r"\s([a-zA-Z])\s([?,.!;:])",r" \1\2", sentence["text"])   # replace " A ." with " A."
+            match_ = re.findall(r'(\s-\s)?(\d+)(\s.\s\d{3})+',sentence["text"])                 # find any big number spaced " - 24 . 000" (meno 24 mila)
+            if any(match_):
+                sentence["text"] = sentence["text"].replace("".join(match_[0]), "".join(match_[0]).replace(" ",""))
+        return timed_transcript
+
+    def _apply_english_fixes(self,timed_sentences:list):
+        '''
+        Applies italian specific fixes to the text in order to be correctly analized by ItaliaNLP and matched back
+        Furthemore groups short sentences.
+        '''
+
+        out_sentences = []    
+        accent_replacements = {
+                                  "e'": "è", "E'": "È",
+                                  "o'": "ò", "O'": "Ò",
+                                  "a'": "à", "A'": "À",
+                                  "i'": "ì", "I'": "Ì",
+                                  "u'": "ù", "U'": "Ù", "po'": "pò"
+                              }
+        number_regex = r'(-?\d+(?:\.\d*)?)'
+        big_numer_regex = r'(-?)(\d+)(.\d\d\d)+'
+        degrees_regex = number_regex[:-1] + r'°)'
+        temperature_regex = degrees_regex[:-1] + r'[C|c|F|f|K|k])'
+
+        for i, segment in enumerate(timed_sentences):
+            segment = {"text": segment["text"].lstrip(),
+                       "words": segment["words"],
+                       "start": segment["start"], 
+                       "end": segment["end"]}
+
+            to_remove_words = []
+
+            for j, word in enumerate(segment["words"]):
+                word["word"] = word["word"].lstrip()
+
+                word.pop("tokens",None)
+
+                # Match "fatto," that must be split into tokens "fatto" and "," 
+                if len(word["word"]) > 1 and word["word"][-1] in [",",".","?","!"]:
+                    new_word = word.copy()
+                    new_word["word"] = word["word"][-1]
+                    segment["words"].insert(j+1, new_word)
+                    word["word"] = word["word"][:-1]
+
+                if word["word"][0] == "," and any(re.findall(r',\d+',word["word"])):
+                    new_word = word.copy()
+                    new_word["word"] = word["word"][1:]
+                    word["word"] = word["word"][0]
+                    segment["words"].insert(j+1, new_word)
+                    segment["text"] = segment["text"].replace(",",", ")
+
+                # Realign apostrophe and replace accented words
+                if word["word"].startswith("'"):
+                    segment["words"][j-1]["word"] += "'"
+                    if len(segment["words"][j-1]["word"]) == 2:
+                        for pattern, replacement in accent_replacements.items():
+                            segment["words"][j-1]["word"] = re.sub(pattern, replacement, segment["words"][j-1]["word"])
+                            segment["text"] = re.sub(pattern, replacement, segment["text"])
+                    word["word"] = word["word"][1:]
+
+                # Match math symbol terminology "x'" that should be "x primo" and "E'" that should be "È"
+                elif any(re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])):
+                    match_ = re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])[0]
+                    if match_ in accent_replacements.keys():
+                        replacement = accent_replacements[word["word"]]
+                        segment["text"] = segment["text"].replace(word["word"],replacement)
+                        word["word"] = replacement
+                    # TODO there can be a case like "l'altezza di l'(primo) nel..." in text that can break it
+                    # but make it work would require to rework the structures and map words as indices of the text string
+                    elif any(re.findall(f"{match_}[ .,:?!]",segment["text"])):
+                        word["word"] = word["word"].split("'")[0]
+                        new_word = word.copy()
+                        new_word["word"] = "primo"
+                        segment["words"].insert(j+1,new_word)
+                        segment["text"] = segment["text"].replace(match_,match_[:-1]+" primo")
+                    # fixes some random " l 'apostrofo mal messo" -> " l'apostrofo mal messo"
+                    elif any(re.findall(r"[a-zA-Z]+ '", segment["text"])):
+                        match_ = re.findall(r"[a-zA-Z]+ '", segment["text"])[0]
+                        segment["text"] = segment["text"].replace(match_, match_[:-2]+"'")
+
+                # "di raggio R." separated symbol R -> "di raggio R ." for T2K correct pos tag
+                # TODO check with another video that Whisper AI correctly separates the two words in words list 
+                elif any(re.findall(r"\s[a-zA-Z][?,.!;:]", segment["text"])):
+                    segment["text"] = re.sub(r"\s([a-zA-Z])([?,.!;:])",r" \1 \2", segment["text"])
+
+                # Match "po'" but ignores "anch'" or "dell'" 
+                elif any(re.findall(r"[a-zA-Z]+'", word["word"])) and word["word"].endswith("'") and len(word["word"]) >= 3:
+                    match_ = re.findall(r"[a-zA-Z]+'", word["word"])[0]
+                    if match_ in accent_replacements.keys():
+                        replacement = accent_replacements[word["word"]]
+                        word["word"] = replacement
+
+                # Case "termo" "-idrometrico" -> merged into "termo-idrometrico" for T2K compatibility
+                # can also be "pay-as-you-go" found split into "pay", "-as", "-you", "-go"
+                elif word["word"].startswith("-"):
+                    for head_word in segment["words"][j-1::-1]:
+                        if not head_word["word"].startswith("-"):
+                            break
+                    head_word["word"] = head_word["word"] + word["word"]
+                    head_word["end"] = word["end"]
+                    to_remove_words.append(j)
+
+                # Sometime happened the shift of the apostrophe ["accetta l", "'ipotesi forte"] 
+                # Should not happen due to prior merge
+                #if segment["text"].startswith("'") and not "'" in segment["words"][0] and i > 0:
+                #    segment["text"] = segment["text"][1:]
+                #    timed_sentences[i-1]["text"] += "'"
+                #    timed_sentences[i-1]["words"][-1]["word"] += "'"
+
+                # Case "25°C" -> "25°" "celsius"
+                if any(re.findall(temperature_regex,word["word"])):
+                    new_word = word.copy()
+                    new_word["word"] = word["word"][-1]
+                    #segment["text"] = segment["text"].replace(word["word"][-1]," "+scale)
+                    segment["words"].insert(j+1, new_word)
+                    word["word"] = word["word"][:-1]
+
+                # Case "22°" -> "22" "°"
+                if any(re.findall(degrees_regex, word["word"])):
+                    new_word = word.copy()
+                    new_word["word"] = "°" 
+                    #segment["text"] = segment["text"].replace("°"," ° ")
+                    segment["words"].insert(j+1, new_word)
+                    word["word"] = word["word"][:-1]
+
+                elif any(re.findall(r"\s\.[0-9]+", word["word"])):
+                    new_word = word.copy()
+                    new_word["word"] = word["word"][1:]
+                    segment["words"].insert(j+1, new_word)
+                    word["word"] = "."
+
+                if any(re.findall(big_numer_regex, segment["text"])):
+                    match_ = "".join(re.findall(big_numer_regex, segment["text"])[0])
+                    segment["text"] = segment["text"].replace(match_, match_.replace("-"," - ").replace("."," . "))
+
+                # Sometimes words list don't perfectly match the text: "'attrito della ruota", words: ["attrito","della", "ruota'"]
+                # But "pò" in words and "po'" in text match, TODO Fix with T2K 
+                if word["word"] not in segment["text"] and not (word["word"] == "pò" and "po'" in segment["text"]) :
+                    longest_substring = ''
+                    text = segment["text"]
+                    word_ = word["word"]
+                    for ch_l in range(len(word_)):
+                        for ch_r in range(ch_l + 1, len(word_) + 1):
+                            if word_[ch_l:ch_r] in text and len(word_[ch_l:ch_r]) > len(longest_substring):
+                                longest_substring = word_[ch_l:ch_r]
+                    # Replace the word with the longest substring
+                    word["word"] = longest_substring
+
+                # Random points in words
+                if len(word["word"]) > 1 and word["word"].endswith("."):
+                    new_word = word.copy()
+                    new_word["word"] = "."
+                    word["word"] = word["word"][:-1]
+                    segment["words"].insert(j+1, new_word)
+
+
+                # Case "22%" -> "22" "%"
+                elif any(re.findall(number_regex+'%', word["word"])):
+                    new_word = word.copy()
+                    word["word"] = word["word"][:-1]
+                    new_word["word"] = "%"
+                    segment["words"].insert(j+1, new_word)
+
+                if any(re.findall(number_regex+'%', segment["text"])):
+                    segment["text"] = re.sub(r"%([?,.!;:])",r"% \1", segment["text"])
+                    segment["text"] = re.sub(r"([0-9])%",r"\1 %", segment["text"])
+
+
+                # Match with "dell'SiO2" -> split into tokens "dell'" and "SiO2"
+                if len(word["word"].split("'")) > 1 and len(word["word"].split("'")[1]) > 0:
+                    before_apos, after_apos = word["word"].split("'")
+                    new_word = word.copy()
+                    new_word["word"] = after_apos
+                    segment["words"].insert(j+1, new_word)
+                    word["word"] = before_apos+"'"
+
+            for indx in reversed(to_remove_words):
+                del segment["words"][indx]
+
+            segment["text"] = segment["text"].replace("  ", " ")
+            out_sentences.append(segment)
+
+        return out_sentences
+
+    def _restore_english_fixes(timed_transcript:list):
+        for sentence in timed_transcript:
+            sentence["text"] = re.sub(r'\s+%', '%', sentence["text"])                           # replace " %" with "%"
+            sentence["text"] = re.sub(r'%\s([?,.!;:])', r'%\1', sentence["text"])               # replace "% ," with "%,"
+            sentence["text"] = re.sub(r"\s([a-zA-Z])\s([?,.!;:])",r" \1\2", sentence["text"])   # replace " A ." with " A."
+            match_ = re.findall(r'(\s-\s)?(\d+)(\s.\s\d{3})+',sentence["text"])                 # find any big number spaced " - 24 . 000" (meno 24 mila)
+            if any(match_):
+                sentence["text"] = sentence["text"].replace("".join(match_[0]), "".join(match_[0]).replace(" ",""))
+        return timed_transcript
+
+    def apply_rules(self,timed_transcript:list):
+        if self._lang == "it":
+            return self._apply_italian_fixes(timed_transcript)
+        elif self._lang == "en":
+            return self._apply_english_fixes(timed_transcript)
+    
+    def revert_rules(self,timed_transcript:list):
+        if self._lang == "it":
+            return self._restore_italian_fixes(timed_transcript)
+        elif self._lang == "en":
+            return self._restore_english_fixes(timed_transcript)
+
 
 
 class TextCleaner:

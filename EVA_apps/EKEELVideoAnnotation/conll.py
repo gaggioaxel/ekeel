@@ -335,6 +335,6 @@ def html_interactable_transcript_word_level(sentences):
 
 if __name__ == '__main__':
     from segmentation import VideoAnalyzer
-    vid = VideoAnalyzer("https://www.youtube.com/watch?v=da3NOtH3PXM")
+    vid = VideoAnalyzer("https://www.youtube.com/watch?v=MMzdKTtUIFM")
     print(html_interactable_transcript_word_level(vid.data["transcript_data"]["text"]))
     #print(conll_gen("L94FfnqrJUk",SemanticText("Hello my name is Ekeel","en")))

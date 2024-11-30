@@ -17,7 +17,7 @@ from segmentation import VideoAnalyzer, SemanticText
 from ontology import annotations_to_jsonLD
 from burst_class import create_local_vocabulary, create_burst_graph
 from forms import addVideoForm, RegisterForm, LoginForm, GoldStandardForm, ForgotForm, PasswordResetForm, ConfirmCodeForm, BurstForm
-from words import get_real_keywords, transcript_to_string
+from words import get_real_keywords
 from conll import conll_gen, html_interactable_transcript_legacy, html_interactable_transcript_word_level
 from analysis import compute_data_summary, compute_agreement, linguistic_analysis, fleiss
 from user import User
@@ -251,7 +251,7 @@ def video_selection():
         data = vid_analyzer.data
         
         language = vid_analyzer.identify_language()
-        text = SemanticText(transcript_to_string(data["transcript_data"]["text"]), language)
+        text = SemanticText(" ".join(timed_sentence["text"] for timed_sentence in data["transcript_data"]["text"] if not "[" in timed_sentence['text']), language)
         conll_sentences = conll_gen(video_id,text)
         if vid_analyzer.data["transcript_data"]["is_whisper_transcribed"]:
             #lemmatized_subtitles, all_lemmas = html_interactable_transcript_word_level(data["transcript_data"]["text"], language)
