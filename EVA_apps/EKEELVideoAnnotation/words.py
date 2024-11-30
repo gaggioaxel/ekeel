@@ -43,8 +43,8 @@ except LookupError:
     nltk.download("punkt")
 
 for language in Locale().get_supported_languages():
-    if not { 'en':'en_core_web_sm','it':'it_core_news_sm'}[language] in spacy.util.get_installed_models(): 
-        spacy.cli.download({ 'en':'en_core_web_sm','it':'it_core_news_sm'}[language])
+    if not { 'en':'en_core_web_lg','it':'it_core_news_lg'}[language] in spacy.util.get_installed_models(): 
+        spacy.cli.download({ 'en':'en_core_web_lg','it':'it_core_news_lg'}[language])
 
 
 
@@ -62,7 +62,7 @@ class NLPSingleton():
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(NLPSingleton, cls).__new__(cls)
-            cls._spacy = { 'en':spacy.load('en_core_web_sm'),'it':spacy.load('it_core_news_sm')}
+            cls._spacy = { 'en':spacy.load('en_core_web_lg'),'it':spacy.load('it_core_news_lg')}
         return cls._instance
             
     def lemmatize(self, text:str, lang:str):
@@ -1029,4 +1029,5 @@ def get_timed_sentences(subtitles, sentences: List['str']):
 
 
 if __name__ == '__main__':
+    SemanticText("esempi",language).get_semantic_structure_info()
     pass

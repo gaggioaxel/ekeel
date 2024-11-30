@@ -270,7 +270,61 @@ function closeVocabularyDiv(){
   setConceptSelectionElements("--")
 }
 
-
+/**
+ * Handles the click event on a concept row in the UI.
+ * Highlights the selected concept and its synonyms in the transcript,
+ * updates the transcript selection display, and scrolls to the next occurrence
+ * of the concept or synonym in the transcript.
+ *
+ * @param {Event} e - The click event triggered by the user interaction.
+ * @returns {void}
+ *
+ * Workflow:
+ * 1. **Ignore Trash Icon Clicks**:
+ *    - If the user clicks on the trash icon (with class `fa-trash`), the function exits immediately.
+ *
+ * 2. **Deselect Previous Highlights**:
+ *    - Finds all elements with the `concept` class that are currently highlighted (via `selected-concept-text` or `selected-synonym-text`) 
+ *      and resets their classes to only `concept`.
+ *
+ * 3. **Identify Selected Concept**:
+ *    - Retrieves the concept text from the clicked row, sanitizes it (replacing spaces with underscores), 
+ *      and updates the transcript selection fields (`#transcript-selected-concept` and `#transcript-selected-concept-synonym`).
+ *    - Fetches the synonyms of the selected concept from `$conceptVocabulary` and formats them as a comma-separated string for display.
+ *
+ * 4. **Highlight Concept and Synonyms**:
+ *    - Iterates through all elements with the `concept` class and:
+ *      - Adds the `selected-concept-text` class to elements that match the selected concept.
+ *      - Adds the `selected-synonym-text` class to elements that match any synonym of the selected concept.
+ *
+ * 5. **Group Occurrences**:
+ *    - Finds all occurrences of the selected concept (`.selected-concept-text`) and groups consecutive elements representing 
+ *      multi-word concepts into arrays.
+ *    - Similarly groups occurrences of synonyms (`.selected-synonym-text`), ensuring that multi-word synonyms are handled correctly.
+ *
+ * 6. **Handle Focus and Navigation**:
+ *    - Determines the currently focused occurrence and removes its focus.
+ *    - Advances to the next occurrence in the list (or wraps to the first occurrence if at the end).
+ *    - Updates the focus attribute of the new occurrence.
+ *
+ * 7. **Scroll to Element**:
+ *    - Smoothly scrolls the next focused occurrence into view, centering it in the viewport.
+ *
+ * @dependencies:
+ * - Global variables:
+ *   - `$conceptVocabulary`: Object storing concepts and their synonyms.
+ * - Uses the following DOM elements:
+ *   - `.concept-row`: Rows representing concepts in the UI.
+ *   - `.concept`: Elements marked with the `concept` attribute.
+ *   - `#transcript`: Container holding the transcript content.
+ *   - `#transcript-selected-concept`: Displays the currently selected concept.
+ *   - `#transcript-selected-concept-synonym`: Displays the synonyms of the selected concept.
+ * - Assumes all concepts and synonyms are annotated in the DOM with a `concept` attribute.
+ *
+ * @example
+ * // Triggered by clicking on a row with class `concept-row`.
+ * $(".concept-row").trigger("click");
+ */
 $(document).on("click", ".concept-row", function (e) {
 
   // ignore clicks on the trash
@@ -557,7 +611,59 @@ function addSynonym(){
   showMsg("printMessageSynonymAdd", "green")
 }
 
-
+/**
+ * Removes a synonym from the currently selected synonym set.
+ * 
+ * This function handles the removal of a specified synonym word from the selected 
+ * synonym set in the global `$conceptVocabulary`. It validates the input, updates 
+ * the vocabulary, and refreshes the user interface to reflect the change.
+ * 
+ * @returns {void}
+ * 
+ * Workflow:
+ * 1. **Input Validation**:
+ *    - Checks if the input field `#synonymWord` is empty. If so, displays an error 
+ *      message ("empty field !") in the `#printMessageSynonymAdd` element and exits.
+ *    - Checks if no synonym set is currently selected (`$synonymList` is empty). If so, 
+ *      displays an error message ("select a synonym set !") and exits.
+ *    - Verifies that the word entered is a concept. If not, displays an error 
+ *      message ("the word typed is not a concept !") and exits.
+ *    - Verifies that the word is part of the selected synonym set. If not, displays 
+ *      an error message ("the word typed is not in the selected synonym set !") and exits.
+ * 
+ * 2. **Update Vocabulary**:
+ *    - Clears all synonyms associated with the target word in `$conceptVocabulary`.
+ *    - Removes the target word from the synonym lists of all other words in the synonym set.
+ * 
+ * 3. **Update UI**:
+ *    - Calls `showVocabulary` to refresh the vocabulary view.
+ *    - Updates the synonym set selection dropdown to default to the first synonym 
+ *      in the updated list (if any).
+ *    - Clears the input field `#synonymWord`.
+ *    - Displays a success message ("word successfully removed from the synonyms set") 
+ *      in `#printMessageSynonymAdd`.
+ * 
+ * 4. **Database Update**:
+ *    - Calls `uploadManuGraphOnDB()` to persist the updated vocabulary data to the database.
+ * 
+ * @example
+ * // Example usage:
+ * removeSynonym();
+ * 
+ * @dependencies:
+ * - Global variables:
+ *   - `$conceptVocabulary`: Object storing concept vocabulary and their associated synonyms.
+ *   - `$synonymList`: Array containing the currently selected synonym set.
+ *   - `$concepts`: Array storing all concepts.
+ * - Uses the following DOM elements:
+ *   - `#synonymWord`: Input field for the synonym to remove.
+ *   - `#printMessageSynonymAdd`: Element for displaying messages to the user.
+ *   - `#selectSynonymSet`: Dropdown for selecting synonym sets.
+ * - Calls external functions:
+ *   - `showVocabulary`: Updates the displayed vocabulary.
+ *   - `uploadManuGraphOnDB`: Saves updated vocabulary data to the database.
+ *   - `selectSynonymSet`: Handles UI updates when a synonym set is selected.
+ */
 function removeSynonym(){
 
   let synonymToRemove = document.getElementById("synonymWord").value
@@ -607,6 +713,58 @@ function removeSynonym(){
   showMsg("printMessageSynonymAdd", "green")
 }
 
+/**
+ * Removes a concept and its related elements from the UI and internal data structures.
+ * 
+ * This function handles the deletion of a concept and its synonyms from the global 
+ * `$conceptVocabulary`, `$concepts` array, and the DOM elements where the concept 
+ * appears. It also updates the user interface to reflect the removal.
+ * 
+ * @param {HTMLElement} button 
+ *        The button element that triggered the removal.
+ * 
+ * @param {string} concept 
+ *        The concept to be removed, represented as a string.
+ * 
+ * Workflow:
+ * 1. **Remove Row from Table**:
+ *    - Slides up the closest container (div) of the button that triggered the action 
+ *      and removes it from the DOM. #TODO removal works but animation does not work and can't figure out why  
+ * 
+ * 2. **Update Vocabulary**:
+ *    - Deletes the concept and its synonyms from the `$conceptVocabulary`.
+ *    - Removes the concept from the synonym lists of other concepts.
+ *    - Calls `showVocabulary` to refresh the displayed vocabulary.
+ * 
+ * 3. **Update Concepts Array**:
+ *    - Finds and removes the concept from the `$concepts` array.
+ * 
+ * 4. **Remove Concept Class and Attributes from Transcript**:
+ *    - Identifies all elements in the transcript where the concept is tagged.
+ *    - Removes the `concept` attribute and the `concept` class from these elements.
+ *    - Ensures elements no longer associated with any concept have their `concept` 
+ *      class removed.
+ * 
+ * 5. **Clear Selected Concept Fields**:
+ *    - Updates the fields `#transcript-selected-concept` and `#transcript-selected-concept-synonym` 
+ *      to show `--` (indicating no selected concept or synonym).
+ * 
+ * 6. **Remove Associated Definition Div**:
+ *    - Deletes the sidebar div (if it exists) that displays the concept definition.
+ * 
+ * 7. **Database Update**:
+ *    - Calls `uploadManuGraphOnDB()` to persist the updated concept data to the database.
+ * 
+ * @example
+ * // Example usage:
+ * removeConcept(document.querySelector('#deleteButton'), 'hardware resources');
+ * 
+ * @dependencies:
+ * - Relies on global variables `$conceptVocabulary` (object storing concept vocabulary) 
+ *   and `$concepts` (array storing all concepts).
+ * - Uses jQuery for DOM manipulation and event handling.
+ * - Calls external functions `showVocabulary` and `uploadManuGraphOnDB`.
+ */
 function removeConcept(button, concept){
   //rimuovo riga della tabella
   $(button).closest('div').slideUp("slow", function() {
@@ -653,6 +811,44 @@ function removeConcept(button, concept){
   uploadManuGraphOnDB()
 }
 
+/**
+ * Displays a confirmation box for deleting a concept and handles user input.
+ * 
+ * This function dynamically creates a modal-like confirmation box near the specified button
+ * to confirm whether the user wants to delete the selected concept. The confirmation box
+ * contains "Yes" and "No" buttons, along with support for keyboard navigation using arrow keys
+ * and selection using the ENTER key.
+ * 
+ * @param {HTMLElement} button 
+ *        The button element that triggered the confirmation box.
+ * 
+ * @param {*} concept 
+ *        The concept object to be deleted upon confirmation.
+ * 
+ * Workflow:
+ * 1. Removes any existing confirmation box (`#confirmDeleteConceptBox`).
+ * 2. Dynamically creates a new confirmation box with the following properties:
+ *    - Styled with absolute positioning and CSS for alignment and appearance.
+ *    - Contains a title with confirmation text and a note about keyboard navigation.
+ *    - Includes two buttons: "Yes" to confirm deletion and "No" to cancel.
+ * 3. Button functionality:
+ *    - "No": Closes the confirmation box and restores normal UI behavior.
+ *    - "Yes": Calls the `removeConcept` function to delete the concept and closes the box.
+ * 4. Adds keyboard navigation:
+ *    - Left Arrow (`ArrowLeft`): Focuses the "No" button.
+ *    - Right Arrow (`ArrowRight`): Focuses the "Yes" button.
+ *    - Enter (`Enter`): Triggers the focused button's click event.
+ * 5. Fades in the confirmation box and sets the initial focus to the "No" button.
+ * 6. Removes keyboard navigation and cleans up the box upon closure.
+ * 
+ * Dependencies:
+ * - Uses jQuery for DOM manipulation and event handling.
+ * - Relies on the external `removeConcept` function to handle concept deletion.
+ * 
+ * @example
+ * // Example usage:
+ * confirmConceptDelete(document.querySelector('#deleteButton'), conceptObject);
+ */
 function confirmConceptDelete(button, concept){
 
   $("#confirmDeleteConceptBox").remove()
@@ -789,7 +985,39 @@ function deleteConcept(button,concept) {
   confirmConceptDelete(button, concept);
 }
 
-/* highlight a concept in a div with id div_id */
+
+/**
+ * Processes a given concept to identify and tag its occurrences in the transcript.
+ * 
+ * This function uses lemmatization data and other attributes of the concept to find matching words or 
+ * phrases in the transcript. It handles single-word concepts as well as multi-word concepts, including
+ * cases where the concept spans multiple spans of text or lines in the transcript. It also considers 
+ * syntactic and grammatical features to ensure accurate tagging.
+ * 
+ * @param {*} concept 
+ *        An object representing the concept to be processed. It contains the following properties:
+ *        - `text` (String): The textual representation of the concept.
+ *        - `lemmatization_data` (Object): Data related to lemmatization of the concept, including:
+ *          - `tokens` (Array): An array of token objects, where each token has properties `word` and `lemma`.
+ *          - `head_indx` (Number): The index of the head token in the `tokens` array.
+ * 
+ * @returns {String|null} 
+ *          The identified lemma of the concept if a match is found; otherwise, `null`.
+ * 
+ * Workflow:
+ * 1. Identify all elements in the transcript matching the first term of the concept using lemma or word comparisons.
+ * 2. For single-word concepts:
+ *    - Count occurrences of the word and prioritize the most frequent or grammatically appropriate match.
+ * 3. For multi-word concepts:
+ *    - Start from the head term and attempt to match subsequent words.
+ *    - Handle cases where:
+ *      - Words are split across spans.
+ *      - Words are merged into a single token in the transcript.
+ *    - Allow for a tolerance of unrelated words or punctuation within the concept.
+ *    - Stop matching on encountering terminal punctuation (e.g., ".", "!", "?") or a verb.
+ * 4. Tag matching spans with the identified concept using the "concept" attribute.
+ * 5. If no exact match for the head term is found, fallback to the most frequent or closest match.
+ */
 function selectConcept(concept) {
   
   let words = concept.lemmatization_data.tokens
@@ -994,7 +1222,6 @@ function toggleAnnotationStatus(){
   const checkbox = document.querySelector(".switch input");
   isCompleted = checkbox.checked;
   uploadManuGraphOnDB();
-
 }
 
 function toggleAskConfirmConceptDelete(){
