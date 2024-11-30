@@ -877,7 +877,7 @@ function selectConcept(concept) {
 
       if(nextSpan[0] !== undefined){
 
-        nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text(), $(nextSpan[0]).attr("num")]
+        nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text(), $(nextSpan[0]).attr("num"), $(nextSpan[0]).attr("pos")]
         //nextWord = nextSpan[0].attributes[0].nodeValue
         currentSpan = nextSpan[0]
 
@@ -891,12 +891,14 @@ function selectConcept(concept) {
           if(nextRow !== undefined){
               currentSpan = nextRow.find("span")[0]
               if(currentSpan !== undefined)
-                nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text(), $(currentSpan).attr("num")]
+                nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text(), $(currentSpan).attr("num"),$(currentSpan).attr("pos")]
           }
       }
+      // transcript is finished
       if (!nextWord.length){
         isConcept = false
         break
+      // found the word in one of possible variant matches
       } else if (nextWord[0] == words[j].word || 
           nextWord[1] == words[j].word || 
           nextWord[0] == words[j].lemma||
@@ -908,13 +910,15 @@ function selectConcept(concept) {
         if(j == head_indx && nextWord[2] == "s")
           foundSingularTerm = true
 
-      // multiword has been split in the concept but merged in the transcript
+      // multiword has been split in the input concept but merged in the transcript
       } else if(nextWord[1].includes(words[j].word)){
         for(jj=j; jj < words.length; jj++){
+          // last part of the concept
           if(nextWord[1].endsWith(words[jj].word)){
             j = jj
             allSpan.push(currentSpan)
             break
+          // one part does not match 
           } else if(!nextWord[1].includes(words[jj].word)){
             isConcept = false
             break
@@ -923,13 +927,24 @@ function selectConcept(concept) {
         if(!isConcept)
           break
 
+      // we have still tolerance
       } else if(num_words_tol > 0) {
+        // found a new word that matches the first word of the concept
+        // will keep on next iteration
         if(words[0].word == nextWord[0] || words[0].word == nextWord[1]){
           isConcept = false
           break
-        } else if(![",",".","?","!"].includes(nextWord[1])) // punctuation doesn't count in words count tol
-          num_words_tol--;
+        // commas don't count in words count tol
+        } else if([","].includes(nextWord[1]))
+          num_words_tol++;
+        // other punctuation elements terminate the search
+        // also if a verb occurr, meaning there is a new syntactic period 
+        else if([".","!","?"].includes(nextWord[1]) || nextWord[3] == "V"){
+          isConcept = false
+          break
+        }
         j--;
+        num_words_tol--;
       } else {
         isConcept = false
         break
