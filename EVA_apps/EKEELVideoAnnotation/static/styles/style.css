@@ -265,7 +265,7 @@ input[type=submit] {
   overflow-y: scroll;
 }
 
-.autocomplete-items-custom2 {
+.autocomplete-items-input {
   position: absolute;
   border: 1px solid #d4d4d4;
   z-index: 99;

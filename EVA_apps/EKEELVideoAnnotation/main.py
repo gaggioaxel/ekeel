@@ -277,8 +277,8 @@ def video_selection():
                 lemmatized_concepts.append(sem_text.set_text(concept).get_semantic_structure_info())
         
         # If the concept vocabulary is new (empty) in DB then initialize it from the terms extracted
-        if conceptVocabulary is None :
-            lemmatized_concepts = [SemanticText(term["term"].lower(),language).get_semantic_structure_info() for term in vid_analyzer.data["transcript_data"]["terms"]]
+        if conceptVocabulary is None:
+            lemmatized_concepts = [SemanticText(term["term"].lower() if term["term"].istitle() else term["term"],language).get_semantic_structure_info() for term in vid_analyzer.data["transcript_data"]["terms"]]
             #-----------------------------------------------------------------
             # 1) Automatically obtain synonyms using wordnet NLTK
             #

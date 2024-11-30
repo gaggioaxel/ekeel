@@ -1,9 +1,25 @@
-autocomplete(document.getElementById("prerequisite"), $concepts, []);
-//autocomplete(document.getElementById("targetSelector"), $concepts, []);
-autocomplete(document.getElementById("conceptDescribed"), $concepts, []);
-autocomplete(document.getElementById("selectSynonymSet"), $concepts, ["autocomplete-items-custom1"]);
-autocomplete(document.getElementById("synonymWord"), $concepts, ["autocomplete-items-custom1"]);
 
+document.addEventListener("DOMContentLoaded", function () {
+  if (document.getElementById("prerequisite")) {
+    autocomplete(document.getElementById("prerequisite"), $concepts, []);
+  }
+
+  if (document.getElementById("conceptDescribed")) {
+    autocomplete(document.getElementById("conceptDescribed"), $concepts, []);
+  }
+
+  if (document.getElementById("selectSynonymSet")) {
+    autocomplete(document.getElementById("selectSynonymSet"), $concepts, []);
+  }
+
+  if (document.getElementById("synonymWord")) {
+    autocomplete(document.getElementById("synonymWord"), $concepts, []);
+  }
+
+  if (document.getElementById("searchbar")) {
+    autocomplete(document.getElementById("searchbar"), $(".video_title").map((_, elem) => elem.innerText).get(), []);
+  }
+});
 
 function autocomplete(inp, arr, classes) {
   /*the autocomplete function takes two arguments,
@@ -29,16 +45,18 @@ function autocomplete(inp, arr, classes) {
       this.parentNode.appendChild(a);
       /*for each item in the array...*/
       let counter = 0;
-      for (i = 0; i < arr.length; i++) {
+      for (let i = 0; i < arr.length; i++) {
         /*check if the item starts with the same letters as the text field value:*/
-        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+        if (arr[i].toLowerCase().includes(val.toLowerCase())) {
 
           counter++;
           /*create a DIV element for each matching element:*/
           b = document.createElement("DIV");
           /*make the matching letters bold:*/
-          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-          b.innerHTML += arr[i].substr(val.length);
+          let indices = [arr[i].toLowerCase().indexOf(val.toLowerCase()), arr[i].toLowerCase().indexOf(val.toLowerCase())+val.length]
+          b.innerHTML = arr[i].slice(0,indices[0]) + `<strong>${arr[i].slice(indices[0],indices[1])}</strong>` + arr[i].slice(indices[1]);
+          //b.innerHTML = b.innerHTML.replace(val.toLowerCase(), `<strong>${val.toLowerCase()}</strong>`)
+          //b.innerHTML += arr[i].substr(val.length);
           /*insert a input field that will hold the current array item's value:*/
           b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
           /*execute a function when someone clicks on the item value (DIV element):*/

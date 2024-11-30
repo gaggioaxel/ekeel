@@ -1,22 +1,33 @@
 function search_video(){
 
-  let input, filter, titles, a, i, txtValue;
 
-  input = document.getElementById('searchbar');
-  filter = input.value.toUpperCase();
+  let filter = document.getElementById('searchbar').value.toUpperCase();
   console.log(filter)
 
-  titles = document.getElementsByClassName("video_title")
+  const titles = document.getElementsByClassName("video_title")
 
   // Loop through all list items, and hide those who don't match the search query
-  for (i = 0; i < titles.length; i++) {
+  for (let i = 0; i < titles.length; i++) {
 
-    txtValue = titles[i].innerText;
-    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+    if (titles[i].innerText.toUpperCase().indexOf(filter) > -1) {
       titles[i].parentElement.style.display = "";
-      console.log(txtValue.toUpperCase().indexOf(filter))
+      //console.log(txtValue.toUpperCase().indexOf(filter))
     } else {
       titles[i].parentElement.style.display = "none";
+    }
+  }
+
+  // Hide parent creator group divs if they are empty
+  const creatorGroups = document.getElementsByClassName("creator-group");
+  for (let group of creatorGroups) {
+    const visibleVideos = Array.from(group.getElementsByClassName("video_title"))
+                               .filter(video => video.parentElement.style.display !== "none");
+    
+    // Check if the group contains any visible videos
+    if (visibleVideos.length === 0) {
+      group.style.display = "none"; // Hide the empty group
+    } else {
+      group.style.display = ""; // Show the group if it contains visible videos
     }
   }
 

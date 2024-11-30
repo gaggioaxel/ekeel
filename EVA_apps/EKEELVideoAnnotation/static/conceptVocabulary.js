@@ -1105,7 +1105,7 @@ function selectConcept(concept) {
 
       if(nextSpan[0] !== undefined){
 
-        nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text(), $(nextSpan[0]).attr("num"), $(nextSpan[0]).attr("pos")]
+        nextWord = [$(nextSpan[0]).attr("lemma"), $(nextSpan[0]).text(), $(nextSpan[0]).attr("num"), $(nextSpan[0]).attr("pos"), $(nextSpan[0]).attr("gen")]
         //nextWord = nextSpan[0].attributes[0].nodeValue
         currentSpan = nextSpan[0]
 
@@ -1119,7 +1119,7 @@ function selectConcept(concept) {
           if(nextRow !== undefined){
               currentSpan = nextRow.find("span")[0]
               if(currentSpan !== undefined)
-                nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text(), $(currentSpan).attr("num"),$(currentSpan).attr("pos")]
+                nextWord = [$(currentSpan).attr("lemma"), $(currentSpan).text(), $(currentSpan).attr("num"),$(currentSpan).attr("pos"),$(currentSpan).attr("gen")]
           }
       }
       // transcript is finished
@@ -1166,8 +1166,8 @@ function selectConcept(concept) {
         } else if([","].includes(nextWord[1]))
           num_words_tol++;
         // other punctuation elements terminate the search
-        // also if a verb occurr, meaning there is a new syntactic period 
-        else if([".","!","?"].includes(nextWord[1]) || nextWord[3] == "V"){
+        // also if a verb (form not indefinite eg. infinite, gerund, participle) occurr, meaning there is a new syntactic period 
+        else if([".","!","?"].includes(nextWord[1]) || (nextWord[3] == "V" && !nextWord[4])){
           isConcept = false
           break
         }
