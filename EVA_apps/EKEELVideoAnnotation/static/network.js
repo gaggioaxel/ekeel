@@ -14,7 +14,7 @@ function downloadTranscript(){
     	let sentence = {    
             "start_time":parseFloat(sentenceElem.getAttribute("data-start")),
     		"end_time":parseFloat(sentenceElem.getAttribute("data-end")),
-    		"sentence":sentenceElem.innerText.split(":").splice(-1)[0],
+    		"sentence":sentenceElem.innerText.split(": ").splice(-1)[0],
     		"words": []
         }
     	$(sentenceElem).find("span").each(function(_, lemmaElem) {
