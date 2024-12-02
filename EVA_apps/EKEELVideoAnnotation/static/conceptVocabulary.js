@@ -985,6 +985,7 @@ function deleteConcept(button,concept) {
   confirmConceptDelete(button, concept);
 }
 
+MAX_TOL_WORDS = 8
 
 /**
  * Processes a given concept to identify and tag its occurrences in the transcript.
@@ -1020,8 +1021,8 @@ function deleteConcept(button,concept) {
  */
 function selectConcept(concept) {
   
-  let words = concept.lemmatization_data.tokens
-  let firstTerm = words[0]
+  let concept_words = concept.lemmatization_data.tokens
+  let firstTerm = concept_words[0]
   
   let elements = $("#transcript span[lemma]").filter(function() {
     let this_query = $(this)
@@ -1035,8 +1036,10 @@ function selectConcept(concept) {
   })
   if(!elements.length)
     return null
+
+  // Concept made of a single word
   // It must be the head
-  if(words.length == 1) {
+  if(concept_words.length == 1) {
     let occurrences = {};
     elements.each(function() {
       let textContent = $(this).text();
@@ -1067,9 +1070,9 @@ function selectConcept(concept) {
       conceptElem.classList.add("concept");
     });
     return conceptLemma
-
   } 
     
+  // Concept made of multiple words
   let occurrences = [];
   let allSpansPerConcept = []
 
@@ -1087,18 +1090,18 @@ function selectConcept(concept) {
       foundSingularTerm = true
     let currentSpan = this
     let isConcept = true
-    let num_words_tol = 8 // number of words of tolerance to skip when looking for a concept 
+    let num_words_tol = MAX_TOL_WORDS // number of words of tolerance to skip when looking for a concept 
     // (concept = "poligono concavo", words in text "il poligono e' sempre e solo concavo" )
     
     let nextWord = [$(this).attr("lemma"), $(this).text()]
     let j = 0
-    if(!nextWord.some(word => word == words[0].word || word == words[0].lemma)) // partial match
-      for(let jj=j; jj < words.length; jj++)
-        if(nextWord[1].endsWith(words[jj].word))
+    if(!nextWord.some(word => word == concept_words[0].word || word == concept_words[0].lemma)) // partial match
+      for(let jj=j; jj < concept_words.length; jj++)
+        if(nextWord[1].endsWith(concept_words[jj].word))
           j = jj
           
 
-    for( j++; j<words.length; j++){
+    for( j++; j<concept_words.length; j++){
 
       let nextSpan =  $(currentSpan).nextAll('span:first')
       nextWord = []
@@ -1127,39 +1130,47 @@ function selectConcept(concept) {
         isConcept = false
         break
       // found the word in one of possible variant matches
-      } else if (nextWord[0] == words[j].word || 
-          nextWord[1] == words[j].word || 
-          nextWord[0] == words[j].lemma||
-          nextWord[1] == words[j].lemma ) {
+      } else if (nextWord[0].toLowerCase() == concept_words[j].word || 
+          nextWord[1].toLowerCase() == concept_words[j].word        || 
+          nextWord[0].toLowerCase() == concept_words[j].lemma       ||
+          nextWord[1].toLowerCase() == concept_words[j].lemma){
         allSpan.push(currentSpan)
-        num_words_tol = 8
+        num_words_tol = MAX_TOL_WORDS
         
         // head word is num singular
         if(j == head_indx && nextWord[2] == "s")
           foundSingularTerm = true
 
       // multiword has been split in the input concept but merged in the transcript
-      } else if(nextWord[1].includes(words[j].word)){
-        for(jj=j; jj < words.length; jj++){
+      // skip words of the concept
+      } else if(nextWord[1].toLowerCase().includes(concept_words[j].word)){
+        for(jj=j; jj < concept_words.length; jj++){
           // last part of the concept
-          if(nextWord[1].endsWith(words[jj].word)){
+          if(nextWord[1].toLowerCase().endsWith(concept_words[jj].word)){
             j = jj
             allSpan.push(currentSpan)
             break
           // one part does not match 
-          } else if(!nextWord[1].includes(words[jj].word)){
+          } else if(!nextWord[1].toLowerCase().includes(concept_words[jj].word)){
             isConcept = false
             break
           }
         }
         if(!isConcept)
           break
+      
+      // concept may be unitary term but split in transcript ("3","D" and term "3D") part of the concept
+      } else if(concept_words[j].word.includes(nextWord[1].toLowerCase())) {
+        allSpan.push(currentSpan)
+        if(!concept_words[j].word.endsWith(nextWord[1].toLowerCase()))
+          j--;
+        num_words_tol = MAX_TOL_WORDS
 
       // we have still tolerance
       } else if(num_words_tol > 0) {
         // found a new word that matches the first word of the concept
         // will keep on next iteration
-        if(words[0].word == nextWord[0] || words[0].word == nextWord[1]){
+        if(concept_words[0].word == nextWord[0] || concept_words[0].word == nextWord[1]){
           isConcept = false
           break
         // commas don't count in words count tol

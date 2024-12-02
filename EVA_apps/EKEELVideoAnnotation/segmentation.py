@@ -766,11 +766,16 @@ class VideoAnalyzer:
 
         db_mongo.insert_video_data(self.data)
     
-    def request_terms(self):
-        if "terms" in self.data["transcript_data"].keys() and any(self.data["transcript_data"]["terms"]):
-            return
+    def request_terms(self, _debug_recompute:bool=True):
+        if not _debug_recompute:
+            if "terms" in self.data["transcript_data"].keys() and any(self.data["transcript_data"]["terms"]):
+                return
         
-        terms = ItaliaNLAPI().execute_term_extraction(self.data["transcript_data"]["ItaliaNLP_doc_id"], self.identify_language())
+        language = self.identify_language()
+        if language == "it":
+            terms = ItaliaNLAPI().execute_term_extraction(self.data["transcript_data"]["ItaliaNLP_doc_id"])
+        elif language == "en":
+            terms = extract_keywords_LEGACY(" ".join(timed_sentence["text"] for timed_sentence in self.data["transcript_data"]["text"] if not "[" in timed_sentence['text']))
         self.data["transcript_data"].update({"terms": terms.to_dict('records')})
         db_mongo.insert_video_data(self.data)
         
@@ -1210,12 +1215,7 @@ class VideoAnalyzer:
         return added_concepts,burst_concepts
 
 
-
-def workers_queue_scheduler(queue:'ListProxy[any]'):
-    '''
-    Creates a separated process that runs the segmentation of every video in the queue
-    '''
-    Process(target=_run_jobs,args=(queue,)).start()    
+ 
 
 
 
@@ -1230,7 +1230,7 @@ if __name__ == '__main__':
         print(video)
         vid_analyzer = VideoAnalyzer(f"https://www.youtube.com/watch?v={video['video_id']}")
         #vid_analyzer.data["transcript_data"]["terms"] = []
-        vid_analyzer.analyze_transcript()
+        vid_analyzer.request_terms()
         #vid_analyzer.request_terms()
         #vid_analyzer.filter_terms()
         #vid_analyzer.analyze_transcript()

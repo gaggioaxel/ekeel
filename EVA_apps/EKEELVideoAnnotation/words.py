@@ -18,6 +18,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from fuzzywuzzy.fuzz import partial_ratio, ratio
 from nltk.tokenize import sent_tokenize
 import nltk
+from rake_nltk import Rake
+from pandas import DataFrame
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
 
@@ -31,6 +33,11 @@ from conll import conll_gen
 #    nltk.data.find('corpora/wordnet')
 #except LookupError:
 #    nltk.download("wordnet")
+
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download("stopwords")
 
 try:
     nltk.data.find('corpora/words')
@@ -977,7 +984,30 @@ def get_timed_sentences(subtitles, sentences: List['str']):
     """
     return timed_sentences
 
+def extract_keywords_LEGACY(text:str,maxWords=3,minFrequency=1):
+    r = Rake(max_length=maxWords)
+    r.extract_keywords_from_text(text)
+    ranks_and_keywords = r.get_ranked_phrases_with_scores()
+    concepts_stored = set()
+    nlp = NLPSingleton()
+    words_lemmas = {}
+    for i, (score,term) in enumerate(ranks_and_keywords):
+        lemma = " ".join([token.lemma_ for token in nlp.lemmatize(term,"en")])
+        if not lemma in words_lemmas.keys():
+            words_lemmas[lemma] = True
+        else:
+            ranks_and_keywords[i] = (score,lemma)
 
+    counts = dict(Counter(list(map(lambda x: x[1], ranks_and_keywords))))
+    out_concepts = [{"term":key, "frequency":value, "domain_relevance":100} for key, value in counts.items() if value > minFrequency]
+    for concept in out_concepts:
+        concepts_stored.add(concept["term"])
+    for (score, key) in ranks_and_keywords[:15]:
+        if key not in concepts_stored:
+            out_concepts.append({"term":key, "frequency":counts[key], "domain_relevance":100})
+            concepts_stored.add(key)
+            
+    return DataFrame(out_concepts)
 
 if __name__ == '__main__':
     from segmentation import VideoAnalyzer

@@ -692,18 +692,7 @@ def video_segmentation_refinement():
 def lemmatize_term():
     language = request.json["lang"]
     concept = request.json["concept"]
-    if language == "en":
-        sem_text = SemanticText("", language=language)
-        return {}
-        return {"lemmatized_term": " ".join(sem_text.set_text(word).lemmatize() for word in term["text"].split(" "))}
-    elif language == "it":
-        #VideoAnalyzer(url= "https://www.youtube.com/watch?v="+video_id, \
-        #              request_fields_from_db=["video_id"]) \
-        #            .lemmatize_an_italian_term(term)
-        #print(f"chosen: {term['lemma']}")
-        #return {"lemmatized_term": term["lemma"]}
-        return SemanticText(concept,language).get_semantic_structure_info()
-    raise Exception("not implemented")
+    return SemanticText(concept,language).get_semantic_structure_info()
     
 
 DEBUG = False

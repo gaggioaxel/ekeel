@@ -80,11 +80,7 @@ class ItaliaNLAPI():
 
 
     
-    def execute_term_extraction(self, doc_id, language:str, configuration=None, apply_contrast=True, n_try=60) -> DataFrame:
-        
-        if language != "it":
-            return DataFrame(columns=["term", "domain_relevance", "frequency"])
-        
+    def execute_term_extraction(self, doc_id, configuration=None, apply_contrast=True, n_try=60) -> DataFrame:
         if configuration is None:
             configuration = self._term_extraction_configs['alzetta-conf'+"-no-contrast"*(not apply_contrast)]
         
