@@ -766,7 +766,7 @@ class VideoAnalyzer:
 
         db_mongo.insert_video_data(self.data)
     
-    def request_terms(self, _debug_recompute:bool=True):
+    def request_terms(self, _debug_recompute:bool=False):
         if not _debug_recompute:
             if "terms" in self.data["transcript_data"].keys() and any(self.data["transcript_data"]["terms"]):
                 return
