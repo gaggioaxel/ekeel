@@ -30,13 +30,14 @@ def reset_password(email, password):
         users.update_one(query, new)
         
 def remove_annotations_data(video_id:str, user:dict=None):
-    if user is None:
-        while True:
-            doc = db.graphs.find_one_and_delete({"video_id":video_id})
-            if doc is None:
-                return
+    for coll in [db.graphs, db.conlls]:
+        if user is None:
+            while True:
+                doc = coll.find_one_and_delete({"video_id":video_id})
+                if doc is None:
+                    return
     
-    doc = db.graphs.find_one_and_delete({"video_id":video_id, "annotator_id": user["id"], "annotator_name": user["name"]})
+    [coll.find_one_and_delete({"video_id":video_id, "annotator_id": user["id"], "annotator_name": user["name"]}) for coll in [db.graphs, db.conlls]]
     
             
 

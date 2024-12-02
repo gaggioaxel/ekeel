@@ -252,7 +252,7 @@ def video_selection():
         
         language = vid_analyzer.identify_language()
         text = SemanticText(" ".join(timed_sentence["text"] for timed_sentence in data["transcript_data"]["text"] if not "[" in timed_sentence['text']), language)
-        conll_sentences = conll_gen(video_id,text)
+        conll_sentences = conll_gen(video_id,text,language)
         if vid_analyzer.data["transcript_data"]["is_whisper_transcribed"]:
             #lemmatized_subtitles, all_lemmas = html_interactable_transcript_word_level(data["transcript_data"]["text"], language)
             #all_lemmas = vid_analyzer.data["transcript_data"]["lemmas"]

@@ -230,14 +230,6 @@ span.current-marker {
     background-color: rgba(255, 255, 0, 0.76);
 }
 
-.concept:not(:has(> *)) {
-    margin-right: 4px;
-}
-
-.concept > * {
-    margin-right: 4px;
-}
-
 .highlighted-text {
     text-decoration: underline !important;
     font-weight: 600 !important;

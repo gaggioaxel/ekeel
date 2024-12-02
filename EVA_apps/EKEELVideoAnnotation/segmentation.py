@@ -742,10 +742,10 @@ class VideoAnalyzer:
             raise Exception(f"Language is not between supported ones: {locale.get_supported_languages()}")
         return self.data['language'] if format =='pt1' else locale.get_full_from_pt1(self.data['language'])
 
-    def analyze_transcript(self, async_call:bool=False, _reload_from_json=False):
+    def analyze_transcript(self, _debug_reload_from_json=False):
 
         #assert self.identify_language() == "it", "implementation error cannot analyze other language transcripts here"
-        if _reload_from_json:
+        if _debug_reload_from_json:
             self.data["transcript_data"].pop("ItaliaNLP_doc_id", None)
             from pathlib import Path
             from json import load
@@ -756,92 +756,12 @@ class VideoAnalyzer:
         
         timed_transcript = self.data["transcript_data"]["text"].copy()        
         language = self.identify_language()
-        wh_to_T2k = WhisperToT2K(language)
-        timed_transcript = wh_to_T2k.apply_rules(wh_to_T2k.group_short_sentences(timed_transcript))
-        string_transcript = " ".join(timed_sentence["text"] for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
-        timed_transcript = wh_to_T2k.revert_rules(timed_transcript)
-        
-        api_obj = ItaliaNLAPI()
-        doc_id = api_obj.upload_document(string_transcript, language=language, async_call=async_call)
-        
-        tagged_sentences = api_obj.wait_for_pos_tagging(doc_id)
-        
-        tagged_transcript = {"full_text":"", "words":[]}
-        for sentence in tagged_sentences:
-            tagged_transcript["full_text"] += sentence["sentence"]+" "
-            for word in sentence["words"]:
-                # append the word from NLPTranscript but remove "-" from for example "inviar-", "li"
-                word = {"word":     word["word"] if len(word["word"]) == 1 or (len(word["word"]) > 1 and not word["word"].endswith("-")) else word["word"][:-1], 
-                        "lemma":    word["lemma"], 
-                        "pos":      word["pos"], 
-                        "gen":      word["gen"], 
-                        "cpos":     word["cpos"],
-                        "num":      word["num"]}
-                tagged_transcript["words"].append(word)
+        doc_id, tagged_transcript = WhisperToPosTagged(language).request_tagged_transcript(self.video_id, timed_transcript)
 
-        words_cursor = 0
-        tagged_transcript_words = tagged_transcript["words"]
-        is_first_part_of_word = True
-        is_misaligned = False
-        for sentence in timed_transcript:
-            for word_indx, word in enumerate(sentence["words"]):
-                if word["word"] == tagged_transcript_words[words_cursor]["word"] or \
-                  (word["word"] == "po'" and tagged_transcript_words[words_cursor]["word"] == "p\u00f2"):
-                    transcript_word = tagged_transcript_words[words_cursor]
-                    word["gen"] = transcript_word["gen"] if transcript_word["gen"] is not None else ""
-                    word["lemma"] = transcript_word["lemma"]
-                    word["pos"] = transcript_word["pos"]
-                    word["cpos"] = transcript_word["cpos"]
-                    word["num"] = transcript_word["num"] if transcript_word["num"] is not None else ""
-                
-                # Can be for example in Whisper transcript "inviarli" a single word but ItaliaNLP gives "inviar", "li"
-                elif tagged_transcript_words[words_cursor]["word"] in word["word"]:
-                    if is_first_part_of_word:
-                        new_word = word.copy()
-                    transcript_word = tagged_transcript_words[words_cursor]
-                    word["word"] = transcript_word["word"]
-                    word["gen"] = transcript_word["gen"] if transcript_word["gen"] is not None else ""
-                    word["lemma"] = transcript_word["lemma"]
-                    word["pos"] = transcript_word["pos"]
-                    word["cpos"] = transcript_word["cpos"]
-                    word["num"] = transcript_word["num"] if transcript_word["num"] is not None else ""
-                    if is_first_part_of_word:
-                        word["end"] = 0.8*(word["end"]-word["start"]) + word["start"]
-                    else:
-                        word["start"] = sentence["words"][word_indx-1]["end"]
-                    if is_first_part_of_word:
-                        sentence["words"].insert(word_indx+1, new_word) 
-                        is_first_part_of_word = False
-                    else:
-                        is_first_part_of_word = True
-                        
-                # match is partial so it's wrong, print a message on backend but continue (TODO but may break)
-                elif word["word"] in tagged_transcript_words[words_cursor]["word"] and \
-                  ((len(sentence["words"]) > word_indx+1 and sentence["words"][word_indx+1]["word"] in tagged_transcript_words[words_cursor]["word"]) or \
-                  is_misaligned) :
-                    tagged_word = tagged_transcript_words[words_cursor]
-                    word["gen"] = tagged_word["gen"]
-                    word["lemma"] = tagged_word["lemma"]
-                    word["pos"] = tagged_word["pos"]
-                    word["cpos"] = tagged_word["cpos"] 
-                    word["num"] = tagged_word["gen"]
-                    is_misaligned = not tagged_word["word"].endswith(word["word"])
-                    print(f"Error in matching tagged and timed transcript, for video: {self.data['video_id']}")
-                    print(f"word \"{word['word']}\" is not \"{tagged_transcript_words[words_cursor]['word']}\"")
-                    if is_misaligned:
-                        words_cursor -= 1
-                    else:
-                        print("Realigned successfully!")
-                words_cursor += 1
-
-        #import json
-        #with open("lemmas.json","w") as f:
-        #    json.dump(self.data["transcript_data"]["lemmas"],f,indent=4)
-        #
         #with open("transcript.json","w") as f:
         #    json.dump({"transcript": self.data["transcript_data"]["text"], "lemmas": self.data["transcript_data"]["lemmas"]},f,indent=4)
 
-        self.data["transcript_data"]["text"] = timed_transcript
+        self.data["transcript_data"]["text"] = tagged_transcript
         self.data["transcript_data"].update({ "ItaliaNLP_doc_id":   doc_id })
 
         db_mongo.insert_video_data(self.data)
@@ -850,7 +770,7 @@ class VideoAnalyzer:
         if "terms" in self.data["transcript_data"].keys() and any(self.data["transcript_data"]["terms"]):
             return
         
-        terms = ItaliaNLAPI().execute_term_extraction(self.data["transcript_data"]["ItaliaNLP_doc_id"])
+        terms = ItaliaNLAPI().execute_term_extraction(self.data["transcript_data"]["ItaliaNLP_doc_id"], self.identify_language())
         self.data["transcript_data"].update({"terms": terms.to_dict('records')})
         db_mongo.insert_video_data(self.data)
         

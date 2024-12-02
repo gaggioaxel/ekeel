@@ -24,7 +24,8 @@ os.environ["TOKENIZERS_PARALLELISM"] = "true"
 
 from locales import Locale 
 import db_mongo
-
+from NLP_API import ItaliaNLAPI
+from conll import conll_gen
 
 #try:
 #    nltk.data.find('corpora/wordnet')
@@ -148,13 +149,13 @@ class SemanticText():
         return term_infos
 
 
-class WhisperToT2K():
+class WhisperToPosTagged():
     _lang:str
     
     def __init__(self,language:str) -> None:
         self._lang = language
     
-    def group_short_sentences(self, timed_sentences:list, min_segment_len:int=4, min_segment_duration:float=3):
+    def _group_short_sentences(self, timed_sentences:list, min_segment_len:int=4, min_segment_duration:float=3):
         for i, sentence in reversed(list(enumerate(timed_sentences))): 
             # if i=4 and sent3 = "Ebbene," sent4 = "nulla si puo' dire perche' tutto e' stato detto." => merge into "Ebbene, nulla si puo' dire perche' tutto e' stato detto."
             # if sent3 = "quindi otteniamo cio' che ci aspettiamo," and sent4 = "cioe' niente." => merge into sent3 = "quindi otteniamo cio' che ci aspettiamo, cioe' niente." and pop sent4
@@ -351,6 +352,25 @@ class WhisperToT2K():
 
         return out_sentences
     
+    def _apply_english_fixes(self,timed_sentences:list):
+        for sent_id, sentence in enumerate(timed_sentences):
+            sentence = {"text":sentence["text"].strip(),
+                        "start":sentence["start"],
+                        "end":sentence["end"],
+                        "words":sentence["words"]}
+            timed_sentences[sent_id] = sentence 
+            for word_id, word in enumerate(sentence["words"]):
+                word.pop("tokens",None)
+                word["word"] = word["word"].strip()
+                if any([word["word"].endswith(punct) for punct in [",",".","!","?"]]) and len(word["word"]) > 1:
+                    new_word = word.copy()
+                    new_word["word"] = new_word["word"][-1]
+                    sentence["words"].insert(word_id+1, new_word)
+                    word["word"] = word["word"][:-1]
+        return timed_sentences
+                
+                
+                
     def _restore_italian_fixes(timed_transcript:list):
         for sentence in timed_transcript:
             sentence["text"] = re.sub(r'\s+%', '%', sentence["text"])                           # replace " %" with "%"
@@ -361,206 +381,137 @@ class WhisperToT2K():
                 sentence["text"] = sentence["text"].replace("".join(match_[0]), "".join(match_[0]).replace(" ",""))
         return timed_transcript
 
-    def _apply_english_fixes(self,timed_sentences:list):
-        '''
-        Applies italian specific fixes to the text in order to be correctly analized by ItaliaNLP and matched back
-        Furthemore groups short sentences.
-        '''
-
-        out_sentences = []    
-        accent_replacements = {
-                                  "e'": "è", "E'": "È",
-                                  "o'": "ò", "O'": "Ò",
-                                  "a'": "à", "A'": "À",
-                                  "i'": "ì", "I'": "Ì",
-                                  "u'": "ù", "U'": "Ù", "po'": "pò"
-                              }
-        number_regex = r'(-?\d+(?:\.\d*)?)'
-        big_numer_regex = r'(-?)(\d+)(.\d\d\d)+'
-        degrees_regex = number_regex[:-1] + r'°)'
-        temperature_regex = degrees_regex[:-1] + r'[C|c|F|f|K|k])'
-
-        for i, segment in enumerate(timed_sentences):
-            segment = {"text": segment["text"].lstrip(),
-                       "words": segment["words"],
-                       "start": segment["start"], 
-                       "end": segment["end"]}
-
-            to_remove_words = []
-
-            for j, word in enumerate(segment["words"]):
-                word["word"] = word["word"].lstrip()
-
-                word.pop("tokens",None)
-
-                # Match "fatto," that must be split into tokens "fatto" and "," 
-                if len(word["word"]) > 1 and word["word"][-1] in [",",".","?","!"]:
-                    new_word = word.copy()
-                    new_word["word"] = word["word"][-1]
-                    segment["words"].insert(j+1, new_word)
-                    word["word"] = word["word"][:-1]
-
-                if word["word"][0] == "," and any(re.findall(r',\d+',word["word"])):
-                    new_word = word.copy()
-                    new_word["word"] = word["word"][1:]
-                    word["word"] = word["word"][0]
-                    segment["words"].insert(j+1, new_word)
-                    segment["text"] = segment["text"].replace(",",", ")
-
-                # Realign apostrophe and replace accented words
-                if word["word"].startswith("'"):
-                    segment["words"][j-1]["word"] += "'"
-                    if len(segment["words"][j-1]["word"]) == 2:
-                        for pattern, replacement in accent_replacements.items():
-                            segment["words"][j-1]["word"] = re.sub(pattern, replacement, segment["words"][j-1]["word"])
-                            segment["text"] = re.sub(pattern, replacement, segment["text"])
-                    word["word"] = word["word"][1:]
-
-                # Match math symbol terminology "x'" that should be "x primo" and "E'" that should be "È"
-                elif any(re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])):
-                    match_ = re.findall(r"(?<![a-zA-Z])[a-zA-Z]'", word["word"])[0]
-                    if match_ in accent_replacements.keys():
-                        replacement = accent_replacements[word["word"]]
-                        segment["text"] = segment["text"].replace(word["word"],replacement)
-                        word["word"] = replacement
-                    # TODO there can be a case like "l'altezza di l'(primo) nel..." in text that can break it
-                    # but make it work would require to rework the structures and map words as indices of the text string
-                    elif any(re.findall(f"{match_}[ .,:?!]",segment["text"])):
-                        word["word"] = word["word"].split("'")[0]
-                        new_word = word.copy()
-                        new_word["word"] = "primo"
-                        segment["words"].insert(j+1,new_word)
-                        segment["text"] = segment["text"].replace(match_,match_[:-1]+" primo")
-                    # fixes some random " l 'apostrofo mal messo" -> " l'apostrofo mal messo"
-                    elif any(re.findall(r"[a-zA-Z]+ '", segment["text"])):
-                        match_ = re.findall(r"[a-zA-Z]+ '", segment["text"])[0]
-                        segment["text"] = segment["text"].replace(match_, match_[:-2]+"'")
-
-                # "di raggio R." separated symbol R -> "di raggio R ." for T2K correct pos tag
-                # TODO check with another video that Whisper AI correctly separates the two words in words list 
-                elif any(re.findall(r"\s[a-zA-Z][?,.!;:]", segment["text"])):
-                    segment["text"] = re.sub(r"\s([a-zA-Z])([?,.!;:])",r" \1 \2", segment["text"])
-
-                # Match "po'" but ignores "anch'" or "dell'" 
-                elif any(re.findall(r"[a-zA-Z]+'", word["word"])) and word["word"].endswith("'") and len(word["word"]) >= 3:
-                    match_ = re.findall(r"[a-zA-Z]+'", word["word"])[0]
-                    if match_ in accent_replacements.keys():
-                        replacement = accent_replacements[word["word"]]
-                        word["word"] = replacement
-
-                # Case "termo" "-idrometrico" -> merged into "termo-idrometrico" for T2K compatibility
-                # can also be "pay-as-you-go" found split into "pay", "-as", "-you", "-go"
-                elif word["word"].startswith("-"):
-                    for head_word in segment["words"][j-1::-1]:
-                        if not head_word["word"].startswith("-"):
-                            break
-                    head_word["word"] = head_word["word"] + word["word"]
-                    head_word["end"] = word["end"]
-                    to_remove_words.append(j)
-
-                # Sometime happened the shift of the apostrophe ["accetta l", "'ipotesi forte"] 
-                # Should not happen due to prior merge
-                #if segment["text"].startswith("'") and not "'" in segment["words"][0] and i > 0:
-                #    segment["text"] = segment["text"][1:]
-                #    timed_sentences[i-1]["text"] += "'"
-                #    timed_sentences[i-1]["words"][-1]["word"] += "'"
-
-                # Case "25°C" -> "25°" "celsius"
-                if any(re.findall(temperature_regex,word["word"])):
-                    new_word = word.copy()
-                    new_word["word"] = word["word"][-1]
-                    #segment["text"] = segment["text"].replace(word["word"][-1]," "+scale)
-                    segment["words"].insert(j+1, new_word)
-                    word["word"] = word["word"][:-1]
-
-                # Case "22°" -> "22" "°"
-                if any(re.findall(degrees_regex, word["word"])):
-                    new_word = word.copy()
-                    new_word["word"] = "°" 
-                    #segment["text"] = segment["text"].replace("°"," ° ")
-                    segment["words"].insert(j+1, new_word)
-                    word["word"] = word["word"][:-1]
-
-                elif any(re.findall(r"\s\.[0-9]+", word["word"])):
-                    new_word = word.copy()
-                    new_word["word"] = word["word"][1:]
-                    segment["words"].insert(j+1, new_word)
-                    word["word"] = "."
-
-                if any(re.findall(big_numer_regex, segment["text"])):
-                    match_ = "".join(re.findall(big_numer_regex, segment["text"])[0])
-                    segment["text"] = segment["text"].replace(match_, match_.replace("-"," - ").replace("."," . "))
-
-                # Sometimes words list don't perfectly match the text: "'attrito della ruota", words: ["attrito","della", "ruota'"]
-                # But "pò" in words and "po'" in text match, TODO Fix with T2K 
-                if word["word"] not in segment["text"] and not (word["word"] == "pò" and "po'" in segment["text"]) :
-                    longest_substring = ''
-                    text = segment["text"]
-                    word_ = word["word"]
-                    for ch_l in range(len(word_)):
-                        for ch_r in range(ch_l + 1, len(word_) + 1):
-                            if word_[ch_l:ch_r] in text and len(word_[ch_l:ch_r]) > len(longest_substring):
-                                longest_substring = word_[ch_l:ch_r]
-                    # Replace the word with the longest substring
-                    word["word"] = longest_substring
-
-                # Random points in words
-                if len(word["word"]) > 1 and word["word"].endswith("."):
-                    new_word = word.copy()
-                    new_word["word"] = "."
-                    word["word"] = word["word"][:-1]
-                    segment["words"].insert(j+1, new_word)
-
-
-                # Case "22%" -> "22" "%"
-                elif any(re.findall(number_regex+'%', word["word"])):
-                    new_word = word.copy()
-                    word["word"] = word["word"][:-1]
-                    new_word["word"] = "%"
-                    segment["words"].insert(j+1, new_word)
-
-                if any(re.findall(number_regex+'%', segment["text"])):
-                    segment["text"] = re.sub(r"%([?,.!;:])",r"% \1", segment["text"])
-                    segment["text"] = re.sub(r"([0-9])%",r"\1 %", segment["text"])
-
-
-                # Match with "dell'SiO2" -> split into tokens "dell'" and "SiO2"
-                if len(word["word"].split("'")) > 1 and len(word["word"].split("'")[1]) > 0:
-                    before_apos, after_apos = word["word"].split("'")
-                    new_word = word.copy()
-                    new_word["word"] = after_apos
-                    segment["words"].insert(j+1, new_word)
-                    word["word"] = before_apos+"'"
-
-            for indx in reversed(to_remove_words):
-                del segment["words"][indx]
-
-            segment["text"] = segment["text"].replace("  ", " ")
-            out_sentences.append(segment)
-
-        return out_sentences
-
-    def _restore_english_fixes(timed_transcript:list):
-        for sentence in timed_transcript:
-            sentence["text"] = re.sub(r'\s+%', '%', sentence["text"])                           # replace " %" with "%"
-            sentence["text"] = re.sub(r'%\s([?,.!;:])', r'%\1', sentence["text"])               # replace "% ," with "%,"
-            sentence["text"] = re.sub(r"\s([a-zA-Z])\s([?,.!;:])",r" \1\2", sentence["text"])   # replace " A ." with " A."
-            match_ = re.findall(r'(\s-\s)?(\d+)(\s.\s\d{3})+',sentence["text"])                 # find any big number spaced " - 24 . 000" (meno 24 mila)
-            if any(match_):
-                sentence["text"] = sentence["text"].replace("".join(match_[0]), "".join(match_[0]).replace(" ",""))
-        return timed_transcript
-
-    def apply_rules(self,timed_transcript:list):
+    def request_tagged_transcript(self, video_id:str, timed_transcript:list):
+        timed_transcript = self._group_short_sentences(timed_transcript)
         if self._lang == "it":
-            return self._apply_italian_fixes(timed_transcript)
+            timed_transcript = self._apply_italian_fixes(timed_transcript)
+            string_transcript = " ".join(timed_sentence["text"] for timed_sentence in timed_transcript if not "[" in timed_sentence['text'])
+            timed_transcript = self._restore_italian_fixes(timed_transcript)
+
+            api_obj = ItaliaNLAPI()
+            doc_id = api_obj.upload_document(string_transcript, language=language, async_call=False)
+
+            tagged_sentences = api_obj.wait_for_pos_tagging(doc_id)
+
+            tagged_transcript = {"full_text":"", "words":[]}
+            for sentence in tagged_sentences:
+                tagged_transcript["full_text"] += sentence["sentence"]+" "
+                for word in sentence["words"]:
+                    # append the word from NLPTranscript but remove "-" from for example "inviar-", "li"
+                    word = {"word":     word["word"] if len(word["word"]) == 1 or (len(word["word"]) > 1 and not word["word"].endswith("-")) else word["word"][:-1], 
+                            "lemma":    word["lemma"], 
+                            "pos":      word["pos"], 
+                            "gen":      word["gen"], 
+                            "cpos":     word["cpos"],
+                            "num":      word["num"]}
+                    tagged_transcript["words"].append(word)
+
+            words_cursor = 0
+            tagged_transcript_words = tagged_transcript["words"]
+            is_first_part_of_word = True
+            is_misaligned = False
+            for sentence in timed_transcript:
+                for word_indx, word in enumerate(sentence["words"]):
+                    if word["word"] == tagged_transcript_words[words_cursor]["word"] or \
+                      (word["word"] == "po'" and tagged_transcript_words[words_cursor]["word"] == "p\u00f2"):
+                        transcript_word = tagged_transcript_words[words_cursor]
+                        word["gen"] = transcript_word["gen"] if transcript_word["gen"] is not None else ""
+                        word["lemma"] = transcript_word["lemma"]
+                        word["pos"] = transcript_word["pos"]
+                        word["cpos"] = transcript_word["cpos"]
+                        word["num"] = transcript_word["num"] if transcript_word["num"] is not None else ""
+
+                    # Can be for example in Whisper transcript "inviarli" a single word but ItaliaNLP gives "inviar", "li"
+                    elif tagged_transcript_words[words_cursor]["word"] in word["word"]:
+                        if is_first_part_of_word:
+                            new_word = word.copy()
+                        transcript_word = tagged_transcript_words[words_cursor]
+                        word["word"] = transcript_word["word"]
+                        word["gen"] = transcript_word["gen"] if transcript_word["gen"] is not None else ""
+                        word["lemma"] = transcript_word["lemma"]
+                        word["pos"] = transcript_word["pos"]
+                        word["cpos"] = transcript_word["cpos"]
+                        word["num"] = transcript_word["num"] if transcript_word["num"] is not None else ""
+                        if is_first_part_of_word:
+                            word["end"] = 0.8*(word["end"]-word["start"]) + word["start"]
+                        else:
+                            word["start"] = sentence["words"][word_indx-1]["end"]
+                        if is_first_part_of_word:
+                            sentence["words"].insert(word_indx+1, new_word) 
+                            is_first_part_of_word = False
+                        else:
+                            is_first_part_of_word = True
+
+                    # match is partial so it's wrong, print a message on backend but continue (TODO but may break)
+                    elif word["word"] in tagged_transcript_words[words_cursor]["word"] and \
+                      ((len(sentence["words"]) > word_indx+1 and sentence["words"][word_indx+1]["word"] in tagged_transcript_words[words_cursor]["word"]) or \
+                      is_misaligned) :
+                        tagged_word = tagged_transcript_words[words_cursor]
+                        word["gen"] = tagged_word["gen"]
+                        word["lemma"] = tagged_word["lemma"]
+                        word["pos"] = tagged_word["pos"]
+                        word["cpos"] = tagged_word["cpos"] 
+                        word["num"] = tagged_word["gen"]
+                        is_misaligned = not tagged_word["word"].endswith(word["word"])
+                        print(f"Error in matching tagged and timed transcript, for video: {self.data['video_id']}")
+                        print(f"word \"{word['word']}\" is not \"{tagged_transcript_words[words_cursor]['word']}\"")
+                        if is_misaligned:
+                            words_cursor -= 1
+                        else:
+                            print("Realigned successfully!")
+                    words_cursor += 1
         elif self._lang == "en":
-            return self._apply_english_fixes(timed_transcript)
-    
-    def revert_rules(self,timed_transcript:list):
-        if self._lang == "it":
-            return self._restore_italian_fixes(timed_transcript)
-        elif self._lang == "en":
-            return self._restore_english_fixes(timed_transcript)
+            conll = conll_gen(video_id,SemanticText(" ".join(timed_sentence["text"] for timed_sentence in timed_transcript if not "[" in timed_sentence['text']), self._lang), self._lang)
+            conll_words = []
+            for sentence in conll:
+                for token in sentence:
+                        conll_words.append({ "id":token["id"],
+                                             "word":token["form"],
+                                             "lemma":token["lemma"],
+                                             "cpos":token["upos"],
+                                             "pos":token["xpos"],
+                                             "num":token["feats"].get("Number","").replace("Sing","s").replace("Plur","p") if token["feats"] else "",
+                                             "gen":"" # token["feats"].get("Gen","") # There is no gen in udpipe
+                                             })
+            timed_transcript = self._apply_english_fixes(timed_transcript)
+            word_indx = 0
+            skip_next = False
+            for sent_id, sentence in enumerate(timed_transcript):
+                for word_id, word in enumerate(sentence["words"]):
+                    conll_word = conll_words[word_indx]
+                    if ("id" in conll_word.keys() and type(conll_word["id"]) != int) or (conll_word["word"] in word["word"] and conll_word["word"] != word["word"]):
+                        if ("id" in conll_word.keys() and type(conll_word["id"]) != int):
+                            word_indx += 1
+                        conll_word = conll_words[word_indx]
+                        conll_word.pop("id",None)
+                        sentence["words"][word_id] = conll_word
+                        conll_word["start"] = word["start"]
+                        conll_word["end"] = word["start"] + .8*(word["end"]-word["start"])
+                        conll_word["probability"] = word["probability"]
+                        
+                        word_indx += 1
+                        conll_word = conll_words[word_indx]
+                        conll_word.pop("id",None)
+                        sentence["words"].insert(word_id+1,conll_word)
+                        conll_word["start"] = word["start"] + .8*(word["end"]-word["start"])
+                        conll_word["end"] = word["end"]
+                        conll_word["probability"] = word["probability"]
+                        skip_next = True
+                    elif skip_next:
+                        word_indx -= 1
+                        skip_next = False
+                        
+                    elif word["word"] == conll_word["word"]:
+                        sentence["words"][word_id] = conll_word
+                        conll_word["start"] = word["start"]
+                        conll_word["end"] = word["end"]
+                        conll_word["probability"] = word["probability"]
+                    else:
+                        raise Exception("Error parsing! required fix")
+                    conll_word.pop("id",None)
+                    word_indx += 1
+            doc_id = None
+        return doc_id, timed_transcript
 
 
 
@@ -1029,5 +980,7 @@ def get_timed_sentences(subtitles, sentences: List['str']):
 
 
 if __name__ == '__main__':
-    SemanticText("esempi",language).get_semantic_structure_info()
+    from segmentation import VideoAnalyzer
+    VideoAnalyzer("https://www.youtube.com/watch?v=MMzdKTtUIFM").analyze_transcript()
+    #WhisperToPosTagged("en").request_tagged_transcript("MMzdKTtUIFM",data["transcript_data"]["text"])
     pass
