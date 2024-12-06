@@ -73,6 +73,7 @@ dependencies:
       - dominate==2.9.1
       - dtw-python==1.5.1
       - email-validator==2.2.0
+      - en-core-web-lg==3.5.0
       - filelock==3.15.4
       - flask==2.0.3
       - flask-bootstrap==3.3.7.1
@@ -91,6 +92,7 @@ dependencies:
       - imageio==2.34.2
       - iso639-lang==2.2.3
       - isodate==0.6.1
+      - it-core-news-lg==3.5.0
       - itsdangerous==2.2.0
       - jax==0.4.30
       - jaxlib==0.4.30
@@ -141,7 +143,7 @@ dependencies:
       - psutil==6.0.0
       - pycparser==2.22
       - pycryptodomex==3.20.0
-      - pydantic==2.8.2
+      - pydantic==1.10.19
       - pydantic-core==2.20.1
       - pydub==0.25.1
       - pygments==2.18.0
@@ -158,6 +160,7 @@ dependencies:
       - pytz==2024.1
       - pywavelets==1.6.0
       - pyyaml==6.0.1
+      - rake-nltk==1.0.6
       - rapidfuzz==3.9.5
       - rdflib==7.0.0
       - regex==2024.5.15
@@ -168,16 +171,16 @@ dependencies:
       - sentence-transformers==3.0.1
       - shellingham==1.5.4
       - six==1.16.0
-      - smart-open==7.0.4
+      - smart-open==6.4.0
       - sounddevice==0.4.7
       - soupsieve==2.5
-      - spacy==3.7.5
+      - spacy==3.5.4
       - spacy-loggers==1.0.5
       - stable-ts==2.17.3
       - sympy==1.13.0
       - texttable==1.7.0
       - theano==1.0.5
-      - thinc==8.2.2
+      - thinc==8.1.12
       - threadpoolctl==3.5.0
       - tifffile==2024.7.24
       - tiktoken==0.7.0
@@ -186,7 +189,7 @@ dependencies:
       - torchaudio==2.3.1
       - transformers==4.42.4
       - triton==2.3.1
-      - typer==0.12.3
+      - typer==0.9.4
       - typing-extensions==4.12.2
       - tzdata==2024.1
       - visitor==0.1.3
