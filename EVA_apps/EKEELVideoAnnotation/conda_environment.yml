@@ -73,7 +73,6 @@ dependencies:
       - dominate==2.9.1
       - dtw-python==1.5.1
       - email-validator==2.2.0
-      - en-core-web-lg==3.5.0
       - filelock==3.15.4
       - flask==2.0.3
       - flask-bootstrap==3.3.7.1
@@ -92,7 +91,6 @@ dependencies:
       - imageio==2.34.2
       - iso639-lang==2.2.3
       - isodate==0.6.1
-      - it-core-news-lg==3.5.0
       - itsdangerous==2.2.0
       - jax==0.4.30
       - jaxlib==0.4.30
