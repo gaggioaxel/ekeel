@@ -82,8 +82,8 @@ class NLPSingleton():
     
     
     def destroy(self):
-        for lang in self._spacy.keys():
-            self._spacy[lang] = None
+        #for lang in self._spacy.keys():
+        #    self._spacy[lang] = None
         NLPSingleton._instance = None
      
         

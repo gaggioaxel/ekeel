@@ -60,9 +60,9 @@ cd {inside folder EKEELVideoAnnotation}
 
 overwrite the conda_environment.yml inside using
 ```
-conda env export --no-builds | grep -v "^prefix: " > conda_environment.yml
+conda env export --no-builds | grep -v "^prefix: " | grep -v "en-core-web-lg" | grep -v "it-core-news-lg" > conda_environment.yml
 ```
-and push the modifications to the repo.
+and push the modifications to the repo. (The spacy models end up in the final distribution but must be ignored otherwise cause errors)
 
 Then to synchronize the packages change in the server pull updates from the repo and on the server terminal
 
