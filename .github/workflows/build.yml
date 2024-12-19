@@ -28,11 +28,14 @@ jobs:
     - name: Build site 🏗️
       run: |
         mkdocs build --clean
-
-    - name: Deploy to GitHub Pages 🚀
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.PAGES_TOKEN }}
-        publish_dir: ./ekeel
-        publish_branch: gh-pages
-        force_orphan: true
+    
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages 🚀
+        id: deployment
+        uses: actions/deploy-pages@v4
