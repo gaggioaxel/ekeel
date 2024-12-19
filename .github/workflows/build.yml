@@ -38,4 +38,10 @@ jobs:
         publish_branch: gh-pages
         force_orphan: true
 
+  deploy:
+    needs: build
+    
+    steps:
+    - name: Deploy online
+      uses: actions/deploy-pages@v4
 
