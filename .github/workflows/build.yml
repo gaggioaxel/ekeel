@@ -27,23 +27,12 @@ jobs:
 
     - name: Build site 🏗️
       run: |
-        ls
-        mkdocs build
+        mkdocs build --clean
 
     - name: Deploy to GitHub Pages 🚀
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.PAGES_TOKEN }}
-        publish_dir: ./docs
+        publish_dir: ./ekeel
         publish_branch: gh-pages
         force_orphan: true
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Deploy online
-      uses: actions/deploy-pages@v4
-      with:
-        github_token: ${{ secrets.PAGES_TOKEN }}
-
