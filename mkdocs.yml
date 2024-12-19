@@ -2,8 +2,8 @@ site_name: "EKEEL - Empowering Knowledge Extraction to Empower Learners"
 repo_url: https://github.com/gaggioaxel/ekeel
 site_url: https://gaggioaxel.github.io/ekeel/docs/
 
-docs_dir: docs
-site_dir: mkdocs
+docs_dir: mkdocs
+site_dir: docs
 
 theme:
   name: "material"
