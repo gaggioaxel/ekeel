@@ -1,6 +1,6 @@
 mkdocs
 mkdocs-material
-mkdocs-video
+mkdocs-pdf
 mkdocstrings[python]
 mkdocs-gen-files
 mkdocs-literate-nav
