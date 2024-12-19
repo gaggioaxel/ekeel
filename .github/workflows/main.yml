@@ -24,13 +24,10 @@ jobs:
       with:
         repository: gaggioaxel/ekeel
         ref: main
-        # Relative path under $GITHUB_WORKSPACE to place the repository
-        path: ekeel
 
     - name: Build site 🏗️
       run: |
         ls
-        cp -r docs/ ./
         mkdocs build
 
     - name: Deploy to GitHub Pages 🚀
