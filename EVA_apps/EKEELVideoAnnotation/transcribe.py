@@ -1,5 +1,48 @@
-if __name__ == "__main__":
-    import stable_whisper
+
+import stable_whisper
+
+def main():
+    """
+    Continuous video transcription worker process for the Edurell system.
+
+    This function runs an infinite loop that:
+    1. Retrieves untranscribed videos from a MongoDB database
+    2. Downloads YouTube videos
+    3. Converts videos to WAV format
+    4. Transcribes audio using Whisper model
+    5. Stores transcription data in the database
+    6. Handles various error scenarios with robust error logging and retry mechanisms
+
+    Key Features:
+    - Uses stable-whisper for transcription
+    - Supports multiple languages
+    - Implements continuous polling for new video transcription jobs
+    - Includes error handling and reconnection logic for database interactions
+    - Removes temporary audio files after processing
+
+    Environment Dependencies:
+    - MongoDB connection
+    - Stable-whisper model
+    - Python libraries: pymongo, stable_whisper, pathlib
+
+    Error Handling:
+    - Catches and logs detailed error information
+    - Implements sleep/retry mechanism for transient errors
+    - Gracefully handles network and processing exceptions
+
+    Workflow:
+    - Continuously polls for untranscribed videos
+    - For each video:
+        1. Download video
+        2. Convert to WAV
+        3. Transcribe using Whisper
+        4. Update database with transcription
+        5. Remove temporary files
+
+    Note:
+    - Runs as a persistent background worker
+    - Sleeps between job cycles to reduce system load
+    """
     # TODO stable-ts version 2.17.3: passing the language is not working, will be inferenced at cost of small increase in time
     # self._model.transcribe(wav_path.__str__(), decode_options={"language":language}) \
     #             .save_as_json(json_path.__str__())
@@ -99,3 +142,7 @@ if __name__ == "__main__":
                 lines = f.readlines()
                 error_line = lines[line_number - 1].strip()
             print(f"File: {filename}, Function: {frame.name}, Line: {line_number} | {error_line}")
+    
+
+if __name__ == "__main__":
+    main()

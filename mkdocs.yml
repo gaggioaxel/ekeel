@@ -1,0 +1,68 @@
+site_name: "EKEEL - Empowering Knowledge Extraction to Empower Learners"
+repo_url: https://github.com/gaggioaxel/EKEEL
+site_url: https://gaggioaxel.github.io/EKEEL/docs/
+
+docs_dir: docs
+site_dir: docs
+
+theme:
+  name: "material"
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to system preference
+
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to dark mode
+        
+  features:
+    - navigation.top  # Keeps navigation bar fixed at the top
+    - navigation.tabs  # Use tabs for navigation
+    - navigation.instant  # Load pages instantly without reloads
+    - content.code.annotate  # Adds code annotations
+    - content.code.copy  # Adds copy-to-clipboard button in code blocks
+    - content.tooltips  # Enables tooltips for glossary terms
+    
+  font:
+    text: Source Serif Pro
+    
+markdown_extensions:
+  - attr_list
+
+plugins:
+  - mkdocs-pdf
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: false
+
+nav:
+  - Homepage: index.md
+  - Deploy:
+    - Local:
+      - Annotator: platforms/annotation/install.md
+      - Augmentator: platforms/augmentation/install.md
+    - Remote:
+      - Codebase Update: platforms/pull.md
+      - Annotator: platforms/annotation/deploy.md
+      - Augmentator: platforms/augmentation/deploy.md
+      - Transcriber: platforms/annotation/transcriber/deploy.md
+
+extra:
+  social:
+  - icon: fontawesome/brands/twitter
+    link: about:void
+  - icon: fontawesome/brands/blogger
+    link: https://ekeel.dibris.unige.it/

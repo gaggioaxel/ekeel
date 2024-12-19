@@ -1064,6 +1064,17 @@ class VideoAnalyzer:
             images_path.append(f"videos/{self.video_id}/{i}.jpg")
         
         self.images_path = images_path
+    
+    @staticmethod
+    def seconds_to_h_mm_ss_dddddd(time:float):
+        millisec = str(time%1)[2:8]
+        millisec += '0'*(6-len(millisec))
+        seconds = str(int(time)%60)
+        seconds = '0'*(2-len(seconds)) + seconds
+        minutes = str(int(time/60))
+        minutes = '0'*(2-len(minutes)) + minutes
+        hours = str(int(time/3600))
+        return hours+':'+minutes+':'+seconds+'.'+millisec
 
 
     def adjust_or_insert_definitions_and_indepth_times(self,burst_concepts:List[dict],definition_tol_seconds:float = 3,_show_output=False):
@@ -1133,17 +1144,6 @@ class VideoAnalyzer:
                             if _show_output:
                                 print(f"time: {str(timed_sentence['start'])[:5]} : {str(timed_sentence['end'])[:5]}  |  sentence: {timed_sentence['text']}")
 
-
-        def seconds_to_h_mm_ss_dddddd(time:float):
-            millisec = str(time%1)[2:8]
-            millisec += '0'*(6-len(millisec))
-            seconds = str(int(time)%60)
-            seconds = '0'*(2-len(seconds)) + seconds
-            minutes = str(int(time/60))
-            minutes = '0'*(2-len(minutes)) + minutes
-            hours = str(int(time/3600))
-            return hours+':'+minutes+':'+seconds+'.'+millisec
-
         # Creating or modifying burst_concept definition of the video results 
         added_concepts = []
         concepts_used = {concept:False for concept in video_defs.keys()}
@@ -1156,8 +1156,8 @@ class VideoAnalyzer:
                     burst_concept_name = burst_concept['concept']
                     burst_concept['start_sent_id'] = video_defs[burst_concept_name][0][0]
                     burst_concept['end_sent_id'] = video_defs[burst_concept_name][-1][0]
-                    burst_concept['start'] = seconds_to_h_mm_ss_dddddd(video_defs[burst_concept_name][0][1]["start"])
-                    burst_concept['end'] = seconds_to_h_mm_ss_dddddd(video_defs[burst_concept_name][-1][1]["end"])
+                    burst_concept['start'] = self.seconds_to_h_mm_ss_dddddd(video_defs[burst_concept_name][0][1]["start"])
+                    burst_concept['end'] = self.seconds_to_h_mm_ss_dddddd(video_defs[burst_concept_name][-1][1]["end"])
                     burst_concept['creator'] = "Video_Analysis"
                     concepts_used[burst_concept_name] = True
         
@@ -1166,8 +1166,8 @@ class VideoAnalyzer:
                 burst_concepts.append({ 'concept':concept_name,
                                         'start_sent_id':video_defs[concept_name][0][0],
                                         'end_sent_id':video_defs[concept_name][-1][0],
-                                        'start':seconds_to_h_mm_ss_dddddd(video_defs[concept_name][0][1]['start']),
-                                        'end':seconds_to_h_mm_ss_dddddd(video_defs[concept_name][-1][1]["end"]),
+                                        'start':self.seconds_to_h_mm_ss_dddddd(video_defs[concept_name][0][1]['start']),
+                                        'end':self.seconds_to_h_mm_ss_dddddd(video_defs[concept_name][-1][1]["end"]),
                                         'description_type':concept_description_type,
                                         'creator':'Video_Analysis'})
                 if not concept_name in added_concepts:
