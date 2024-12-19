@@ -37,10 +37,5 @@ jobs:
         publish_dir: ./docs
         publish_branch: gh-pages
         force_orphan: true
-  deploy:
-    runs-on: ubuntu-latest
 
-    steps:
-    - name: Deploy online
-      uses: actions/deploy-pages@v4
 
