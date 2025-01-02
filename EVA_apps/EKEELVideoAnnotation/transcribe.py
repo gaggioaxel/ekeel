@@ -1,47 +1,32 @@
+"""
+External Video Transcription Service
+==================================
+
+Provides video transcription services for the EKEEL annotation system.
+Used in deployment as an external worker service.
+
+Notes
+-----
+More details about deployment can be found [here](../../platforms/annotator/transcriber/deploy.md)
+
+Functions
+---------
+main()
+    Main worker process for continuous video transcription
+"""
 
 import stable_whisper
 
 def main():
     """
-    Continuous video transcription worker process for the Edurell system.
-
-    This function runs an infinite loop that:
-    1. Retrieves untranscribed videos from a MongoDB database
-    2. Downloads YouTube videos
-    3. Converts videos to WAV format
-    4. Transcribes audio using Whisper model
-    5. Stores transcription data in the database
-    6. Handles various error scenarios with robust error logging and retry mechanisms
-
-    Key Features:
-    - Uses stable-whisper for transcription
-    - Supports multiple languages
-    - Implements continuous polling for new video transcription jobs
-    - Includes error handling and reconnection logic for database interactions
-    - Removes temporary audio files after processing
-
-    Environment Dependencies:
-    - MongoDB connection
-    - Stable-whisper model
-    - Python libraries: pymongo, stable_whisper, pathlib
-
-    Error Handling:
-    - Catches and logs detailed error information
-    - Implements sleep/retry mechanism for transient errors
-    - Gracefully handles network and processing exceptions
-
-    Workflow:
-    - Continuously polls for untranscribed videos
-    - For each video:
-        1. Download video
-        2. Convert to WAV
-        3. Transcribe using Whisper
-        4. Update database with transcription
-        5. Remove temporary files
-
-    Note:
-    - Runs as a persistent background worker
-    - Sleeps between job cycles to reduce system load
+    Continuous video transcription worker process.
+    
+    Runs an infinite loop to process untranscribed videos by:\n
+    1. Retrieving untranscribed videos from MongoDB\n
+    2. Downloading the video from YouTube\n
+    3. Converting to WAV\n
+    4. Transcribing with `stable-whisper` library and large-v3 model\n
+    5. Storing results\n
     """
     # TODO stable-ts version 2.17.3: passing the language is not working, will be inferenced at cost of small increase in time
     # self._model.transcribe(wav_path.__str__(), decode_options={"language":language}) \
@@ -52,12 +37,11 @@ def main():
     from pathlib import Path
     base_folder = Path(__file__).parent.joinpath("static").joinpath("videos")
     
-    from db_mongo import get_untranscribed_videos, insert_video_data, get_video_data, remove_annotations_data
+    from database.mongo import get_untranscribed_videos, insert_video_data, get_video_data, remove_annotations_data
     from time import sleep, time
     from json import load
-    from audio import convert_mp4_to_wav
-    from segmentation import VideoAnalyzer
-    #from words import apply_italian_fixes
+    from media.audio import convert_mp4_to_wav
+    from media.segmentation import VideoAnalyzer
     import os
     
     try:
@@ -83,7 +67,7 @@ def main():
                     print(f"File: {filename}, Function: {frame.name}, Line: {line_number} | {error_line}")
                 # If there is an error at network level sleep and try again reconnecting
                 sleep(300)
-                from environment import MONGO_CLUSTER_USERNAME, MONGO_CLUSTER_PASSWORD
+                from env import MONGO_CLUSTER_USERNAME, MONGO_CLUSTER_PASSWORD
                 import pymongo
                 global client
                 global db

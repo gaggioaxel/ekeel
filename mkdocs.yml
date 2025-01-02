@@ -35,30 +35,48 @@ theme:
     
   font:
     text: Source Serif Pro
-    
+  
 markdown_extensions:
   - attr_list
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
 
 plugins:
   - mkdocs-pdf
+  - search
   - mkdocstrings:
       handlers:
         python:
+          paths: [mkdocs/codebase]
           options:
+            docstring_style: numpy
             show_source: true
             show_root_heading: false
+  - gen-files:
+      scripts:
+        - mkdocs/docstring_extractor.py
+  - literate-nav:
+      nav_file: CODE_INDEX.md
+  - section-index  
+  
+          
 
 nav:
   - Homepage: index.md
   - Deploy:
     - Local:
-      - Annotator: platforms/annotation/install.md
-      - Augmentator: platforms/augmentation/install.md
+      - Prerequisites: prerequisites/conda.md
+      - Annotator: platforms/annotator/install.md
+      - Augmentator: platforms/augmentator/install.md
     - Remote:
-      - Codebase Update: platforms/pull.md
-      - Annotator: platforms/annotation/deploy.md
-      - Augmentator: platforms/augmentation/deploy.md
-      - Transcriber: platforms/annotation/transcriber/deploy.md
+      - Prerequisites: prerequisites/linux-services.md
+      - Codebase Update: remote/pull.md
+      - Annotator: platforms/annotator/deploy.md
+      - Augmentator: platforms/augmentator/deploy.md
+      - Transcriber: platforms/annotator/transcriber/deploy.md
+  - Codebase: codebase/
+  - Mkdocs: prerequisites/mkdocs.md
 
 extra:
   social:

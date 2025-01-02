@@ -1,32 +1,37 @@
-# Miniconda Installation Guide for Linux
+# Prerequisites
 
-## Download Miniconda Installer
+## Mandatory files
+You must put a `secrets.env` file when installed locally and must be moved inside folder under `\EVA_apps\sharedSecrets`, ask the project manager to access the file
+
+## Miniconda Installation Guide for Linux
+
+### Download Miniconda Installer
 ```bash
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 ```
 
-## Run the Installer
+### Run the Installer
 ```bash
 bash Miniconda3-latest-Linux-x86_64.sh
 ```
 
-## Installation Prompts
+### Installation Prompts
 1. Press `Enter` to view license
 2. Type `yes` to accept the license
 3. Press `Enter` to confirm installation location
 4. Type `yes` to initialize Miniconda3
 
-## Activate Installation
+### Activate Installation
 ```bash
 source ~/.bashrc
 ```
 
-## Verify Installation
+### Verify Installation
 ```bash
 conda --version
 ```
 
-## Clean Up Installer
+### Clean Up Installer
 ```bash
 rm Miniconda3-latest-Linux-x86_64.sh
 ```
