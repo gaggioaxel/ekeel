@@ -24,7 +24,7 @@ from multiprocessing.managers import ListProxy
 
 from media.audio import *
 from media.image import *
-from media.video import VideoSpeedManager, LocalVideo, SimpleVideo
+from media.video import VideoSpeedManager, LocalVideo, SimpleVideo, VIDEOS_PATH
 from models.xgboost_adapter import XGBoostModelAdapter
 from utils.itertools import double_iterator, pairwise
 from utils.structures import LiFoStack
@@ -103,10 +103,7 @@ class VideoAnalyzer:
                 raise Exception("The video is too long, please choose another video.")
             
         if _testing_path is None:
-            self.folder_path = Path(__file__).parent \
-                                            .joinpath('static') \
-                                            .joinpath('videos') \
-                                            .joinpath(self.video_id)
+            self.folder_path = VIDEOS_PATH.joinpath(self.video_id)
         else:
             self.folder_path = _testing_path
 
@@ -259,7 +256,7 @@ class VideoAnalyzer:
         
         # saving images to show into the timeline
         images_path = []
-        folder_path = Path(__file__).parent.joinpath("static","videos",self.video_id)
+        folder_path = VIDEOS_PATH.joinpath(self.video_id)
         for i, start_end in enumerate(start_end_frames):
             vidcap.set(cv2.CAP_PROP_POS_FRAMES, start_end[0])
             ret, image = vidcap.read()
@@ -474,7 +471,7 @@ class VideoAnalyzer:
 
         # Optimization is performed by doing a first coarse-grained analysis with the XGBoost model predictor
         # then set those windows inside the VideoSpeedManager
-        model = XGBoostModelAdapter(Path(__file__).parent.joinpath("models","xgboost500.sav").__str__())
+        model = XGBoostModelAdapter(Path(__file__).parent.parent.joinpath("models","xgboost500.sav").__str__())
         #XGBoostModelAdapter(os.path.dirname(os.path.realpath(__file__))+"/xgboost/model/xgboost500.sav")
 
         start_frame_num = None
@@ -749,7 +746,7 @@ class VideoAnalyzer:
             self.data["transcript_data"].pop("ItaliaNLP_doc_id", None)
             from pathlib import Path
             from json import load
-            with open(Path(__file__).parent.joinpath("static","videos",self.video_id,self.video_id+".json")) as f:
+            with open(VIDEOS_PATH.joinpath(self.video_id,self.video_id+".json")) as f:
                 self.data["transcript_data"]["text"] = load(f)["segments"]
         if "ItaliaNLP_doc_id" in self.data["transcript_data"].keys():
             return
@@ -1045,7 +1042,7 @@ class VideoAnalyzer:
         #    times = sorted(times)
 
         images_path = []
-        path = Path(__file__).parent.joinpath("static","videos",self.video_id) #os.path.dirname(os.path.abspath(__file__))
+        path = VIDEOS_PATH.joinpath(self.video_id) #os.path.dirname(os.path.abspath(__file__))
         if any(File.endswith(".jpg") for File in os.listdir(path)):
             for file in sorted(os.listdir(path)):
                 if file.endswith(".jpg"):

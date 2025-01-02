@@ -13,7 +13,10 @@ For annotation protocol specifications look [here](reports/PREAP%20Annotation%20
 
 ![Annotation Protocol](reports/PREAP%20Annotation%20Protocol%20specifications.pdf){ type=application/pdf id="protocol-specifications" style="min-height:70vh;width:100%; display:none" }
 
-## `Annotation`
+## `Annotator Tool`
+The Annotator Tool is a web application designed to facilitate the annotation of videos. It involves several key actors: A Vanilla Javascript frontend, a Python Flask backend, a MongoDB database, and a python Whisper Transcriber service running on the same machine in the backend. The tool allows users to interact with the frontend to perform various tasks such as opening the website, registering, annotating videos, comparing annotations and make automatic annotations. The transcriber service periodically processes untranscribed videos and updates the database. 
+
+### `Sequence Diagrams`
 
 Follows sequence diagrams of typical function calls: 
 <button onclick="
@@ -33,13 +36,27 @@ Follows sequence diagrams of typical function calls:
 
 
 
+#### `Homepage Access`
+Interaction between a user, the frontend, and the backend when a user opens a website. The user sends a request to the frontend to open the website. The frontend then sends a GET request to the backend to retrieve the main page data. The backend processes this request by calling a function in the Flask application and then sends the response back to the frontend. The frontend processes the response and renders the main page for the user.
 <div class="mermaid-container" id="annotator1"></div>
 <br>
+
+#### `Registration Process`
+The main actors are a user, the frontend (JS-Frontend), the backend (Flask-Backend), and the database (MongoDB). The process starts with the user clicking the "Sign up" button, prompting the frontend to send a GET request to the backend to load the registration page. The backend processes this request and the frontend renders the registration form. The user fills out the form and submits it, causing the frontend to send a POST request to the backend. The backend inserts the user's data into an unverified users collection in MongoDB and, upon receiving a response from MongoDB, sends a response back to the frontend, which renders a confirmation code page. The user then submits the confirmation code, and the frontend sends another POST request to the backend. If the code is correct, the backend deletes the user from the unverified users collection and inserts them into the verified users collection in MongoDB, then sends a response back to the frontend, which renders a success message. If the code is incorrect, the backend updates the unverified user's data in MongoDB and sends a response back to the frontend, which displays an error message. This sequence outlines the interactions between the user, frontend, backend, and database during the registration process.
 <div class="mermaid-container" id="annotator2"></div>
 <br>
+
+#### `Video Insertion`
+The main actors are: A user, the frontend (JS-Frontend), the backend (Flask-Backend), the database (MongoDB), and the transcriber service. The process begins with the user clicking the "Manual Annotator" button, which triggers a series of interactions. The frontend sends a GET request to the backend to load the video selection page, while the transcriber service periodically wakes up every 60 seconds to query the database for untranscribed videos. The backend processes the request and queries the database to retrieve video data, then sends the response back to the frontend, which renders the video selection page. The user then inserts a URL, prompting the frontend to send a POST request to the backend to add the video. The backend downloads the video, performs automatic transcription, and extracts terms and thumbnails, then inserts the video data into the database. The transcriber service transcribes the video and updates the database with the transcription data. Concurrently, the backend creates an interactable transcript in HTML, queries the database for additional data such as concept maps, definitions, annotation status, and vocabulary, and adds concepts and relations to the payload. Finally, the backend sends the response back to the frontend, which renders the MOOC annotator page. This sequence outlines the interactions between the user, frontend, backend, database, and transcriber service during the video annotation process.
 <div class="mermaid-container" id="annotator3"></div>
+<br>
+
+#### `Performing Annotation`
+The process begins with the user logging in and opening the Manual Annotator, which prompts the backend to send the video selection page to the frontend for rendering. The user then clicks on a video to annotate it, causing the frontend to send a POST request to the backend. The backend processes this request by initializing the VideoAnalyzer and querying MongoDB for video data. After receiving the data, the backend creates an interactable transcript in HTML and retrieves additional information such as concept maps, definitions, annotation status, and vocabulary from MongoDB. This data is then added to the payload and sent back to the frontend, which renders the MOOC annotator page. During the annotation process, whenever the user adds a description to a concept and clicks "Add Description," the frontend updates the local description and network scripts, then sends a POST request to the backend to upload the annotated graph. The backend processes this request by inserting the graph into MongoDB and responds to the frontend with the success or failure status, which the frontend handles accordingly. This sequence outlines the interactions between the user, frontend, backend, and database during the video annotation process.
+<div class="mermaid-container" id="annotator4"></div>
+<br>
 <style>
-    #root-6 rect, #root-10 rect {
+    rect.actor[name='mongo'] {
         rx: 50%; /* Fully round the corners to create a circle */
         ry: 50%;
     }
@@ -59,7 +76,7 @@ Follows sequence diagrams of typical function calls:
                             participant b as Flask-Backend
 
                             u->>+f: Opens the Website
-                            f->>+b: GET /
+                            f->>+b: GET /annotator
                             b->>+f: python: main.index()
                             deactivate b
                             f->>f: render index.html
@@ -69,7 +86,6 @@ Follows sequence diagrams of typical function calls:
                 {
                     containerId: "annotator2",
                     graph: `
-                        %%{init: { 'sequence': {'mirrorActors':false} } }%%
                         sequenceDiagram
                             actor u as User
                             participant f as JS-Frontend
@@ -77,13 +93,13 @@ Follows sequence diagrams of typical function calls:
                             participant mongo as MongoDB
 
                             u->>+f: click "Sign up" button 
-                            f->>+b: GET /register
+                            f->>+b: GET /annotator/register
                             b->>+f: python: main.register()
                             deactivate b
                             f->>f: render register.html
                             deactivate f
                             u->>+f: fills the form      
-                            f->>+b: POST /register
+                            f->>+b: POST /annotator/register
                             b->>+mongo: db.unverified_users.insert_one()
                             mongo->>+b: response
                             deactivate mongo
@@ -91,7 +107,7 @@ Follows sequence diagrams of typical function calls:
                             deactivate b
                             f->>f: render confirm_code.html
                             deactivate f
-                            f->>+b: POST /confirm_code
+                            f->>+b: POST /annotator/confirm_code
 
                             alt code is correct
                                 b->>+mongo: db.unverified_users.delete_one()
@@ -114,13 +130,11 @@ Follows sequence diagrams of typical function calls:
                                 f->>f: alert()
                                 deactivate f
                             end
-                            
                     `,
                 },
                 {
                     containerId: "annotator3",
                     graph: `
-                        %%{init: { 'sequence': {'mirrorActors':false} } }%%
                         sequenceDiagram
                             actor u as User
                             participant f as JS-Frontend
@@ -134,7 +148,7 @@ Follows sequence diagrams of typical function calls:
                             t->>t: sleep
                             deactivate t
                             Note over f,mongo: The user must be authenticated to see the videos
-                            f->>+b: GET /video_selection
+                            f->>+b: GET /annotator/video_selection
                             
                             par transcriber-service
                                 loop every 60 seconds
@@ -158,7 +172,7 @@ Follows sequence diagrams of typical function calls:
                             u->>+f: Inserts an url
                             
                             Note over f,mongo: The user must be authenticated to add videos
-                            f->>+b: POST /video_selection
+                            f->>+b: POST /annotator/video_selection
                             b->>b: main.video_selection()
                             b->>b: Download video, automatic transcript, and extract terms and thumbnails
                             b->>+mongo: VideoAnalyzer -> mongo.insert_video_data()
@@ -201,6 +215,64 @@ Follows sequence diagrams of typical function calls:
                             deactivate f
                     `,
                 },
+                {
+                    containerId: "annotator4",
+                    graph: `
+                        sequenceDiagram
+                            actor u as User
+                            participant f as JS-Frontend
+                            participant b as Flask-Backend
+                            participant mongo as MongoDB
+
+                            Note over f,mongo: The user has logged in and opened the Manual Annotator
+                            b->>+f: main.video_selection()
+                            f->>f: render video_selection.html
+                            deactivate f
+                            u->>+f: clicks on a video to annotate it
+                            f->>+b: POST /annotator/video_selection
+                            b->>b: main.video_selection()
+                            b->>b: VideoAnalyzer -> __init__() 
+                            b->>+mongo: VideoAnalyzer -> mongo.get_video_data()
+                            mongo->>+b: response
+                            deactivate mongo
+                            b->>b: Create interactable transcript in html
+                            b->>+mongo: mongo.get_concept_map()
+                            mongo->>+b: response
+                            deactivate mongo
+                            b->>+mongo: mongo.get_definitions()
+                            mongo->>+b: response
+                            deactivate mongo
+                            b->>+mongo: mongo.get_annotation_status()
+                            mongo->>+b: response
+                            deactivate mongo
+                            b->>+mongo: mongo.get_vocabulary()
+                            mongo->>+b: response
+                            deactivate mongo
+                            b->>b: add concepts and relations to payload
+                            b->>+f: main.video_selection()
+                            f->>f: render mooc_annotator.html
+                            deactivate f
+                            loop every time data is inserted or modified
+                                u->>+f: adds a description to a concept and clicks "Add Description"
+                                f->>f: description.js -> addDescription()
+                                f->>f: network.js -> uploadManuGraphOnDB()
+                                f->>+b: POST /annotator/upload_graph
+                                b->>b: main.upload_annotated_graph()
+                                b->>+mongo: mongo.insert_graph()
+                                mongo->>+b: response
+                                deactivate mongo
+                                alt is success
+                                    b->>+f: json: {"done":True}
+                                    f->>f: no-response
+                                else error
+                                    b->>+f: json: {"done":False}
+                                    f->>f: alert()
+                                    deactivate f
+                                end
+                            end
+
+                    `,
+                },
             ];
 
         for (const { containerId, graph } of diagramDefinitions) {
@@ -209,25 +281,51 @@ Follows sequence diagrams of typical function calls:
     }
 </script>
 
+### Homepage View
+The homepage view of the Annotator application provides an overview of the available features and functionalities. It serves as the entry point for users to navigate to different sections of the application.
+
+![home](./resources/homepage.png)
+
+### Video Selection View
+The video selection view allows users to browse and select videos for annotation. This view displays a list of available videos, along with relevant metadata such as titles, descriptions, and thumbnails. Users can choose a video to start the annotation process.
+
+![video](./resources/video_selection.png)
+
+### Annotator View
+The annotator view is where users perform the actual annotation of the selected video. This view provides tools and controls for annotating the video, such as adding concepts and synonyms, adding and editing descriptions, bounding box of concepts, relations, downloading the Graph in JSON format and the transcript enriched with the annotations. Users can play, pause, and navigate through the video while making annotations.
+
+![annotator](./resources/annotator.png)
 
 
+### `Slides Extraction`
 
-Slides extraction is described [here](reports/SWLD2023%20-%20Video%20Slide%20Segmentation.pdf) or click ->
+The full document can be found [here](reports/SWLD2023%20-%20Video%20Slide%20Segmentation.pdf) or click ->
 <button onclick="const spec = document.getElementById('video-segmentation'); if(spec.style.display==='block'){ spec.style.display='none'; this.innerHTML=this.innerHTML.replace('Hide','Show'); } else { spec.style.display='block'; this.innerHTML=this.innerHTML.replace('Show','Hide'); }" style="cursor: pointer">
     `Show Slide Segmentation Protocol`
 </button>
 
 ![Annotation Protocol](reports/SWLD2023%20-%20Video%20Slide%20Segmentation.pdf){ type=application/pdf id="video-segmentation" style="min-height:70vh;width:100%; display:none" }
 
-In the current implementation, slides extraction has been disabled to avoid overloading the server and should be reimplemented using novel NLP models like [LLaVA](https://llava-vl.github.io/)
+#### `A short summary`
+The system analyzes videos to identify and segment slide-based content using machine learning and OpenCV. Initially, the video undergoes a coarse analysis to determine if it contains a significant percentage of slides. A pre-trained model classifies images as "slidish," and this classification is validated using OpenCV.
+
+If the video meets the "slide threshold," further analysis is conducted. The segmentation process involves extracting keyframes based on color histograms and analyzing text to determine slide titles and content. Titles are identified through statistical analysis of text height and position, and concepts are extracted using phrasemachine. Each segment is compacted by merging similar or overlapping text and validated through a double-checking mechanism.
+
+The platform uses Python and relies on several core classes. The ImageClassifier handles face and text detection, as well as color conversions. The LocalVideo class manages video loading, frame extraction, and resizing using OpenCV. The VideoSpeedManager adds logic for efficient frame extraction. The TimedAndFramedText dataclass stores text, bounding box positions, and video frame ranges for slide segments. The VideoAnalyzer processes video transcription, keyframe segmentation, and slide classification, identifying slides and validating segments.
+
+The system includes a process scheduler that automatically segments videos, saving results to a database. This enables the reconstruction of slides and timeframes for further analysis or playback. Concepts and definitions are heuristically extracted based on the appearance of terms in transcripts and slide durations. This comprehensive process ensures accurate segmentation and analysis of educational videos containing slides.
+
+!!! info
+    In the current implementation, slides extraction has been disabled to avoid overloading the server and should be reimplemented using novel NLP models like [LLaVA](https://llava-vl.github.io/)
 
 
-## `Augmentation`
-
-## `flask-server`
+## `Augmentator Tool`
 
 
-## `react-app`
+### `flask-server`
+
+
+### `react-app`
 
 
 
@@ -238,6 +336,13 @@ In the current implementation, slides extraction has been disabled to avoid over
       margin-left:auto;
       margin-right:auto;
       max-width:80rem;
+    }
+    .mermaid-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+        width: 80%; /* Adjust the width as needed */
     }
 </style>
 <script>
@@ -261,10 +366,34 @@ In the current implementation, slides extraction has been disabled to avoid over
             container.innerHTML = ''; // Clear existing content
             const { svg } = await mermaid.render(containerId+"_graph", graphDefinition);
             container.innerHTML = svg;
-            const lineElements = document.querySelectorAll('svg#annotator3_graph line.actor-line');
+            let lineElements = document.querySelectorAll('svg#annotator3_graph line.actor-line');
             lineElements.forEach(line => {
-                line.setAttribute('y2', '3500'); // Set the y2 attribute
+                line.setAttribute('y2', '2970'); // Set the y2 attribute
             });
+            lineElements = document.querySelectorAll('svg#annotator4_graph line.actor-line');
+            lineElements.forEach(line => {
+                line.setAttribute('y2', '2380'); // Set the y2 attribute
+            });
+            const rect = document.querySelector('rect.actor[name="t"]');
+            if (rect) {
+                const x = parseFloat(rect.getAttribute("x"));
+                const y = parseFloat(rect.getAttribute("y"));
+                const width = parseFloat(rect.getAttribute("width"));
+                const height = parseFloat(rect.getAttribute("height"));
+                const points = [
+                    `${x + width},${y}`, // Top right
+                    `${x + width * 0.9},${y + height}`, // Bottom Right-center
+                    `${x},${y + height}`, // Bottom Left
+                    `${x + width * 0.1},${y}` // Top Left-center
+                ].join(" ");
+                const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                polygon.setAttribute("class", rect.getAttribute("class"));
+                polygon.setAttribute("points", points);
+                polygon.setAttribute("stroke", rect.getAttribute("stroke"));
+                polygon.setAttribute("fill", rect.getAttribute("fill"));
+                polygon.setAttribute("name", rect.getAttribute("name"));
+                rect.parentNode.replaceChild(polygon, rect);
+            }
         } catch (error) {
             console.error('Failed to render Mermaid diagram:', error);
         }

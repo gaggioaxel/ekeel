@@ -28,6 +28,8 @@ from typing import Tuple
 from media.image import ImageClassifier,COLOR_BGR,COLOR_RGB,COLOR_GRAY
 from pathlib import Path
 
+VIDEOS_PATH = Path(__file__).parent.parent.joinpath("static","videos")
+
 
 class LocalVideo:
     """
@@ -93,10 +95,9 @@ class LocalVideo:
             else:
                 self._num_colors = 3
         self._frame_size = forced_frame_size
-        class_path = os.path.dirname(os.path.abspath(getfile(self.__class__)))
         self._vid_id = video_id
         if _testing_path is None:
-            video_file_folder = os.path.join(class_path, "static", "videos", video_id)
+            video_file_folder = VIDEOS_PATH.joinpath(video_id)
         else:
             video_file_folder = _testing_path
         self._vidcap = cv2.VideoCapture(os.path.join(video_file_folder,video_id+'.mp4'))
