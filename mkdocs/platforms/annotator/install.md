@@ -1,9 +1,9 @@
 # EKEEL Video Annotation
 The document provides instructions for setting up the EKEEL Video Annotation project locally on your pc.
 
-# First Installation
+## First Installation
 
-## Prerequisites: ffmpeg
+### Prerequisites: ffmpeg
 
 Open a Terminal and type:
 ```bash
@@ -13,7 +13,7 @@ sudo apt install tesseract-ocr
 sudo apt install libtesseract-dev
 ```
 
-## Prerequisites: Anaconda  
+### Prerequisites: Anaconda  
 
 <br>
 
@@ -25,7 +25,7 @@ To install follow [this guide](../../prerequisites/conda.md)
 
 Download the repository:
 ```bash 
-git clone https://github.com/Teldh/edurell.git
+git clone https://github.com/Teldh/ekeel.git
 ```
 
 "cd" to the folder EKEELVideoAnnotation
@@ -52,7 +52,7 @@ python main.py
 
 <br>
 
-# On any Change in Environment Packages 
+## On any Change in Environment Packages 
 
 To avoid inconsistency between local and server, yml file has been used to enforce same environment state
 
@@ -73,7 +73,7 @@ The guide is [here](deploy.md#update-and-setup-video-annotation-app)
 
 
 
-# Run locally
+## Run locally
 
 Start by running Anaconda/Conda terminal:
 
@@ -92,7 +92,7 @@ With the environment activated launch the app locally with:
     > python main.py
 
 
-# Notes:
+## Notes
     
 - Email 
 

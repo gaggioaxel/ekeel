@@ -306,7 +306,7 @@ The full document can be found [here](reports/SWLD2023%20-%20Video%20Slide%20Seg
 
 ![Annotation Protocol](reports/SWLD2023%20-%20Video%20Slide%20Segmentation.pdf){ type=application/pdf id="video-segmentation" style="min-height:70vh;width:100%; display:none" }
 
-#### `A short summary`
+#### `Short Summary`
 The system analyzes videos to identify and segment slide-based content using machine learning and OpenCV. Initially, the video undergoes a coarse analysis to determine if it contains a significant percentage of slides. A pre-trained model classifies images as "slidish," and this classification is validated using OpenCV.
 
 If the video meets the "slide threshold," further analysis is conducted. The segmentation process involves extracting keyframes based on color histograms and analyzing text to determine slide titles and content. Titles are identified through statistical analysis of text height and position, and concepts are extracted using phrasemachine. Each segment is compacted by merging similar or overlapping text and validated through a double-checking mechanism.

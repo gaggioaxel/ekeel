@@ -1,71 +1,86 @@
 # Video augmentation and graph exploration
 
-### Short description of the project:
+## Short description of the project:
 
 This project is a web application developped in React (JS) for the front-end and with Flask for the back-end (Python). The aim of the application is to help students learn through videos, contextual help and an interactive knowledge graph gathering all the concepts explainend in the video and the relationships with each other.
 
 <br>
 
-#### Link to features demo
+## Link to features demo
 
 https://drive.google.com/drive/folders/1o9WdAvNopdtUSw5h2tq0q5QBMCZbrNIk?usp=sharing
 
 <br>
 
-# Installation
+## Installation
 
-## Virtual Environment
+### Virtual Environment
 
 <br>
 
 To organize the projecty it is better to create and use a virtual env as Annotator app, but you can skip this step.
 
-#### Prerequisites: Anaconda  
+### Prerequisites: Anaconda  
 
 <br>
 
-Start by running Anaconda/Conda terminal:
+Ensure Anaconda/Conda configured in terminal:
 
-Create the virtual environment (if you do not have it yet):
+To install follow [this guide](../../prerequisites/conda.md) 
 
-    > conda create -n myenv python=3.7 pip pytorch
-    
-Activate the environment:
+<br>
 
-    > conda activate myenv
-
-(Optional) Open VSCode with conda (if dev using VScode ide)
-
-    > code
-
-## Back-end (Flask)
+### Back-end (Flask)
 
 * Make sure that you have Flask installed on your machine
 
 * Go inside flask-server folder:
-  - cd src/flask-server
+```
+cd src/flask-server
+conda env create -f conda_environment.yml
+conda activate ekeel_aug_env
+```
 
-* Install the requirements:
-  - pip install -r requirements.txt  
+#### On any Change in Environment Packages 
 
-  (each module's version is specified in requirements.txt)
+To avoid inconsistency between local and server, yml file has been used to enforce same environment state
+
+open a terminal:
+
+    > cd {inside folder EKEELVideoAugmentation/src/flask-server}
+
+
+overwrite the conda_environment.yml inside using
+```
+conda env export --no-builds | grep -v "^prefix: " | grep -v "en-core-web-lg" | grep -v "it-core-news-lg" > conda_environment.yml
+```
+and push the modifications to the repo. (The spacy models end up in the final distribution but must be ignored otherwise cause errors)
+
+Then to synchronize the packages change in the server pull updates from the repo and on the server terminal update dependencies on the server:
+
+The guide is [here](deploy.md#update-and-setup-video-augmentation-app)
+
 
 * If you need to connect to EKEEL’s mail box:
   - Go to Gmail’s login interface
-  - Email address : Specified in src/flask-server/main.py **(line 43)**
-  - Password : Specified in src/flask-server/main.py at **(line 44)**
+  - Email address : Specified in the `.env` file as `EMAIL_ACCOUNT`
+  - Password : Specified in the `.env` file as `EMAIL_PASSWORD`
 
-## Front-end (React.js)
+### Front-end (React.js)
 
 * Make sure that Node.js and npm are installed on the machine
 
 * Go inside react-app folder
-  - cd src/react-app  
+```
+cd src/react-app  
+```
 
 * Install the dependencies
-  - npm install
+```
+npm install --legacy-peer-deps
+```
 
-# Notes
+## Notes
 
 - Pymongo issues 
 
@@ -131,28 +146,33 @@ Activate the environment:
 
 <br>
 
-# Run the application
+## Run the application
 
 * Open 2 terminals
 
   - 1st one : go to flask-server folder and run main
-    - cd src/flask-server
-    - python main.py  
+  ```
+  cd src/flask-server
+  python main.py  
+  ```
+
   - 2nd one : go to react-app folder and run the start script
-    - cd src/react-app
-    - npm start
+  ```
+  cd src/react-app
+  npm start
+  ```
 
 The app should start automatically in the default browser at this point..  
 (However the url to type in the browser is the following: http://localhost:3000/)
 
 <br>
 
-# Deploy and run on server
+## Deploy and run on server
 
 Follow this guide:
 https://drive.google.com/file/d/1hta5qeYVr-2U9mcQdjT0-a_NacvhYUPC/view?usp=sharing
 
-# Credits:
+## Credits:
 
 - Thomas Neveux
 - Julie Massari
