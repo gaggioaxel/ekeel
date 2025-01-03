@@ -378,7 +378,7 @@ def get_graphs_info(selected_video=None):
             annotator = {"id": vid["annotator_id"], "name": vid["annotator_name"]}
 
             if vid["video_id"] not in graphs_info:
-                graphs_info[vid["video_id"]] = {"title": vid["title"][0], "creator": vid["creator"], "annotators": [annotator]}
+                graphs_info[vid["video_id"]] = {"title": vid["title"][0], "creator": vid["creator"][0], "annotators": [annotator]}
             else:
                 graphs_info[vid["video_id"]]["annotators"].append(annotator)
 

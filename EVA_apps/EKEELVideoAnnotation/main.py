@@ -780,8 +780,13 @@ def analysis():
             return render_template('analysis_results.html', results=results, analysis_type=analysis_type,
                                    title=video_choices[video_id]["title"])
 
-
-    return render_template('analysis_selection.html',  video_choices=video_choices) #form=form,
+    videos = []
+    for vid_id in video_choices.keys():
+        video = video_choices[vid_id]
+        video["video_id"] = vid_id
+        videos.append(video)
+    
+    return render_template('analysis_selection.html',  videos=videos) #form=form,
 
 
 @app.route('/gold_standard', methods=['GET', 'POST'])
