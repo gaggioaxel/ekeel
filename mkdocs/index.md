@@ -321,11 +321,12 @@ The system includes a process scheduler that automatically segments videos, savi
 
 ## `Augmentator Tool`
 
+The Augmentator Tool is a specialized web application designed to enhance educational videos through automatic concept detection and knowledge graph generation. It analyzes video content, extracts key concepts and their relationships, and presents them in an interactive visual format. The tool allows educators and learners to navigate complex educational content through temporal concept maps, making it easier to understand concept dependencies and progression throughout the video.
+The system processes both video transcripts and visual elements to identify important educational concepts, their temporal occurrences, and their interconnections. 
+Users can interact with the generated knowledge graphs, explore concept definitions at specific timestamps, and visualize how different concepts relate to each other within the educational context. The tool supports multiple languages and integrates with various video platforms, making it versatile for different educational settings and content types. Its primary goal is to transform linear video content into an interactive learning experience that highlights conceptual understanding and knowledge structure.
 
-### `flask-server`
-
-
-### `react-app`
+!!! note
+    Currently not working for deprecation issues
 
 
 
