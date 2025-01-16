@@ -1,4 +1,6 @@
-# Introduction
+# Transcriber deployment
+------
+
 The EKEEL Transcriber Service is a continuous transcription system that automates the process of converting YouTube videos into text transcripts using the Stable-Whisper model (large-v3), a state-of-the-art speech recognition model.
 
 The service operates as a background worker that continuously polls a MongoDB database for untranscribed video jobs. 
@@ -34,7 +36,6 @@ If the service is running correctly, you should see an active (running) status.
 
 
 --------------
-
 ## Code
 
 The code is available [here](../../../codebase/EKEELVideoAnnotation/transcribe.md)

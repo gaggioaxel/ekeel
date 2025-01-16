@@ -1,35 +1,30 @@
 # Video augmentation and graph exploration
+------
+
 
 ## Short description of the project:
 
 This project is a web application developped in React (JS) for the front-end and with Flask for the back-end (Python). The aim of the application is to help students learn through videos, contextual help and an interactive knowledge graph gathering all the concepts explainend in the video and the relationships with each other.
 
-<br>
-
-## Link to features demo
-
-https://drive.google.com/drive/folders/1o9WdAvNopdtUSw5h2tq0q5QBMCZbrNIk?usp=sharing
+[Here](https://drive.google.com/drive/folders/1o9WdAvNopdtUSw5h2tq0q5QBMCZbrNIk?usp=sharing) is a folder of demo of the features
 
 <br>
 
+--------
 ## Installation
 
 ### Virtual Environment
-
-<br>
 
 To organize the projecty it is better to create and use a virtual env as Annotator app, but you can skip this step.
 
 ### Prerequisites: Anaconda  
 
-<br>
 
 Ensure Anaconda/Conda configured in terminal:
 
 To install follow [this guide](../../prerequisites/conda.md) 
 
-<br>
-
+------
 ### Back-end (Flask)
 
 * Make sure that you have Flask installed on your machine
@@ -66,6 +61,7 @@ The guide is [here](deploy.md#update-and-setup-video-augmentation-app)
   - Email address : Specified in the `.env` file as `EMAIL_ACCOUNT`
   - Password : Specified in the `.env` file as `EMAIL_PASSWORD`
 
+------
 ### Front-end (React.js)
 
 * Make sure that Node.js and npm are installed on the machine
@@ -80,6 +76,7 @@ cd src/react-app
 npm install --legacy-peer-deps
 ```
 
+-----
 ## Notes
 
 - Pymongo issues 
@@ -144,8 +141,7 @@ npm install --legacy-peer-deps
     * (More info -> https://stackoverflow.com/questions/16512592/login-credentials-not-working-with-gmail-smtp)
 
 
-<br>
-
+------
 ## Run the application
 
 * Open 2 terminals
@@ -165,13 +161,15 @@ npm install --legacy-peer-deps
 The app should start automatically in the default browser at this point..  
 (However the url to type in the browser is the following: http://localhost:3000/)
 
-<br>
 
+-------
 ## Deploy and run on server
 
 Follow this guide:
 https://drive.google.com/file/d/1hta5qeYVr-2U9mcQdjT0-a_NacvhYUPC/view?usp=sharing
 
+
+--------
 ## Credits:
 
 - Thomas Neveux

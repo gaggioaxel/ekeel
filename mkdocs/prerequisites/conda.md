@@ -1,9 +1,12 @@
 # Prerequisites
+-----
 
 ## Mandatory files
 You must put a `secrets.env` file when installed locally and must be moved inside folder under `\EVA_apps\sharedSecrets`, ask the project manager to access the file
 
+------
 ## Miniconda Installation Guide for Linux
+------
 
 ### Download Miniconda Installer
 ```bash

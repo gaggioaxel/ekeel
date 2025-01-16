@@ -1,4 +1,6 @@
 # Documentation for `EKEEL` apps
+-------
+
 For deep overview of the system look [here](reports/System%20Overview.pdf) or click ->
 <button onclick="const spec = document.getElementById('system-overview'); if(spec.style.display==='block'){ spec.style.display='none'; this.innerHTML=this.innerHTML.replace('Hide','Show'); } else { spec.style.display='block'; this.innerHTML=this.innerHTML.replace('Show','Hide'); }" style="cursor: pointer">
     `Show System Overview`
@@ -12,6 +14,7 @@ For annotation protocol specifications look [here](reports/PREAP%20Annotation%20
 </button>
 
 ![Annotation Protocol](reports/PREAP%20Annotation%20Protocol%20specifications.pdf){ type=application/pdf id="protocol-specifications" style="min-height:70vh;width:100%; display:none" }
+
 
 ## `Annotator Tool`
 The Annotator Tool is a web application designed to facilitate the annotation of videos. It involves several key actors: A Vanilla Javascript frontend, a Python Flask backend, a MongoDB database, and a python Whisper Transcriber service running on the same machine in the backend. The tool allows users to interact with the frontend to perform various tasks such as opening the website, registering, annotating videos, comparing annotations and make automatic annotations. The transcriber service periodically processes untranscribed videos and updates the database. 
@@ -280,6 +283,8 @@ The process begins with the user logging in and opening the Manual Annotator, wh
         }
     }
 </script>
+----
+
 
 ### Homepage View
 The homepage view of the Annotator application provides an overview of the available features and functionalities. It serves as the entry point for users to navigate to different sections of the application.
@@ -306,7 +311,8 @@ The full document can be found [here](reports/SWLD2023%20-%20Video%20Slide%20Seg
 
 ![Annotation Protocol](reports/SWLD2023%20-%20Video%20Slide%20Segmentation.pdf){ type=application/pdf id="video-segmentation" style="min-height:70vh;width:100%; display:none" }
 
-#### `Short Summary`
+Or it's summarized here:
+
 The system analyzes videos to identify and segment slide-based content using machine learning and OpenCV. Initially, the video undergoes a coarse analysis to determine if it contains a significant percentage of slides. A pre-trained model classifies images as "slidish," and this classification is validated using OpenCV.
 
 If the video meets the "slide threshold," further analysis is conducted. The segmentation process involves extracting keyframes based on color histograms and analyzing text to determine slide titles and content. Titles are identified through statistical analysis of text height and position, and concepts are extracted using phrasemachine. Each segment is compacted by merging similar or overlapping text and validated through a double-checking mechanism.
@@ -318,12 +324,19 @@ The system includes a process scheduler that automatically segments videos, savi
 !!! info
     In the current implementation, slides extraction has been disabled to avoid overloading the server and should be reimplemented using novel NLP models like [LLaVA](https://llava-vl.github.io/)
 
+----
+
 
 ## `Augmentator Tool`
 
-The Augmentator Tool is a specialized web application designed to enhance educational videos through automatic concept detection and knowledge graph generation. It analyzes video content, extracts key concepts and their relationships, and presents them in an interactive visual format. The tool allows educators and learners to navigate complex educational content through temporal concept maps, making it easier to understand concept dependencies and progression throughout the video.
+The Augmentator Tool is a specialized web application designed to enhance educational videos through automatic concept detection and knowledge graph generation. 
+It analyzes video content, extracts key concepts and their relationships, and presents them in an interactive visual format. The tool allows educators and learners to navigate complex educational content through temporal concept maps, making it easier to understand concept dependencies and progression throughout the video.
+
+The tool supports multiple languages and integrates with YouTube platform for research purposes, making it versatile for different educational settings and content types. Its primary goal is to transform linear video content into an interactive learning experience that highlights conceptual understanding and knowledge structure.
+
 The system processes both video transcripts and visual elements to identify important educational concepts, their temporal occurrences, and their interconnections. 
-Users can interact with the generated knowledge graphs, explore concept definitions at specific timestamps, and visualize how different concepts relate to each other within the educational context. The tool supports multiple languages and integrates with various video platforms, making it versatile for different educational settings and content types. Its primary goal is to transform linear video content into an interactive learning experience that highlights conceptual understanding and knowledge structure.
+
+Users can interact with the generated knowledge graphs, explore concept definitions at specific timestamps, and visualize how different concepts relate to each other within the educational context. 
 
 !!! note
     Currently not working for deprecation issues

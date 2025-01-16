@@ -1,4 +1,8 @@
-# Update and Setup Video Augmentation App
+# Deploy Augmentator on Server
+------
+
+
+## Update and Setup Video Augmentation App
 Go inside EkeelVideoAugmentation app folder
 ```bash
 cd /var/www/ekeel/EVA_apps/EkeelVideoAugmentation/

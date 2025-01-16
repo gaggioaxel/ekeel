@@ -1,3 +1,6 @@
+# Mkdocs
+-------
+
 This project is documented with [mkdocs](https://www.mkdocs.org/getting-started/)
 
 Its update is fully automated with every code modification, as long as classes and functions are documented in the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) format.

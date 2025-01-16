@@ -1,9 +1,27 @@
 """
-Loads private data environment
+Environment configuration module.
+
+Loads sensitive configuration variables from secrets.env file for MongoDB, email and security settings.
+
+Attributes
+----------
+MONGO_CLUSTER_USERNAME : str
+    Username for MongoDB cluster access
+MONGO_CLUSTER_PASSWORD : str 
+    Password for MongoDB cluster access
+EMAIL_ACCOUNT : str
+    Email account for sending notifications
+EMAIL_PASSWORD : str
+    Password for email account
+APP_SECRET_KEY : str
+    Secret key for application security
+APP_SECURITY_PASSWORD_SALT : str
+    Salt value for password hashing
 
 Raises
 ------
-Exception: if missing env file
+Exception
+    If secrets.env file is missing in EVA_apps/sharedSecrets directory
 """
 
 

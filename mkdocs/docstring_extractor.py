@@ -29,7 +29,8 @@ for path in all_paths:
 
     with mkdocs_gen_files.open(full_doc_path, "w") as fd:
         ident = ".".join(parts)
-        fd.write(f"::: {root_code_dir}.{ident}")  # {ident}
+        module_name = parts[-1].replace('_', ' ').title()
+        fd.write(f"# {module_name}\n\n------\n\n::: {root_code_dir}.{ident}")
 
     mkdocs_gen_files.set_edit_path(full_doc_path, path)
 
