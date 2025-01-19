@@ -6,7 +6,7 @@
 
 This project is a web application developped in React (JS) for the front-end and with Flask for the back-end (Python). The aim of the application is to help students learn through videos, contextual help and an interactive knowledge graph gathering all the concepts explainend in the video and the relationships with each other.
 
-[Here](https://drive.google.com/drive/folders/1o9WdAvNopdtUSw5h2tq0q5QBMCZbrNIk?usp=sharing) is a folder of demo of the features
+[Here](https://drive.google.com/drive/folders/1o9WdAvNopdtUSw5h2tq0q5QBMCZbrNIk?usp=sharing) is a Drive folder of demo of the features
 
 <br>
 
@@ -22,7 +22,7 @@ To organize the projecty it is better to create and use a virtual env as Annotat
 
 Ensure Anaconda/Conda configured in terminal:
 
-To install follow [this guide](../../prerequisites/conda.md) 
+To install Conda follow [this guide](../../prerequisites/conda.md) 
 
 ------
 ### Back-end (Flask)
@@ -41,8 +41,7 @@ conda activate ekeel_aug_env
 To avoid inconsistency between local and server, yml file has been used to enforce same environment state
 
 open a terminal:
-
-    > cd {inside folder EKEELVideoAugmentation/src/flask-server}
+  > cd {inside folder EKEELVideoAugmentation/src/flask-server}
 
 
 overwrite the conda_environment.yml inside using
@@ -64,7 +63,13 @@ The guide is [here](deploy.md#update-and-setup-video-augmentation-app)
 ------
 ### Front-end (React.js)
 
-* Make sure that Node.js and npm are installed on the machine
+* Make sure that Node.js v16.20.2 (and npm v8.19.4) are installed on the machine
+
+Suggest install nvm to manage different environments
+```
+nvm install 16
+nvm use 16
+```
 
 * Go inside react-app folder
 ```

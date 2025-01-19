@@ -26,7 +26,7 @@ sudo rm -r ./build
 
 Update npm packages
 ```bash
-sudo npm install
+sudo npm install --legacy-peer-deps
 ```
 
 Create new version of the react app build
@@ -39,3 +39,11 @@ Restart VideoAugmentation App
 ```bash
 sudo systemctl restart ekeel-wp3
 ```
+
+## In case of reinstall on server
+Clone the repo
+```
+git clone https://github.com/
+```
+
+Follow [this guide](install.md) to install flask backend and react frontend

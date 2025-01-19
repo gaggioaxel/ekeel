@@ -1,6 +1,6 @@
 site_name: "EKEEL - Empowering Knowledge Extraction to Empower Learners"
 repo_url: https://github.com/teldh/ekeel
-site_url: https://gaggioaxel.github.io/ekeel/docs/
+site_url: https://teldh.github.io/ekeel/docs/
 
 docs_dir: mkdocs
 site_dir: docs
