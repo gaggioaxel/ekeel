@@ -12,6 +12,8 @@ The services are served through [NGINX](https://nginx.org/en/) as a reverse prox
 
 The services are maintained as system services using systemd, ensuring they automatically restart and remain available.
 
+There should always be a perfect replication of the server code and the local code, every update the developer makes to the application should be deployed to the server using [this guide](./remote/pull.md)
+
 
 For annotation protocol specifications look [here](reports/PREAP%20Annotation%20Protocol%20specifications.pdf) or click ->
 <button onclick="const spec = document.getElementById('protocol-specifications'); if(spec.style.display==='block'){ spec.style.display='none'; this.innerHTML=this.innerHTML.replace('Hide','Show'); } else { spec.style.display='block'; this.innerHTML=this.innerHTML.replace('Show','Hide'); }" style="cursor: pointer">

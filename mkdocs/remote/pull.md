@@ -20,6 +20,9 @@ sudo git pull
 ```
 *Note: If github credentials are not valid or you want to use your own credentials...*
 
+!!!warning
+    If you made any change to the environment distribution packages then follow [this guide](../platforms/annotator/deploy.md#update-and-setup-video-annotation-app) to update the Annotator or [this guide](../platforms/augmentator/deploy.md#update-and-setup-video-augmentation-app) to update the Augmentator
+
 
 ### Bug: Provided github credentials are not valid
 You can use your own github credentials:

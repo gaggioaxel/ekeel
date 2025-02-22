@@ -1,10 +1,11 @@
 # Install Annotation tool
 ------------
 
-The document provides instructions for setting up the EKEEL Video Annotation project locally on your pc.
+The document provides instructions for setting up the EKEEL Video Annotation project locally on your PC.  
 
-è stato testato per funzionare su Ubuntu 22 <-> 24. 
-Non testato (e non funzionante) su windows ma solo su linux
+It has been tested to work on Ubuntu 22 and 24.  
+It has not been tested (and does not work) on Windows, but only on Linux distributions or [WSL](https://learn.microsoft.com/en-us/windows/wsl/about).
+
 
 ## First Installation
 
